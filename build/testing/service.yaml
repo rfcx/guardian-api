@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ranger-api-service
+  namespace: testing
+  labels:
+    app: ranger-api
+spec:
+  selector:
+    app: ranger-api
+  type: ClusterIP
+  ports:
+    - name: node
+      port: 80
+      targetPort: 3000

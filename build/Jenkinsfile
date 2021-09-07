@@ -1,0 +1,131 @@
+pipeline {
+    agent {
+    kubernetes {
+      yaml """
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - name: docker-config
+        mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-config
+      configMap:
+        name: docker-config
+"""
+    }
+  }
+    environment {
+        APP = "ranger-api"
+        K8S_NAMESPACE = k8sNamespace(BRANCH_NAME)
+        ECR_HOST = "887044485231.dkr.ecr.eu-west-1.amazonaws.com"
+        ECR_REPO = ecrRepoName(BRANCH_NAME)
+        SLACK_CHANNEL = slackChannel(BRANCH_NAME)
+    }
+
+    stages {
+
+        stage("Build") {
+            steps {
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#FF9800', message: "*Ranger API*: Build started <${env.BUILD_URL}|#${env.BUILD_NUMBER}> commit ${env.GIT_COMMIT[0..6]} branch ${env.BRANCH_NAME}")
+                container(name: 'kaniko') {
+                    sh """
+                    /kaniko/executor --snapshotMode=redo --use-new-run=true --cache=true --cache-repo=${ECR_HOST}/${ECR_REPO} --dockerfile `pwd`/build/Dockerfile --context `pwd` --destination=${ECR_HOST}/${ECR_REPO}:latest --destination=${ECR_HOST}/${ECR_REPO}:$BUILD_NUMBER
+                    """
+                }
+            }
+            post {
+                success {
+                    slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#3380C7', message: "*Ranger API*: Image built on <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+                    echo 'Compile Stage Successful'
+                }
+                failure {
+                    slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#F44336', message: "*Ranger API*: Image build failed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+                    echo 'Compile Stage Failed'
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'slave'
+            }
+            steps {
+                sh "kubectl apply -f build/${K8S_NAMESPACE} --namespace ${K8S_NAMESPACE}"
+                sh "kubectl set image deployment ${APP} ${APP}=${ECR_HOST}/${ECR_REPO}:$BUILD_NUMBER --namespace ${K8S_NAMESPACE}"
+            }
+        }
+        stage('Verifying') {
+            agent {
+                label 'slave'
+            }
+            options {
+                skipDefaultCheckout true
+            }
+            steps {
+                sh "kubectl rollout status deployment ${APP} --namespace ${K8S_NAMESPACE}"
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Deployment completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+            }
+        }
+        stage('Migrate database') {
+            agent {
+                label 'slave'
+            }
+            options {
+                skipDefaultCheckout true
+            }
+            steps {
+                sh """kubectl run -i --rm ${APP}-migration --image=${ECR_HOST}/${ECR_REPO}:$BUILD_NUMBER --namespace=${K8S_NAMESPACE} --overrides='
+                { "spec": { "containers": [ { "name": "${APP}-migration", "image": "${ECR_HOST}/${ECR_REPO}:${BUILD_NUMBER}\",
+                "imagePullPolicy": "IfNotPresent", "restartPolicy": "Never", "args": [ "yarn", "migrate" ],
+                "envFrom": [ { "configMapRef": { "name": "${APP}-config" } }, { "secretRef": { "name": "${APP}-secrets" } } ] } ] } }
+                '"""
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Migrations completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+            }
+        }
+    }
+}
+
+
+def ecrRepoName(branch) {
+    script {
+        repo = "ranger-api/testing"
+        if (branch == 'staging') {
+            repo = "ranger-api/staging"
+        }
+        if (branch == 'master') {
+            repo = "ranger-api"
+        }
+    }
+    return repo
+}
+
+def k8sNamespace(branch) {
+    script {
+        namespace = "testing"
+        if (branch == 'staging') {
+            namespace = "staging"
+        }
+        if (branch == 'master') {
+            namespace = "production"
+        }
+    }
+    return namespace
+}
+
+def slackChannel(branch) {
+    script {
+        channel = "alerts-deployment"
+        if (branch == 'master') {
+            channel = "alerts-deployment-prod"
+        }
+    }
+    return channel
+}

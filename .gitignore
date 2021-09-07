@@ -1,0 +1,11 @@
+dist
+node_modules
+.eslintcache
+jest_html_reporters.html
+yarn-error.log
+.env
+.env.local
+.env.prod
+.env.staging
+
+.DS_Store
