@@ -39,7 +39,7 @@ export interface IReportCreationData extends IReportPayload {
   schemaVersion: number
 }
 
-export interface IReport extends Document, IReportUpdatableData {
+export interface IReport extends Document, IReportPayload {
   createdAt: Date
   updatedAt: Date
   user: IUser['_id']

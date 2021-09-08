@@ -1,28 +1,26 @@
 import mongoose from 'mongoose'
 import { MongoMemoryServer } from 'mongodb-memory-server'
-import User from '../../common/user/user.model'
-import Report from '../../reports/report.model'
+import User from '../../../common/user/user.model'
+import Report from '../../../reports/report.model'
 
-const mongoServer = new MongoMemoryServer()
+let mongod: MongoMemoryServer
 
-async function connect (): Promise<any> {
-  const uri = await mongoServer.getUri()
-  const mongooseOpts = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
+export async function connect (): Promise<any> {
+  if (mongod === undefined) {
+    mongod = await MongoMemoryServer.create()
   }
-  await mongoose.connect(uri, mongooseOpts)
+  await mongoose.connect(mongod.getUri())
 }
 
-async function disconnect (): Promise<any> {
+export async function disconnect (): Promise<any> {
   await mongoose.connection.dropDatabase()
   await mongoose.connection.close()
-  await mongoServer.stop()
+  if (mongod !== undefined) {
+    await mongod.stop()
+  }
 }
 
-async function truncate (models = [User, Report]): Promise<any> {
+export async function truncate (models = [User, Report]): Promise<any> {
   if (!Array.isArray(models)) {
     models = [models]
   }
@@ -31,7 +29,7 @@ async function truncate (models = [User, Report]): Promise<any> {
   }
 }
 
-module.exports = {
+export default {
   connect,
   disconnect,
   truncate

@@ -22,7 +22,7 @@
     "typeRoots": [
       "src/custom.d.ts"
     ],
-    "types": ["jest"]
+    "types": ["@types/jest"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

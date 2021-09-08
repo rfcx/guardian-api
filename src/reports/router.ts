@@ -7,7 +7,7 @@ import { Router } from 'express'
 // import * as api from '../common/core-api'
 // import { getUserUid } from '../common/user'
 // import service from './service'
-import { IUser, IReportPayload, IReport } from '../types'
+import { IReportPayload, IReport } from '../types'
 import { createReport } from './service'
 // import Deployment from './deployment.model'
 
@@ -15,7 +15,7 @@ const router = Router()
 
 router.post('/', (req: Request, res: Response, next: NextFunction): void => {
   const reportPayload = req.body as IReportPayload
-  const user = req.user as IUser
+  const user = (req as any).user
 
   createReport(reportPayload, user)
     .then((report: IReport) => {

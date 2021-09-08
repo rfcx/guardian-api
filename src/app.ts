@@ -1,8 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-// import projects from './projects/router'
-import reports from './deplo/router'
+import reports from './reports/router'
 import { jwtCheck } from './common/auth'
 import { errorHandler, notFoundHandler } from './common/error-handlers'
 
