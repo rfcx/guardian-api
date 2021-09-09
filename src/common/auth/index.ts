@@ -10,7 +10,7 @@ export const jwtCheck = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `https://${config.AUTH0_DOMAIN}/.well-known/jwks.json`,
+    jwksUri: `https://${config.AUTH0_DOMAIN}/.well-known/jwks.json`
   }),
   issuer: `https://${config.AUTH0_DOMAIN}/`,
   algorithms: ['RS256'],
