@@ -1,5 +1,5 @@
 import { Document } from 'mongoose'
-import { IUser } from '../common/user/types'
+import { IUserModel } from '../common/user/types'
 
 enum LoggingScale {
   Small = 0,
@@ -35,16 +35,18 @@ export interface IReportPayload extends IReportUpdatableData {
 }
 
 export interface IReportCreationData extends IReportPayload {
-  user: IUser['_id']
+  user: IUserModel['_id']
   schemaVersion: number
 }
 
-export interface IReport extends Document, IReportPayload {
+export interface IReport extends IReportPayload {
   createdAt: Date
   updatedAt: Date
-  user: IUser['_id']
+  user: IUserModel['_id']
   schemaVersion: number
 }
+
+export interface IReportModel extends Document, IReport {}
 
 export interface IReportsFilters {
   start?: Date

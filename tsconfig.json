@@ -20,7 +20,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "typeRoots": [
-      "src/custom.d.ts"
+      "src/custom"
     ],
     "types": ["@types/jest"]
   },

@@ -1,16 +1,12 @@
-// export interface ProjectResponse {
-//   id: string
-//   name: string
-// }
-
-// export interface CreateProjectRequest {
-//   name: string
-// }
-
-// export interface UpdateProjectRequest {
-//   id: string
-//   name: string
-// }
+export interface IEnv {
+  AUTH0_DOMAIN: string
+  CORE_URL: string
+  DB_HOSTNAME: string
+  DB_NAME: string
+  DB_USER: string
+  DB_PASSWORD: string
+  DB_PORT: string
+}
 
 export interface IQuerySort {
   field: string

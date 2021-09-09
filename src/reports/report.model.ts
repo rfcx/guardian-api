@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose'
-import { IReport } from './types'
+import { IReportModel } from './types'
 
 const ReportSchema: Schema = new Schema({
   guardianId: {
@@ -45,4 +45,4 @@ const ReportSchema: Schema = new Schema({
   }
 })
 
-export default model<IReport>('Report', ReportSchema)
+export default model<IReportModel>('Report', ReportSchema)

@@ -1,7 +1,10 @@
-import { IUser } from '../../types/index'
+import { IUser } from './types'
 
-declare namespace Express {
-  export interface Request {
-    user: IUser
+declare global{
+  namespace Express {
+    interface Request {
+      user: IUser
+      auth: any
+    }
   }
 }

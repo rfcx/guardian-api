@@ -2,7 +2,7 @@ import { startDb, stopDb, truncateDbModels, expressApp } from '../common/db/test
 import request from 'supertest'
 import Report from './report.model'
 import routes from './router'
-import { IReport } from './types'
+import { IReportModel } from './types'
 
 const app = expressApp()
 
@@ -32,7 +32,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(201)
-    const reports: IReport[] = await Report.find()
+    const reports: IReportModel[] = await Report.find()
     const report = reports[0]
     expect(reports.length).toBe(1)
     expect(report.encounteredAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
