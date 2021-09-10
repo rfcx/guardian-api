@@ -1,0 +1,73 @@
+{
+  "Report": {
+    "type": "object",
+    "properties": {
+      "encounteredAt": {
+        "type": "date",
+        "description": "An incident encountered at date (iso 8601)",
+        "example": "2020-11-16T09:03:24.928Z"
+      },
+      "isLoggerEncountered": {
+        "type": "boolean",
+        "description": "Whether logger was encountered or not",
+        "example": true
+      },
+      "isEvidenceEncountered": {
+        "type": "boolean",
+        "description": "Whether evidences were encountered or not",
+        "example": true
+      },
+      "evidences": {
+        "type": "array",
+        "description": "Evidence types",
+        "example": ["Cleared areas", "Cut down trees"]
+      },
+      "loggingScale": {
+        "type": "number",
+        "description": "Logging scale (1 - small, 2 - medium, 3 - large)",
+        "enum": [1, 2, 3],
+        "example": 1
+      },
+      "responseActions": {
+        "type": "array",
+        "description": "Actions that were taken",
+        "example": ["Arrest", "Reprimand"]
+      },
+      "note": {
+        "type": "string",
+        "description": "Additional note",
+        "example": "I found a machete"
+      },
+      "guardianId": {
+        "type": "string",
+        "description": "A guardian id from which the event was received",
+        "example": "skhedl36rxb2"
+      }
+    }
+  },
+  "Project": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "A project id in Core API",
+        "example": "skhedl36rxb2"
+      },
+      "name": {
+        "type": "string",
+        "description": "A project name",
+        "example": "Test project"
+      },
+      "isPublic": {
+        "type": "boolean",
+        "description": "A project public status",
+        "example": false
+      },
+      "externalId": {
+        "type": "number",
+        "description": "A project id in Arbimon API",
+        "example": "1717"
+      }
+    }
+  }
+}

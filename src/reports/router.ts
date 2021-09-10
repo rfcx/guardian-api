@@ -6,6 +6,31 @@ import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 
 const router = Router()
 
+/**
+ * @swagger
+ *
+ * /reports:
+ *   post:
+ *     summary: Create a report
+ *     tags:
+ *       - reports
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/requestBodies/Report'
+ *     responses:
+ *       201:
+ *         description: Created
+ *         headers:
+ *           Location:
+ *             description: Path of the created resource (e.g. `/reports/xyz123`)
+ *             schema:
+ *               type: string
+ *       400:
+ *         description: Invalid parameters
+ */
 router.post('/', (req: Request, res: Response): void => {
   const user = (req as any).user
   const converter = new Converter(req.body, {})

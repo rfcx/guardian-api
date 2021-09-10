@@ -1,0 +1,34 @@
+{
+  "Stream": {
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "xu82jDgX49"
+      },
+      "name": {
+        "type": "string",
+        "example": "My Stream 1"
+      },
+      "latitude": {
+        "type": "float",
+        "example": 90.123
+      },
+      "longitude": {
+        "type": "float",
+        "example": 125.912
+      },
+      "altitude": {
+        "type": "float",
+        "example": 10.0
+      },
+      "project": {
+        "type": "object",
+        "$ref": "#/components/requestBodies/Project"
+      },
+      "deployment": {
+        "type": "object",
+        "$ref": "#/components/requestBodies/Deployment"
+      }
+    }
+  }
+}
