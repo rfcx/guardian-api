@@ -15,7 +15,7 @@ router.post('/', (req: Request, res: Response): void => {
   converter.convert('evidences').toArray()
   converter.convert('loggingScale').toNonNegativeInt()
   converter.convert('responseActions').toArray()
-  converter.convert('note').toString()
+  converter.convert('note').optional().toString()
   converter.convert('guardianId').toString()
   converter.validate()
     .then(async (reportPayload: IReportPayload) => {
