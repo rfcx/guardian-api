@@ -1,53 +1,56 @@
 # RFCx Ranger API
 
-Manages reports produces by Rangers. Consumed by [Ranger app](https://github.com/rfcx/ranger-android)
+Manages reports produced by Rangers. Consumed by [Ranger app](https://github.com/rfcx/ranger-android) and [Incident Center app](https://github.com/rfcx/incident-center)
 
 ---
 
 ## Getting started
 
 Requirements:
-- Node
+- Node 14.17.6 (can be installed via `nvm` module and `.nvmrc` file)
 - yarn
-- Postgres (see below)
+- MongoDb
 
 ### Basics
 
-Install dependencies
+#### Install dependencies
 
-`yarn`
+```sh
+yarn
+```
 
-// TODO: Configure environment variables? Shouldn't be needed if using Docker.
+#### Configure env variables
 
-Run local dev server (live reload)
+Copy `.env.example` to `.env`. Set DB credentials there.
 
-`yarn serve`
+#### Start local MongoDB using Docker.
+```sh
+yarn start.mongo
+```
+MongoDB will start on `localhost` with port `27017`, db name `admin`, user `admin-user`, and password `test`.
 
-### Setup Postgres with Docker
+(When you want to stop MongoDB, use:)
+```sh
+yarn stop.mongo
+```
 
-Start Postgres container
+#### Run local dev server (live reload)
 
-`docker run -d --rm --name pg -e POSTGRES_PASSWORD=test -p 5432:5432 postgres`
+```sh
+yarn serve
+```
 
-Create the schema needed
+### Testing
 
-`docker exec -it pg psql -U postgres --command "create schema sequelize;"`
+#### Run lint:
+```sh
+yarn lint
+```
 
-Run the migrations
-
-`yarn migrate`
-
-You are ready to run `yarn serve` and test the endpoints.
-
----
-
-## Testing
-
-Run lint:
-`yarn lint`
-
-Run tests:
-`yarn test`
+#### Run tests:
+```
+yarn test
+```
 
 ---
 
