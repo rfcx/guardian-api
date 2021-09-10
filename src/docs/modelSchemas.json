@@ -30,5 +30,25 @@
         "$ref": "#/components/requestBodies/Deployment"
       }
     }
+  },
+  "Project": {
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "xu82jDgX49"
+      },
+      "name": {
+        "type": "string",
+        "example": "My Project 1"
+      },
+      "isPublic": {
+        "type": "boolean",
+        "example": true
+      },
+      "externalId": {
+        "type": "number",
+        "example": 1910
+      }
+    }
   }
 }

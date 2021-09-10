@@ -1,19 +1,38 @@
-import axios from 'axios'
-import config from '../../config'
+import axios from '../axios'
+import { IProjectResponse, IStreamResponse, IForwardedResponse } from './types'
+import { snakeToCamel } from '../serializers/snake-camel'
 
-const instance = axios.create({
-  baseURL: config.CORE_URL,
-  timeout: 30000,
-  headers: { 'Content-Type': 'application/json' }
-})
-// TODO I think `await Promise.reject(error) === error` so these are not needed
-instance.interceptors.request.use(function (conf) {
-  return conf
-}, async function (error) {
-  return await Promise.reject(error)
-})
-instance.interceptors.response.use(function (response) {
-  return response
-}, async function (error) {
-  return await Promise.reject(error)
-})
+const coreHeaders = ['total-items']
+
+function extractCoreHeaders (headers: any = {}): object {
+  return Object.keys(headers)
+    .filter(key => coreHeaders.includes(key))
+    .reduce((obj: any, key: string) => {
+      obj[key] = headers[key]
+      return obj
+    }, {})
+}
+
+export const getStreams = async (token: string, params: any = {}): Promise<IForwardedResponse<IStreamResponse>> => {
+  const options = {
+    headers: { Authorization: token },
+    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'altitude', 'project', 'created_at'] }
+  }
+  const response = await axios.get('/streams', options)
+  return {
+    data: snakeToCamel(response.data),
+    headers: extractCoreHeaders(response.headers)
+  }
+}
+
+export const getProjects = async (token: string, params: unknown = {}): Promise<IForwardedResponse<IProjectResponse>> => {
+  const options = {
+    headers: { Authorization: token },
+    params
+  }
+  const response = await axios.get('/projects', options)
+  return {
+    data: snakeToCamel(response.data),
+    headers: extractCoreHeaders(response.headers)
+  }
+}
