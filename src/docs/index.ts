@@ -59,8 +59,9 @@ const options = {
     ]
   },
   apis: [
-    './src/reports/router.ts',
-    './src/projects/router.ts'
+    './src/streams/router.ts',
+    './src/projects/router.ts',
+    './src/reports/router.ts'
   ]
 }
 

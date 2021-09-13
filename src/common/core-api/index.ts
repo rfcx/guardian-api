@@ -16,7 +16,7 @@ function extractCoreHeaders (headers: any = {}): object {
 export const getStreams = async (token: string, params: any = {}): Promise<IForwardedResponse<IStreamResponse>> => {
   const options = {
     headers: { Authorization: token },
-    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'altitude', 'project', 'created_at'] }
+    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
   }
   const response = await axios.get('/streams', options)
   return {

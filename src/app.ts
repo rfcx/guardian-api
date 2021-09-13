@@ -3,6 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import reports from './reports/router'
+import streams from './streams/router'
 import projects from './projects/router'
 import docs from './docs'
 import { jwtCheck, parseUserData } from './common/auth'
@@ -16,6 +17,7 @@ app.use(bodyParser.json())
 app.use('/docs', docs)
 app.use(jwtCheck, parseUserData)
 
+app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/reports', reports)
 

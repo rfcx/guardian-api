@@ -3,7 +3,7 @@
     "properties": {
       "id": {
         "type": "string",
-        "example": "xu82jDgX49"
+        "example": "01a2ucztj8ax"
       },
       "name": {
         "type": "string",
@@ -17,17 +17,9 @@
         "type": "float",
         "example": 125.912
       },
-      "altitude": {
-        "type": "float",
-        "example": 10.0
-      },
       "project": {
         "type": "object",
-        "$ref": "#/components/requestBodies/Project"
-      },
-      "deployment": {
-        "type": "object",
-        "$ref": "#/components/requestBodies/Deployment"
+        "$ref": "#/components/schemas/Project"
       }
     }
   },
