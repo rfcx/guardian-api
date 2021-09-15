@@ -23,6 +23,21 @@
       }
     }
   },
+  "StreamWithEventsCount": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Stream"
+      },
+      {
+        "properties": {
+          "eventsCount": {
+            "type": "number",
+            "example": 10
+          }
+        }
+      }
+    ]
+  },
   "Project": {
     "properties": {
       "id": {

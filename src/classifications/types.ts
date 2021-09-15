@@ -6,3 +6,7 @@ export interface IClassification {
 }
 
 export interface IClassificationModel extends Document, IClassification {}
+
+export interface IClassificationFilters {
+  values?: string[]
+}

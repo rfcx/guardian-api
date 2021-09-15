@@ -20,3 +20,12 @@ export interface IEventSQSMessage {
 }
 
 export interface IEventModel extends Document, IEvent {}
+
+export interface IEventFilters {
+  start?: Date
+  end?: Date
+  createdAfter?: Date
+  createdBefore?: Date
+  streams?: string[]
+  classifications?: string[]
+}

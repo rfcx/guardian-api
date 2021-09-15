@@ -3,6 +3,7 @@ import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 import { IStreamQuery } from './types'
+import { getEventsCountSinceLastReport } from './service'
 
 const router = Router()
 
@@ -27,6 +28,10 @@ const router = Router()
  *         description: Match streams with name
  *         in: query
  *         type: string
+ *       - name: with_events_count
+ *         description: Include count of events created since last report for this stream
+ *         in: query
+ *         type: boolean
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -60,7 +65,9 @@ const router = Router()
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Stream'
+ *                 anyOf:
+ *                 - $ref: '#/components/schemas/Stream'
+ *                 - $ref: '#/components/schemas/StreamWithEventsCount'
  *       400:
  *         description: Invalid query parameters
  */
@@ -70,6 +77,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('projects').optional().toArray()
   converter.convert('only_public').optional().toBoolean()
   converter.convert('keyword').optional().toString()
+  converter.convert('with_events_count').optional().toBoolean()
   converter.convert('limit').default(100).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('sort').default('-updated_at').toString()
@@ -79,6 +87,9 @@ router.get('/', (req: Request, res: Response): void => {
       const forwardedResponse = await api.getStreams(userToken, params)
       for (const key in forwardedResponse.headers) {
         res.header(key, forwardedResponse.headers[key])
+      }
+      if (params.with_events_count) {
+        await getEventsCountSinceLastReport(forwardedResponse.data)
       }
       res.send(forwardedResponse.data)
     })

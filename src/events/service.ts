@@ -1,6 +1,7 @@
-import { IEventSQSMessage, IEventModel } from './types'
-import { create, getByExternalId } from './dao'
+import { IEventSQSMessage, IEventModel, IEventFilters, IQueryOptions } from '../types'
+import { create, getByExternalId, list, count } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
+import classificationsDao from '../classifications/dao'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
@@ -23,4 +24,29 @@ export const createEvent = async (eventData: IEventSQSMessage): Promise<IEventMo
   })
 }
 
-export default { createEvent }
+const preprocessFilters = async (f: IEventFilters = {}): Promise<IEventFilters> => {
+  if (f.classifications !== undefined) {
+    const classifications = await classificationsDao.list({ values: f.classifications })
+    f.classifications = classifications.map(c => c._id)
+  }
+  return f
+}
+
+export const getEvents = async (f: IEventFilters = {}, o: IQueryOptions = {}): Promise<IEventModel[]> => {
+  f = await preprocessFilters(f)
+  if (f.classifications?.length === 0) {
+    return []
+  }
+  return await list(f, o)
+}
+
+export const countEvents = async (f: IEventFilters = {}): Promise<number> => {
+  console.log('\n\ncountEvents', f, '\n\n')
+  f = await preprocessFilters(f)
+  if (f.classifications?.length === 0) {
+    return 0
+  }
+  return await count(f)
+}
+
+export default { createEvent, getEvents }
