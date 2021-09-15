@@ -41,7 +41,6 @@ export const getEvents = async (f: IEventFilters = {}, o: IQueryOptions = {}): P
 }
 
 export const countEvents = async (f: IEventFilters = {}): Promise<number> => {
-  console.log('\n\ncountEvents', f, '\n\n')
   f = await preprocessFilters(f)
   if (f.classifications?.length === 0) {
     return 0
