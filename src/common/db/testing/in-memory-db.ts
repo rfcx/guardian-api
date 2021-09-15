@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { MongoMemoryServer } from 'mongodb-memory-server'
-import User from '../../../common/user/user.model'
+import User from '../../../users/user.model'
 import Report from '../../../reports/report.model'
 
 let mongod: MongoMemoryServer

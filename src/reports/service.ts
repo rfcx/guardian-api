@@ -1,5 +1,5 @@
 import { IReportPayload, IReportModel, IUser } from '../types'
-import { ensureUserExists } from '../common/user/service'
+import { ensureUserExists } from '../users/service'
 import { create } from './dao'
 
 export const createReport = async (reportData: IReportPayload, userData: IUser): Promise<IReportModel> => {

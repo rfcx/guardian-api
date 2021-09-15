@@ -12,7 +12,7 @@ export async function get (id: string): Promise<IReportModel | null> {
   return await Report.findById(id)
 }
 
-export async function list (f: IReportsFilters, o: IQueryOptions): Promise<IReportModel[]> {
+export async function list (f: IReportsFilters = {}, o: IQueryOptions = {}): Promise<IReportModel[]> {
   const filters: FilterQuery<IReportModel> = {}
   const options: QueryOptions = {}
   const { start, end, guardians, users } = f

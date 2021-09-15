@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --colors",
+    "test": "jest --detectOpenHandles --colors --runInBand",
     "lint": "eslint src/** --fix --cache",
     "build": "rimraf dist && tsc",
     "migrate": "node admin/migrate.js",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@rfcx/http-utils": "^1.0.3",
+    "@rfcx/message-queue": "^1.0.4",
     "@types/cors": "^2.8.9",
     "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",

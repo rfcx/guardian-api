@@ -1,5 +1,5 @@
 import { Document } from 'mongoose'
-import { IUserModel } from '../common/user/types'
+import { IUserModel } from '../users/types'
 
 enum LoggingScale {
   Small = 0,

@@ -14,10 +14,14 @@ export interface IQuerySort {
 }
 
 export interface IQueryOptions {
-  limit: number
-  offset: number
-  sort: IQuerySort
+  limit?: number
+  offset?: number
+  sort?: IQuerySort
 }
 
-export * from '../common/user/types'
+export * from '../users/types'
+export * from '../classifications/types'
+export * from '../events/types'
+export * from '../streams/types'
+export * from '../projects/types'
 export * from '../reports/types'

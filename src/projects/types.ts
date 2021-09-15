@@ -6,3 +6,10 @@ export interface IProjectQuery {
   sort: string
   fields: string[]
 }
+
+export interface IProject {
+  id: string
+  name: string
+  isPublic: boolean
+  externalId: number
+}

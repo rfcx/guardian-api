@@ -13,7 +13,7 @@ connection.on('reconnected', () => {
   console.log('Reconnected to MongoDB')
 })
 connection.on('disconnected', () => {
-  console.error('Disconnected from MongoDB')
+  console.log('Disconnected from MongoDB')
 })
 connection.on('reconnectFailed', () => {
   console.error('Reconnection failed')
