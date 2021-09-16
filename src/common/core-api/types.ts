@@ -8,7 +8,7 @@ export interface IProjectResponse {
   name: string
 }
 
-export interface IStreamResponse {
+export interface StreamResponse {
   id: string
   name: string
   latitude: number

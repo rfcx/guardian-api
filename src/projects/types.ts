@@ -1,4 +1,4 @@
-export interface IProjectQuery {
+export interface ProjectQuery {
   only_public: boolean
   keyword: string
   limit: number
@@ -7,7 +7,7 @@ export interface IProjectQuery {
   fields: string[]
 }
 
-export interface IProject {
+export interface ProjectDao {
   id: string
   name: string
   isPublic: boolean

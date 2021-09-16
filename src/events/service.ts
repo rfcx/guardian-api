@@ -1,4 +1,4 @@
-import { IEventSQSMessage, IEventModel, IEventFilters, IQueryOptions } from '../types'
+import { EventSQSMessage, EventModel, EventFilters, QueryOptionsRFCx } from '../types'
 import { create, getByExternalId, list, count } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import classificationsDao from '../classifications/dao'
@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-export const createEvent = async (eventData: IEventSQSMessage): Promise<IEventModel> => {
+export const createEvent = async (eventData: EventSQSMessage): Promise<EventModel> => {
   // in case SQS message was received more than one time...
   const existingEvent = await getByExternalId(eventData.id)
   if (existingEvent !== null) {
@@ -24,7 +24,7 @@ export const createEvent = async (eventData: IEventSQSMessage): Promise<IEventMo
   })
 }
 
-const preprocessFilters = async (f: IEventFilters = {}): Promise<IEventFilters> => {
+const preprocessFilters = async (f: EventFilters = {}): Promise<EventFilters> => {
   if (f.classifications !== undefined) {
     const classifications = await classificationsDao.list({ values: f.classifications })
     f.classifications = classifications.map(c => c._id)
@@ -32,7 +32,7 @@ const preprocessFilters = async (f: IEventFilters = {}): Promise<IEventFilters> 
   return f
 }
 
-export const getEvents = async (f: IEventFilters = {}, o: IQueryOptions = {}): Promise<IEventModel[]> => {
+export const getEvents = async (f: EventFilters = {}, o: QueryOptionsRFCx = {}): Promise<EventModel[]> => {
   f = await preprocessFilters(f)
   if (f.classifications?.length === 0) {
     return []
@@ -40,7 +40,7 @@ export const getEvents = async (f: IEventFilters = {}, o: IQueryOptions = {}): P
   return await list(f, o)
 }
 
-export const countEvents = async (f: IEventFilters = {}): Promise<number> => {
+export const countEvents = async (f: EventFilters = {}): Promise<number> => {
   f = await preprocessFilters(f)
   if (f.classifications?.length === 0) {
     return 0

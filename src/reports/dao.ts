@@ -2,18 +2,18 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { FilterQuery, QueryOptions, UpdateWriteOpResult } from 'mongoose'
 import { DeleteResult } from 'mongodb'
-import { IQueryOptions } from '../types'
-import { IReportsFilters, IReportModel, IReportCreationData, IReportUpdatableData } from './types'
+import { QueryOptionsRFCx } from '../types'
+import { ReportsFilters, ReportModel, ReportCreationData, ReportUpdatableData } from './types'
 import Report from './report.model'
 
 dayjs.extend(utc)
 
-export async function get (id: string): Promise<IReportModel | null> {
+export async function get (id: string): Promise<ReportModel | null> {
   return await Report.findById(id)
 }
 
-export async function list (f: IReportsFilters = {}, o: IQueryOptions = {}): Promise<IReportModel[]> {
-  const filters: FilterQuery<IReportModel> = {}
+export async function list (f: ReportsFilters = {}, o: QueryOptionsRFCx = {}): Promise<ReportModel[]> {
+  const filters: FilterQuery<ReportModel> = {}
   const options: QueryOptions = {}
   const { start, end, guardians, users } = f
   const { limit, offset, sort } = o
@@ -47,15 +47,15 @@ export async function list (f: IReportsFilters = {}, o: IQueryOptions = {}): Pro
   return await Report.find(filters, null, options)
 }
 
-export async function create (data: IReportCreationData): Promise<IReportModel> {
+export async function create (data: ReportCreationData): Promise<ReportModel> {
   return await Report.create(data)
 }
 
-export async function update (id: IReportModel['_id'], data: IReportUpdatableData): Promise<UpdateWriteOpResult> {
+export async function update (id: ReportModel['_id'], data: ReportUpdatableData): Promise<UpdateWriteOpResult> {
   return await Report.where({ _id: id }).update(data)
 }
 
-export async function deleteOne (id: IReportModel['_id']): Promise<DeleteResult> {
+export async function deleteOne (id: ReportModel['_id']): Promise<DeleteResult> {
   return await Report.deleteOne({ _id: id })
 }
 

@@ -1,5 +1,5 @@
 import { Document } from 'mongoose'
-import { IUserModel } from '../users/types'
+import { UserModel } from '../users/types'
 
 enum LoggingScale {
   Small = 0,
@@ -19,7 +19,7 @@ interface ReportAttachment {
   note: string
 }
 
-export interface IReportUpdatableData {
+export interface ReportUpdatableData {
   encounteredAt?: Date
   isLoggerEncountered?: boolean
   isEvidenceEncountered?: boolean
@@ -30,25 +30,25 @@ export interface IReportUpdatableData {
   note?: string
 }
 
-export interface IReportPayload extends IReportUpdatableData {
+export interface ReportPayload extends ReportUpdatableData {
   guardianId: string
 }
 
-export interface IReportCreationData extends IReportPayload {
-  user: IUserModel['_id']
+export interface ReportCreationData extends ReportPayload {
+  user: UserModel['_id']
   schemaVersion: number
 }
 
-export interface IReport extends IReportPayload {
+export interface ReportDao extends ReportPayload {
   createdAt: Date
   updatedAt: Date
-  user: IUserModel['_id']
+  user: UserModel['_id']
   schemaVersion: number
 }
 
-export interface IReportModel extends Document, IReport {}
+export interface ReportModel extends Document, ReportDao {}
 
-export interface IReportsFilters {
+export interface ReportsFilters {
   start?: Date
   end?: Date
   guardians?: string[]

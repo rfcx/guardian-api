@@ -1,27 +1,27 @@
 import { Document } from 'mongoose'
-import { IClassificationModel, IClassification } from '../types'
+import { ClassificationModel, ClassificationDao } from '../types'
 
-export interface IEvent {
+export interface EventDao {
   externalId: string
   start: Date
   end: Date
   streamId: string
-  classification: IClassificationModel['_id']
+  classification: ClassificationModel['_id']
   createdAt: Date
 }
 
-export interface IEventSQSMessage {
+export interface EventSQSMessage {
   id: string
   start: string
   end: string
   streamId: string
-  classification: IClassification
+  classification: ClassificationDao
   createdAt: string
 }
 
-export interface IEventModel extends Document, IEvent {}
+export interface EventModel extends Document, EventDao {}
 
-export interface IEventFilters {
+export interface EventFilters {
   start?: Date
   end?: Date
   createdAfter?: Date

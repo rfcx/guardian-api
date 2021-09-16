@@ -1,6 +1,6 @@
-import { IProject, IStreamResponse } from '../types'
+import { ProjectDao, StreamResponse } from '../types'
 
-export interface IStreamQuery {
+export interface StreamQuery {
   projects: string[]
   only_public: boolean
   keyword: string
@@ -11,14 +11,14 @@ export interface IStreamQuery {
   with_events_count: boolean
 }
 
-export interface IStream {
+export interface StreamDao {
   id: string
   name: string
   latitude: number
   longitude: number
-  project: IProject
+  project: ProjectDao
 }
 
-export interface IStreamResponseWithEventsCount extends IStreamResponse {
+export interface StreamResponseWithEventsCount extends StreamResponse {
   eventsCount: number
 }

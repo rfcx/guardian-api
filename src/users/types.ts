@@ -1,10 +1,10 @@
 import { Document } from 'mongoose'
 
-export interface IUser {
+export interface UserDao {
   firstname: string
   lastname: string
   guid: string
   email?: string
 }
 
-export interface IUserModel extends IUser, Document {}
+export interface UserModel extends UserDao, Document {}

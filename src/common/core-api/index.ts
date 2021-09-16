@@ -1,5 +1,5 @@
 import axios from '../axios'
-import { IProjectResponse, IStreamResponse, IForwardedResponse } from './types'
+import { IProjectResponse, StreamResponse, IForwardedResponse } from './types'
 import { snakeToCamel } from '../serializers/snake-camel'
 
 const coreHeaders = ['total-items']
@@ -13,7 +13,7 @@ function extractCoreHeaders (headers: any = {}): object {
     }, {})
 }
 
-export const getStreams = async (token: string, params: any = {}): Promise<IForwardedResponse<IStreamResponse>> => {
+export const getStreams = async (token: string, params: any = {}): Promise<IForwardedResponse<StreamResponse>> => {
   const options = {
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }

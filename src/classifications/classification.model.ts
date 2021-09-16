@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose'
-import { IClassificationModel } from './types'
+import { ClassificationModel } from './types'
 
 const ClassificationSchema: Schema = new Schema({
   value: {
@@ -10,4 +10,4 @@ const ClassificationSchema: Schema = new Schema({
   }
 })
 
-export default model<IClassificationModel>('Classification', ClassificationSchema)
+export default model<ClassificationModel>('Classification', ClassificationSchema)

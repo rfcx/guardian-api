@@ -1,12 +1,12 @@
 import { Document } from 'mongoose'
 
-export interface IClassification {
+export interface ClassificationDao {
   value: string
   title: string
 }
 
-export interface IClassificationModel extends Document, IClassification {}
+export interface ClassificationModel extends Document, ClassificationDao {}
 
-export interface IClassificationFilters {
+export interface ClassificationFilters {
   values?: string[]
 }

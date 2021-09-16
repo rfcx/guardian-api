@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose'
-import { IUserModel } from './types'
+import { UserModel } from './types'
 
 const UserSchema: Schema = new Schema({
   firstname: { type: String, required: true },
@@ -8,4 +8,4 @@ const UserSchema: Schema = new Schema({
   email: { type: String }
 })
 
-export default model<IUserModel>('User', UserSchema)
+export default model<UserModel>('User', UserSchema)

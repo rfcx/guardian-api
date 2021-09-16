@@ -1,4 +1,4 @@
-export interface IEnv {
+export interface Env {
   AUTH0_DOMAIN: string
   CORE_URL: string
   DB_HOSTNAME: string
@@ -8,15 +8,15 @@ export interface IEnv {
   DB_PORT: string
 }
 
-export interface IQuerySort {
+export interface QuerySort {
   field: string
   order: 'asc' | 'desc'
 }
 
-export interface IQueryOptions {
+export interface QueryOptionsRFCx {
   limit?: number
   offset?: number
-  sort?: IQuerySort
+  sort?: QuerySort
 }
 
 export * from '../users/types'

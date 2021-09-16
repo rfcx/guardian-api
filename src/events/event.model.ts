@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose'
-import { IEventModel } from './types'
+import { EventModel } from './types'
 
 const EventSchema: Schema = new Schema({
   externalId: {
@@ -29,4 +29,4 @@ const EventSchema: Schema = new Schema({
   }
 })
 
-export default model<IEventModel>('Event', EventSchema)
+export default model<EventModel>('Event', EventSchema)

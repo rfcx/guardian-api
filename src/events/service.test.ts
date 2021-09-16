@@ -2,7 +2,7 @@ import { startDb, stopDb, truncateDbModels, muteConsole } from '../common/db/tes
 import { createEvent } from './service'
 import Event from './event.model'
 import Classification from '../classifications/classification.model'
-import { IEventModel, IClassificationModel } from '../types'
+import { EventModel, ClassificationModel } from '../types'
 
 beforeAll(async () => {
   muteConsole()
@@ -28,9 +28,9 @@ describe('createEvent function', () => {
       },
       createdAt: '2021-09-14T20:10:01.312Z'
     })
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     const event = events[0]
-    const classifications: IClassificationModel[] = await Classification.find()
+    const classifications: ClassificationModel[] = await Classification.find()
     const classification = classifications[0]
     expect(events.length).toBe(1)
     expect(event.externalId).toBe('abc')
@@ -56,7 +56,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
   test('fails creating event if `start` is missing', async () => {
@@ -72,7 +72,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
   test('fails creating event if `end` is missing', async () => {
@@ -88,7 +88,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
   test('fails creating event if `streamId` is missing', async () => {
@@ -104,7 +104,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
   test('fails creating event if `classification` is missing', async () => {
@@ -117,7 +117,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
   test('fails creating event if `createdAt` is missing', async () => {
@@ -133,7 +133,7 @@ describe('createEvent function', () => {
         streamId: 'stream000001'
       } as any)
     } catch (e) { }
-    const events: IEventModel[] = await Event.find()
+    const events: EventModel[] = await Event.find()
     expect(events.length).toBe(0)
   })
 })

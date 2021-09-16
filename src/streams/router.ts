@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { IStreamQuery } from './types'
+import { StreamQuery } from './types'
 import { getEventsCountSinceLastReport } from './service'
 
 const router = Router()
@@ -83,7 +83,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('sort').default('-updated_at').toString()
   converter.convert('fields').optional().toArray()
   converter.validate()
-    .then(async (params: IStreamQuery) => {
+    .then(async (params: StreamQuery) => {
       const forwardedResponse = await api.getStreams(userToken, params)
       for (const key in forwardedResponse.headers) {
         res.header(key, forwardedResponse.headers[key])

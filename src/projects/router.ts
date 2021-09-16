@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { IProjectQuery } from './types'
+import { ProjectQuery } from './types'
 
 const router = Router()
 
@@ -70,7 +70,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('sort').default('-updated_at').toString()
   converter.convert('fields').optional().toArray()
   converter.validate()
-    .then(async (params: IProjectQuery) => {
+    .then(async (params: ProjectQuery) => {
       const forwardedResponse = await api.getProjects(userToken, params)
       for (const key in forwardedResponse.headers) {
         res.header(key, forwardedResponse.headers[key])

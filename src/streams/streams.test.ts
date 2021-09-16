@@ -1,6 +1,6 @@
 import { startDb, stopDb, truncateDbModels, muteConsole, expressApp } from '../common/db/testing/index'
 import { GET, setupMockAxios } from '../common/axios/mock'
-import { IClassificationModel, IUserModel } from '../types'
+import { ClassificationModel, UserModel } from '../types'
 import Classification from '../classifications/classification.model'
 import Event from '../events/event.model'
 import User from '../users/user.model'
@@ -8,8 +8,8 @@ import Report from '../reports/report.model'
 import request from 'supertest'
 import routes from './router'
 
-let classification: IClassificationModel
-let user: IUserModel
+let classification: ClassificationModel
+let user: UserModel
 
 beforeAll(async () => {
   muteConsole()
