@@ -1,25 +1,13 @@
-import { Document } from 'mongoose'
-import { ClassificationModel, ClassificationDao } from '../types'
-
-export interface EventDao {
-  externalId: string
-  start: Date
-  end: Date
-  streamId: string
-  classification: ClassificationModel['_id']
-  createdAt: Date
-}
+import { Classification } from '../classifications/classification.model'
 
 export interface EventSQSMessage {
   id: string
   start: string
   end: string
   streamId: string
-  classification: ClassificationDao
+  classification: Classification
   createdAt: string
 }
-
-export interface EventModel extends Document, EventDao {}
 
 export interface EventFilters {
   start?: Date

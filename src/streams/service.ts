@@ -1,10 +1,10 @@
 import { StreamResponse, StreamResponseWithEventsCount } from '../types'
-import reportsDao from '../reports/dao'
+import ReportModel from '../reports/report.model'
 import { countEvents } from '../events/service'
 
 export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
   for (const stream of streams as StreamResponseWithEventsCount[]) {
-    const reports = await reportsDao.list({
+    const reports = await ReportModel.list({
       guardians: [stream.id]
     }, {
       limit: 1,

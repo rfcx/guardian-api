@@ -1,9 +1,9 @@
-export interface IForwardedResponse<T> {
+export interface ForwardedResponse<T> {
   data: T[]
   headers: any
 }
 
-export interface IProjectResponse {
+export interface ProjectResponse {
   id: string
   name: string
 }
@@ -14,5 +14,5 @@ export interface StreamResponse {
   latitude: number
   longitude: number
   altitude: number
-  project: IProjectResponse | null
+  project: ProjectResponse | null
 }

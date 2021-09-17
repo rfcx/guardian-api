@@ -6,10 +6,3 @@ export interface ProjectQuery {
   sort: string
   fields: string[]
 }
-
-export interface ProjectDao {
-  id: string
-  name: string
-  isPublic: boolean
-  externalId: number
-}

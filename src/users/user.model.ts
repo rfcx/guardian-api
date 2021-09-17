@@ -1,11 +1,14 @@
-import { model, Schema } from 'mongoose'
-import { UserModel } from './types'
+import { getModelForClass, prop, ReturnModelType, DocumentType } from '@typegoose/typegoose'
 
-const UserSchema: Schema = new Schema({
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  guid: { type: String, required: true },
-  email: { type: String }
-})
+export class User {
+  @prop({ required: true }) public firstname?: string
+  @prop({ required: true }) public lastname?: string
+  @prop({ required: true, unique: true }) public guid?: string
+  @prop({ required: true, unique: true }) public email?: string
 
-export default model<UserModel>('User', UserSchema)
+  public static async getByGuidOrEmail (this: ReturnModelType<typeof User>, guid?: string, email?: string): Promise<DocumentType<User> | null> {
+    return await this.findOne({ $or: [{ guid }, { email }] })
+  }
+}
+
+export default getModelForClass(User)

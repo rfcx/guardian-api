@@ -1,24 +1,24 @@
 import { startDb, stopDb, truncateDbModels, muteConsole, expressApp } from '../common/db/testing/index'
 import { GET, setupMockAxios } from '../common/axios/mock'
-import { ClassificationModel, UserModel } from '../types'
-import Classification from '../classifications/classification.model'
-import Event from '../events/event.model'
-import User from '../users/user.model'
+import { DocumentType } from '@typegoose/typegoose'
+import ClassificationModel, { Classification } from '../classifications/classification.model'
+import EventModel from '../events/event.model'
+import UserModel, { User } from '../users/user.model'
 import Report from '../reports/report.model'
 import request from 'supertest'
 import routes from './router'
 
-let classification: ClassificationModel
-let user: UserModel
+let classification: DocumentType<Classification>
+let user: DocumentType<User>
 
 beforeAll(async () => {
   muteConsole()
   await startDb()
-  classification = await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
-  user = await User.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
+  classification = await ClassificationModel.create({ value: 'chainsaw', title: 'Chainsaw' })
+  user = await UserModel.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
 })
 beforeEach(async () => {
-  await truncateDbModels([Event])
+  await truncateDbModels([EventModel])
 })
 afterAll(async () => {
   await stopDb()
@@ -60,7 +60,7 @@ describe('GET /streams', () => {
       { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null },
       { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null }
     ]
-    await Event.create([
+    await EventModel.create([
       { externalId: '001', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:06:00.123Z' },
       { externalId: '002', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:11:00.123Z' },
       { externalId: '003', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:16:00.123Z' },

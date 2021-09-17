@@ -1,5 +1,4 @@
-import { Document } from 'mongoose'
-import { UserModel } from '../users/types'
+import { Schema } from 'mongoose'
 
 enum LoggingScale {
   Small = 0,
@@ -35,18 +34,9 @@ export interface ReportPayload extends ReportUpdatableData {
 }
 
 export interface ReportCreationData extends ReportPayload {
-  user: UserModel['_id']
+  user: Schema.Types.ObjectId
   schemaVersion: number
 }
-
-export interface ReportDao extends ReportPayload {
-  createdAt: Date
-  updatedAt: Date
-  user: UserModel['_id']
-  schemaVersion: number
-}
-
-export interface ReportModel extends Document, ReportDao {}
 
 export interface ReportsFilters {
   start?: Date

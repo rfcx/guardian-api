@@ -19,7 +19,12 @@ export interface QueryOptionsRFCx {
   sort?: QuerySort
 }
 
-export * from '../users/types'
+export interface Attachment {
+  id: string
+  url: string
+  note: string
+}
+
 export * from '../classifications/types'
 export * from '../events/types'
 export * from '../streams/types'

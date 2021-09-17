@@ -1,4 +1,4 @@
-import { ProjectDao, StreamResponse } from '../types'
+import { StreamResponse } from '../types'
 
 export interface StreamQuery {
   projects: string[]
@@ -9,14 +9,6 @@ export interface StreamQuery {
   sort: string
   fields: string[]
   with_events_count: boolean
-}
-
-export interface StreamDao {
-  id: string
-  name: string
-  latitude: number
-  longitude: number
-  project: ProjectDao
 }
 
 export interface StreamResponseWithEventsCount extends StreamResponse {
