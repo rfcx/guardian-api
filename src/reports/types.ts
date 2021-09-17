@@ -1,5 +1,4 @@
-import { Document } from 'mongoose'
-import { IUserModel } from '../common/user/types'
+import { Schema } from 'mongoose'
 
 enum LoggingScale {
   Small = 0,
@@ -19,7 +18,7 @@ interface ReportAttachment {
   note: string
 }
 
-export interface IReportUpdatableData {
+export interface ReportUpdatableData {
   encounteredAt?: Date
   isLoggerEncountered?: boolean
   isEvidenceEncountered?: boolean
@@ -30,25 +29,16 @@ export interface IReportUpdatableData {
   note?: string
 }
 
-export interface IReportPayload extends IReportUpdatableData {
+export interface ReportPayload extends ReportUpdatableData {
   guardianId: string
 }
 
-export interface IReportCreationData extends IReportPayload {
-  user: IUserModel['_id']
+export interface ReportCreationData extends ReportPayload {
+  user: Schema.Types.ObjectId
   schemaVersion: number
 }
 
-export interface IReport extends IReportPayload {
-  createdAt: Date
-  updatedAt: Date
-  user: IUserModel['_id']
-  schemaVersion: number
-}
-
-export interface IReportModel extends Document, IReport {}
-
-export interface IReportsFilters {
+export interface ReportsFilters {
   start?: Date
   end?: Date
   guardians?: string[]

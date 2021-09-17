@@ -44,30 +44,5 @@
         "example": "skhedl36rxb2"
       }
     }
-  },
-  "Project": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "A project id in Core API",
-        "example": "skhedl36rxb2"
-      },
-      "name": {
-        "type": "string",
-        "description": "A project name",
-        "example": "Test project"
-      },
-      "isPublic": {
-        "type": "boolean",
-        "description": "A project public status",
-        "example": false
-      },
-      "externalId": {
-        "type": "number",
-        "description": "A project id in Arbimon API",
-        "example": "1717"
-      }
-    }
   }
 }

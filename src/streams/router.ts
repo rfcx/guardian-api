@@ -2,27 +2,36 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { ProjectQuery } from './types'
+import { StreamQuery } from './types'
+import { getEventsCountSinceLastReport } from './service'
 
 const router = Router()
 
 /**
  * @swagger
  *
- * /projects:
+ * /streams:
  *   get:
- *     summary: Get list of projects
+ *     summary: Get list of streams
  *     tags:
- *       - projects
+ *       - streams
  *     parameters:
+ *       - name: projects
+ *         description: Match streams belonging to one or more projects (by id)
+ *         in: query
+ *         type: array
  *       - name: only_public
- *         description: Return public or private projects
+ *         description: Return public or private streams
  *         in: query
  *         type: boolean
  *       - name: keyword
- *         description: Match projects with name
+ *         description: Match streams with name
  *         in: query
  *         type: string
+ *       - name: with_events_count
+ *         description: Include count of events created since last report for this stream
+ *         in: query
+ *         type: boolean
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -45,7 +54,7 @@ const router = Router()
  *         type: array
  *     responses:
  *       200:
- *         description: List of projects objects
+ *         description: List of stream objects
  *         headers:
  *           Total-Items:
  *             schema:
@@ -56,28 +65,35 @@ const router = Router()
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Project'
+ *                 anyOf:
+ *                 - $ref: '#/components/schemas/Stream'
+ *                 - $ref: '#/components/schemas/StreamWithEventsCount'
  *       400:
  *         description: Invalid query parameters
  */
 router.get('/', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization ?? ''
   const converter = new Converter(req.query, {})
+  converter.convert('projects').optional().toArray()
   converter.convert('only_public').optional().toBoolean()
   converter.convert('keyword').optional().toString()
+  converter.convert('with_events_count').optional().toBoolean()
   converter.convert('limit').default(100).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('sort').default('-updated_at').toString()
   converter.convert('fields').optional().toArray()
   converter.validate()
-    .then(async (params: ProjectQuery) => {
-      const forwardedResponse = await api.getProjects(userToken, params)
+    .then(async (params: StreamQuery) => {
+      const forwardedResponse = await api.getStreams(userToken, params)
       for (const key in forwardedResponse.headers) {
         res.header(key, forwardedResponse.headers[key])
       }
+      if (params.with_events_count) {
+        await getEventsCountSinceLastReport(forwardedResponse.data)
+      }
       res.send(forwardedResponse.data)
     })
-    .catch(httpErrorHandler(req, res, 'Failed getting projects.'))
+    .catch(httpErrorHandler(req, res, 'Failed getting streams.'))
 })
 
 export default router

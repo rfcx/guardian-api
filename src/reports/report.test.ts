@@ -1,8 +1,8 @@
 import { startDb, stopDb, truncateDbModels, expressApp } from '../common/db/testing/index'
 import request from 'supertest'
-import Report from './report.model'
+import { DocumentType } from '@typegoose/typegoose'
+import ReportModel, { Report } from './report.model'
 import routes from './router'
-import { IReportModel } from './types'
 
 const app = expressApp()
 
@@ -12,7 +12,7 @@ beforeAll(async () => {
   await startDb()
 })
 beforeEach(async () => {
-  await truncateDbModels([Report])
+  await truncateDbModels([ReportModel])
 })
 afterAll(async () => {
   await stopDb()
@@ -32,7 +32,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(201)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     const report = reports[0]
     expect(reports.length).toBe(1)
     expect(report.encounteredAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
@@ -68,7 +68,7 @@ describe('POST /reports', () => {
     })
     expect(response1.statusCode).toBe(201)
     expect(response2.statusCode).toBe(201)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(2)
     expect(reports[0].encounteredAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
     expect(reports[1].encounteredAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
@@ -85,7 +85,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('returns 400 if isLoggerEncountered is not defined', async () => {
@@ -100,7 +100,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('returns 400 if isEvidenceEncountered is not defined', async () => {
@@ -115,7 +115,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('returns 400 if evidences is not defined', async () => {
@@ -130,7 +130,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('returns 400 if loggingScale is not defined', async () => {
@@ -145,7 +145,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('returns 400 if responseActions is not defined', async () => {
@@ -160,7 +160,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
   test('creates report if note is not defined', async () => {
@@ -175,7 +175,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(201)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     const report = reports[0]
     expect(reports.length).toBe(1)
     expect(report.encounteredAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
@@ -201,7 +201,7 @@ describe('POST /reports', () => {
     }
     const response = await request(app).post('/').send(requestBody)
     expect(response.statusCode).toBe(400)
-    const reports: IReportModel[] = await Report.find()
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
     expect(reports.length).toBe(0)
   })
 })

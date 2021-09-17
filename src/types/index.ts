@@ -1,4 +1,4 @@
-export interface IEnv {
+export interface Env {
   AUTH0_DOMAIN: string
   CORE_URL: string
   DB_HOSTNAME: string
@@ -8,16 +8,26 @@ export interface IEnv {
   DB_PORT: string
 }
 
-export interface IQuerySort {
+export interface QuerySort {
   field: string
   order: 'asc' | 'desc'
 }
 
-export interface IQueryOptions {
-  limit: number
-  offset: number
-  sort: IQuerySort
+export interface QueryOptionsRFCx {
+  limit?: number
+  offset?: number
+  sort?: QuerySort
 }
 
-export * from '../common/user/types'
+export interface Attachment {
+  id: string
+  url: string
+  note: string
+}
+
+export * from '../classifications/types'
+export * from '../events/types'
+export * from '../streams/types'
+export * from '../projects/types'
 export * from '../reports/types'
+export * from '../common/core-api/types'

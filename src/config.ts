@@ -1,6 +1,6 @@
-import { IEnv } from './types'
+import { Env } from './types'
 
-export const env: IEnv = {
+export const env: Env = {
   AUTH0_DOMAIN: process.env.AUTH0_DOMAIN ?? 'auth.rfcx.org',
   CORE_URL: process.env.CORE_URL ?? 'https://staging-api.rfcx.org',
   DB_HOSTNAME: process.env.DB_HOSTNAME ?? 'localhost',

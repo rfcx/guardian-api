@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { MongoMemoryServer } from 'mongodb-memory-server'
-import User from '../../../common/user/user.model'
-import Report from '../../../reports/report.model'
+import UserModel from '../../../users/user.model'
+import ReportModel from '../../../reports/report.model'
 
 let mongod: MongoMemoryServer
 
@@ -20,7 +20,7 @@ export async function disconnect (): Promise<any> {
   }
 }
 
-export async function truncate (models = [User, Report]): Promise<any> {
+export async function truncate (models = [UserModel, ReportModel]): Promise<any> {
   if (!Array.isArray(models)) {
     models = [models]
   }

@@ -1,10 +1,12 @@
-import { IReportPayload, IReportModel, IUser } from '../types'
-import { ensureUserExists } from '../common/user/service'
-import { create } from './dao'
+import { DocumentType } from '@typegoose/typegoose'
+import { ReportPayload } from '../types'
+import { ensureUserExists } from '../users/service'
+import { User } from '../users/user.model'
+import ReportModel, { Report } from './report.model'
 
-export const createReport = async (reportData: IReportPayload, userData: IUser): Promise<IReportModel> => {
+export const createReport = async (reportData: ReportPayload, userData: User): Promise<DocumentType<Report>> => {
   const user = await ensureUserExists(userData)
-  return await create({
+  return await ReportModel.create({
     ...reportData,
     user: user._id,
     schemaVersion: 1
