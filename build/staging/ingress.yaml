@@ -2,11 +2,17 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations
+
+    # Maximum request body size
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Timeout for communicating with service (in seconds)
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    nginx.ingress.kubernetes.io/backend-protocol: "http"
-    nginx.ingress.kubernetes.io/enable-cors: "false"
+    # Rate limiting
+    # limit-rpm = limit each IP address to X requests per minute
+    # limit-whitelist = do not rate limit clients in the IP range
+    nginx.ingress.kubernetes.io/limit-rpm: "120"
   name: ranger-api-ingress
   namespace: staging
   labels:

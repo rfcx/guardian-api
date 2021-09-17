@@ -96,10 +96,7 @@ spec:
 
 def ecrRepoName(branch) {
     script {
-        repo = "ranger-api/testing"
-        if (branch == 'staging') {
-            repo = "ranger-api/staging"
-        }
+        repo = "ranger-api/staging"
         if (branch == 'master') {
             repo = "ranger-api"
         }
@@ -109,10 +106,7 @@ def ecrRepoName(branch) {
 
 def k8sNamespace(branch) {
     script {
-        namespace = "testing"
-        if (branch == 'staging') {
-            namespace = "staging"
-        }
+        namespace = "staging"
         if (branch == 'master') {
             namespace = "production"
         }
