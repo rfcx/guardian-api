@@ -16,7 +16,7 @@
     "stop.mongo": "docker container stop ranger-api-mongo"
   },
   "dependencies": {
-    "@rfcx/http-utils": "^1.0.3",
+    "@rfcx/http-utils": "1.0.4",
     "@rfcx/message-queue": "^1.0.4",
     "@typegoose/typegoose": "^8.2.0",
     "axios": "^0.21.1",
