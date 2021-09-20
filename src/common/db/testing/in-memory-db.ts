@@ -9,7 +9,13 @@ export async function connect (): Promise<any> {
   if (mongod === undefined) {
     mongod = await MongoMemoryServer.create()
   }
-  await mongoose.connect(mongod.getUri())
+  const mongooseOpts = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+  }
+  await mongoose.connect(mongod.getUri(), mongooseOpts)
 }
 
 export async function disconnect (): Promise<any> {
