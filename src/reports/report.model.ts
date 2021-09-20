@@ -17,6 +17,7 @@ export class Report {
   @prop({ required: true }) public isEvidenceEncountered?: boolean
   @prop({ type: () => [String] }) public evidences?: string[]
   @prop({ required: true, enum: [0, 1, 2] }) public loggingScale?: number
+  @prop({ required: true, enum: [0, 1, 2, 3] }) public damageScale?: number
   @prop({ type: () => [String] }) public responseActions?: string[]
   @prop() public attachments?: Attachment[]
   @prop() public note?: string

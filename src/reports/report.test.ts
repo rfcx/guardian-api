@@ -26,6 +26,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -41,6 +42,7 @@ describe('POST /reports', () => {
     expect(report.evidences?.includes('abc')).toBeTruthy()
     expect(report.evidences?.includes('fde')).toBeTruthy()
     expect(report.loggingScale).toBe(1)
+    expect(report.damageScale).toBe(2)
     expect(report.responseActions?.includes('foo')).toBeTruthy()
     expect(report.responseActions?.includes('bar')).toBeTruthy()
     expect(report.note).toBe('Test note')
@@ -53,6 +55,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -63,6 +66,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['tree'],
       loggingScale: 2,
+      damageScale: 3,
       responseActions: ['sms'],
       guardianId: 'aaaaaaaaa012'
     })
@@ -79,6 +83,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -94,6 +99,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -109,6 +115,7 @@ describe('POST /reports', () => {
       isLoggerEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -124,6 +131,7 @@ describe('POST /reports', () => {
       isLoggerEncountered: true,
       isEvidenceEncountered: true,
       loggingScale: 1,
+      damageScale: 2,
       responseActions: ['foo', 'bar'],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
@@ -138,6 +146,23 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       isLoggerEncountered: true,
       isEvidenceEncountered: true,
+      damageScale: 2,
+      evidences: ['abc', 'fde'],
+      responseActions: ['foo', 'bar'],
+      note: 'Test note',
+      guardianId: 'aaaaaaaaa000'
+    }
+    const response = await request(app).post('/').send(requestBody)
+    expect(response.statusCode).toBe(400)
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
+    expect(reports.length).toBe(0)
+  })
+  test('returns 400 if damageScale is not defined', async () => {
+    const requestBody = {
+      encounteredAt: '2021-06-08T19:26:40.000Z',
+      isLoggerEncountered: true,
+      isEvidenceEncountered: true,
+      loggingScale: 1,
       evidences: ['abc', 'fde'],
       responseActions: ['foo', 'bar'],
       note: 'Test note',
@@ -155,6 +180,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
+      damageScale: 2,
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -170,6 +196,7 @@ describe('POST /reports', () => {
       isEvidenceEncountered: true,
       evidences: ['tree'],
       loggingScale: 2,
+      damageScale: 3,
       responseActions: ['sms'],
       guardianId: 'aaaaaaaaa012'
     }
@@ -184,6 +211,7 @@ describe('POST /reports', () => {
     expect(report.evidences?.length).toBe(1)
     expect(report.evidences?.includes('tree')).toBeTruthy()
     expect(report.loggingScale).toBe(2)
+    expect(report.damageScale).toBe(3)
     expect(report.responseActions?.length).toBe(1)
     expect(report.responseActions?.includes('sms')).toBeTruthy()
     expect(report.note).toBeUndefined()
@@ -195,7 +223,8 @@ describe('POST /reports', () => {
       isLoggerEncountered: true,
       isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
-      loggingScale: 1,
+      loggingScale: 0,
+      damageScale: 0,
       responseActions: ['foo', 'bar'],
       note: 'Test note'
     }

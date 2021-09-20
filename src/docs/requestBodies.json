@@ -28,6 +28,12 @@
         "enum": [0, 1, 2],
         "example": 1
       },
+      "damageScale": {
+        "type": "number",
+        "description": "Damage scale (0 - no visible tree disruption found, 1 - small number of trees cut down, 2 - medium number of trees cut down, 3 - large area substantially clear cut)",
+        "enum": [0, 1, 2, 4],
+        "example": 1
+      },
       "responseActions": {
         "type": "array",
         "description": "Actions that were taken",
