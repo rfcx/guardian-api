@@ -13,7 +13,6 @@ export class Report {
   @prop({ required: true }) public encounteredAt?: Date
   @prop({ required: true, default: Date.now() }) public createdAt?: Date
   @prop({ required: true, default: Date.now() }) public updatedAt?: Date
-  @prop({ required: true }) public isLoggerEncountered?: boolean
   @prop({ required: true }) public isEvidenceEncountered?: boolean
   @prop({ type: () => [String] }) public evidences?: string[]
   @prop({ required: true, enum: [0, 1, 2] }) public loggingScale?: number

@@ -35,7 +35,6 @@ router.post('/', (req: Request, res: Response): void => {
   const user = (req as any).user
   const converter = new Converter(req.body, {})
   converter.convert('encounteredAt').toMomentUtc()
-  converter.convert('isLoggerEncountered').toBoolean()
   converter.convert('isEvidenceEncountered').toBoolean()
   converter.convert('evidences').toArray()
   converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
