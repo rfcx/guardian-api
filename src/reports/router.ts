@@ -38,7 +38,7 @@ router.post('/', (req: Request, res: Response): void => {
   converter.convert('isLoggerEncountered').toBoolean()
   converter.convert('isEvidenceEncountered').toBoolean()
   converter.convert('evidences').toArray()
-  converter.convert('loggingScale').toNonNegativeInt()
+  converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
   converter.convert('responseActions').toArray()
   converter.convert('note').optional().toString()
   converter.convert('guardianId').toString()

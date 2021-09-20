@@ -24,8 +24,8 @@
       },
       "loggingScale": {
         "type": "number",
-        "description": "Logging scale (1 - small, 2 - medium, 3 - large)",
-        "enum": [1, 2, 3],
+        "description": "Logging scale (0 - not sure, 1 - small, 2 - large)",
+        "enum": [0, 1, 2],
         "example": 1
       },
       "responseActions": {
