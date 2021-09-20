@@ -27,7 +27,6 @@ interface ReportAttachment {
 
 export interface ReportUpdatableData {
   encounteredAt?: Date
-  isEvidenceEncountered?: boolean
   evidences?: string[]
   loggingScale?: LoggingScale
   damageScale?: DamageScale

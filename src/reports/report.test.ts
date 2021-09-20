@@ -22,7 +22,6 @@ describe('POST /reports', () => {
   test('creates report', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
       damageScale: 2,
@@ -36,7 +35,6 @@ describe('POST /reports', () => {
     const report = reports[0]
     expect(reports.length).toBe(1)
     expect(report.encounteredAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
-    expect(report.isEvidenceEncountered).toBeTruthy()
     expect(report.evidences?.includes('abc')).toBeTruthy()
     expect(report.evidences?.includes('fde')).toBeTruthy()
     expect(report.loggingScale).toBe(1)
@@ -49,7 +47,6 @@ describe('POST /reports', () => {
   test('creates two reports', async () => {
     const response1 = await request(app).post('/').send({
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
       damageScale: 2,
@@ -59,7 +56,6 @@ describe('POST /reports', () => {
     })
     const response2 = await request(app).post('/').send({
       encounteredAt: '2021-05-03T12:31:42.150Z',
-      isEvidenceEncountered: true,
       evidences: ['tree'],
       loggingScale: 2,
       damageScale: 3,
@@ -75,22 +71,6 @@ describe('POST /reports', () => {
   })
   test('returns 400 if encounteredAt is not defined', async () => {
     const requestBody = {
-      isEvidenceEncountered: true,
-      evidences: ['abc', 'fde'],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: ['foo', 'bar'],
-      note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
-    }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
-  })
-  test('returns 400 if isEvidenceEncountered is not defined', async () => {
-    const requestBody = {
-      encounteredAt: '2021-06-08T19:26:40.000Z',
       evidences: ['abc', 'fde'],
       loggingScale: 1,
       damageScale: 2,
@@ -106,7 +86,6 @@ describe('POST /reports', () => {
   test('returns 400 if evidences is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       loggingScale: 1,
       damageScale: 2,
       responseActions: ['foo', 'bar'],
@@ -121,7 +100,6 @@ describe('POST /reports', () => {
   test('returns 400 if loggingScale is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       damageScale: 2,
       evidences: ['abc', 'fde'],
       responseActions: ['foo', 'bar'],
@@ -136,7 +114,6 @@ describe('POST /reports', () => {
   test('returns 400 if damageScale is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       loggingScale: 1,
       evidences: ['abc', 'fde'],
       responseActions: ['foo', 'bar'],
@@ -151,7 +128,6 @@ describe('POST /reports', () => {
   test('returns 400 if responseActions is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 1,
       damageScale: 2,
@@ -166,7 +142,6 @@ describe('POST /reports', () => {
   test('creates report if note is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-05-03T12:31:42.150Z',
-      isEvidenceEncountered: true,
       evidences: ['tree'],
       loggingScale: 2,
       damageScale: 3,
@@ -179,7 +154,6 @@ describe('POST /reports', () => {
     const report = reports[0]
     expect(reports.length).toBe(1)
     expect(report.encounteredAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
-    expect(report.isEvidenceEncountered).toBeTruthy()
     expect(report.evidences?.length).toBe(1)
     expect(report.evidences?.includes('tree')).toBeTruthy()
     expect(report.loggingScale).toBe(2)
@@ -192,7 +166,6 @@ describe('POST /reports', () => {
   test('returns 400 if guardianId is not defined', async () => {
     const requestBody = {
       encounteredAt: '2021-06-08T19:26:40.000Z',
-      isEvidenceEncountered: true,
       evidences: ['abc', 'fde'],
       loggingScale: 0,
       damageScale: 0,

@@ -7,11 +7,6 @@
         "description": "An incident encountered at date (iso 8601)",
         "example": "2020-11-16T09:03:24.928Z"
       },
-      "isEvidenceEncountered": {
-        "type": "boolean",
-        "description": "Whether evidences were encountered or not",
-        "example": true
-      },
       "evidences": {
         "type": "array",
         "description": "Evidence types",
