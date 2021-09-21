@@ -2,9 +2,9 @@
   "Report": {
     "type": "object",
     "properties": {
-      "encounteredAt": {
+      "investigatedAt": {
         "type": "date",
-        "description": "An incident encountered at date (iso 8601)",
+        "description": "An incident investigated at date (iso 8601)",
         "example": "2020-11-16T09:03:24.928Z"
       },
       "evidences": {

@@ -2,6 +2,6 @@
 - Add indexes for `Users` collection
   - by `guid` and `email`
 - Add index for `Reports` collection
-  - by `guardianId` and `encounteredAt`
+  - by `guardianId` and `investigatedAt`
 - Add index for `Events` collection
   - unique by `externalId`

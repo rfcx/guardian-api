@@ -11,7 +11,7 @@ dayjs.extend(utc)
 @modelOptions({ options: { allowMixed: 0 } })
 export class Report {
   @prop({ required: true }) public guardianId?: string
-  @prop({ required: true }) public encounteredAt?: Date
+  @prop({ required: true }) public investigatedAt?: Date
   @prop({ required: true, default: Date.now() }) public createdAt?: Date
   @prop({ required: true, default: Date.now() }) public updatedAt?: Date
   @prop({ required: true, type: [Number], enum: Object.keys(evidences).map(k => parseInt(k)) }) public evidences?: number[]
@@ -36,11 +36,11 @@ export class Report {
       const startCond: object = { $gte: dayjs.utc(start).valueOf() } ?? undefined
       const endCond: object = { $lt: dayjs.utc(end).valueOf() } ?? undefined
       if (start !== undefined && end !== undefined) {
-        filters.encounteredAt = { $and: { ...startCond, ...endCond } } as any
+        filters.investigatedAt = { $and: { ...startCond, ...endCond } } as any
       } else if (start !== undefined) {
-        filters.encounteredAt = startCond
+        filters.investigatedAt = startCond
       } else if (end !== undefined) {
-        filters.encounteredAt = endCond
+        filters.investigatedAt = endCond
       }
     }
     if (guardians !== undefined) {
