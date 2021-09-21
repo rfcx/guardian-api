@@ -25,7 +25,7 @@ describe('POST /reports', () => {
       evidences: [101, 103],
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 204],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -39,8 +39,8 @@ describe('POST /reports', () => {
     expect(report.evidences?.includes(103)).toBeTruthy()
     expect(report.loggingScale).toBe(1)
     expect(report.damageScale).toBe(2)
-    expect(report.responseActions?.includes('foo')).toBeTruthy()
-    expect(report.responseActions?.includes('bar')).toBeTruthy()
+    expect(report.responseActions?.includes(201)).toBeTruthy()
+    expect(report.responseActions?.includes(204)).toBeTruthy()
     expect(report.note).toBe('Test note')
     expect(report.guardianId).toBe('aaaaaaaaa000')
   })
@@ -50,7 +50,7 @@ describe('POST /reports', () => {
       evidences: [101, 103],
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [202, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     })
@@ -59,7 +59,7 @@ describe('POST /reports', () => {
       evidences: [100],
       loggingScale: 2,
       damageScale: 3,
-      responseActions: ['sms'],
+      responseActions: [200],
       guardianId: 'aaaaaaaaa012'
     })
     expect(response1.statusCode).toBe(201)
@@ -74,7 +74,7 @@ describe('POST /reports', () => {
       evidences: [101, 103],
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203, 205],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -88,7 +88,7 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -103,7 +103,7 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -118,7 +118,37 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       loggingScale: 1,
       damageScale: 2,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
+      note: 'Test note',
+      guardianId: 'aaaaaaaaa000'
+    }
+    const response = await request(app).post('/').send(requestBody)
+    expect(response.statusCode).toBe(400)
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
+    expect(reports.length).toBe(0)
+  })
+  test('returns 400 if responseActions is empty', async () => {
+    const requestBody = {
+      evidences: [101, 103],
+      encounteredAt: '2021-06-08T19:26:40.000Z',
+      loggingScale: 1,
+      damageScale: 2,
+      responseActions: [],
+      note: 'Test note',
+      guardianId: 'aaaaaaaaa000'
+    }
+    const response = await request(app).post('/').send(requestBody)
+    expect(response.statusCode).toBe(400)
+    const reports: Array<DocumentType<Report>> = await ReportModel.find()
+    expect(reports.length).toBe(0)
+  })
+  test('returns 400 if responseActions is not from the list', async () => {
+    const requestBody = {
+      evidences: [200],
+      encounteredAt: '2021-06-08T19:26:40.000Z',
+      loggingScale: 1,
+      damageScale: 2,
+      responseActions: [100, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -132,7 +162,7 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       damageScale: 2,
       evidences: [101, 103],
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -146,7 +176,7 @@ describe('POST /reports', () => {
       encounteredAt: '2021-06-08T19:26:40.000Z',
       loggingScale: 1,
       evidences: [101, 103],
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
@@ -175,7 +205,7 @@ describe('POST /reports', () => {
       evidences: [102, 104, 105],
       loggingScale: 2,
       damageScale: 3,
-      responseActions: ['sms'],
+      responseActions: [200],
       guardianId: 'aaaaaaaaa012'
     }
     const response = await request(app).post('/').send(requestBody)
@@ -191,7 +221,7 @@ describe('POST /reports', () => {
     expect(report.loggingScale).toBe(2)
     expect(report.damageScale).toBe(3)
     expect(report.responseActions?.length).toBe(1)
-    expect(report.responseActions?.includes('sms')).toBeTruthy()
+    expect(report.responseActions?.includes(200)).toBeTruthy()
     expect(report.note).toBeUndefined()
     expect(report.guardianId).toBe('aaaaaaaaa012')
   })
@@ -201,7 +231,7 @@ describe('POST /reports', () => {
       evidences: [100],
       loggingScale: 0,
       damageScale: 0,
-      responseActions: ['foo', 'bar'],
+      responseActions: [201, 203],
       note: 'Test note'
     }
     const response = await request(app).post('/').send(requestBody)

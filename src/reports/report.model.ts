@@ -4,7 +4,7 @@ import { getModelForClass, prop, ReturnModelType, DocumentType, Ref, modelOption
 import { FilterQuery, QueryOptions } from 'mongoose'
 import { User } from '../users/user.model'
 import { Attachment, ReportsFilters, QueryOptionsRFCx } from '../types'
-import { evidences } from './constants'
+import { evidences, responseActions } from './constants'
 
 dayjs.extend(utc)
 
@@ -17,7 +17,7 @@ export class Report {
   @prop({ required: true, type: [Number], enum: Object.keys(evidences).map(k => parseInt(k)) }) public evidences?: number[]
   @prop({ required: true, enum: [0, 1, 2] }) public loggingScale?: number
   @prop({ required: true, enum: [0, 1, 2, 3] }) public damageScale?: number
-  @prop({ type: () => [String] }) public responseActions?: string[]
+  @prop({ required: true, type: [Number], enum: Object.keys(responseActions).map(k => parseInt(k)) }) public responseActions?: number[]
   @prop() public attachments?: Attachment[]
   @prop() public note?: string
   @prop({ ref: () => User }) public user?: Ref<User>

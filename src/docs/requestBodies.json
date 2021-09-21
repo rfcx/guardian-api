@@ -26,8 +26,8 @@
       },
       "responseActions": {
         "type": "array",
-        "description": "Actions that were taken",
-        "example": ["Arrest", "Reprimand"]
+        "description": "Actions that were taken (codes). 200 - None, 201 - Confiscated equipment, 202 - Collected evidence, 203 - Submitted report of incident, 204 - Planning to patrol area again in near future, 205 - Other",
+        "example": [201, 203]
       },
       "note": {
         "type": "string",

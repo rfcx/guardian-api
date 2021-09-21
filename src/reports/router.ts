@@ -3,7 +3,7 @@ import { Router } from 'express'
 import { ReportPayload } from '../types'
 import { createReport } from './service'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { evidences } from './constants'
+import { evidences, responseActions } from './constants'
 
 const router = Router()
 
@@ -39,7 +39,7 @@ router.post('/', (req: Request, res: Response): void => {
   converter.convert('evidences').toArray().nonEmpty().isEqualToAny(Object.keys(evidences).map(k => parseInt(k)))
   converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
   converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
-  converter.convert('responseActions').toArray()
+  converter.convert('responseActions').toArray().nonEmpty().isEqualToAny(Object.keys(responseActions).map(k => parseInt(k)))
   converter.convert('note').optional().toString()
   converter.convert('guardianId').toString()
   converter.validate()
