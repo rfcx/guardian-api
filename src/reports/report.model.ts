@@ -13,7 +13,7 @@ export class Report {
   @prop({ required: true }) public encounteredAt?: Date
   @prop({ required: true, default: Date.now() }) public createdAt?: Date
   @prop({ required: true, default: Date.now() }) public updatedAt?: Date
-  @prop({ type: () => [String] }) public evidences?: string[]
+  @prop({ required: true, type: [Number], enum: [100, 101, 102, 103, 104, 105] }) public evidences?: number[]
   @prop({ required: true, enum: [0, 1, 2] }) public loggingScale?: number
   @prop({ required: true, enum: [0, 1, 2, 3] }) public damageScale?: number
   @prop({ type: () => [String] }) public responseActions?: string[]

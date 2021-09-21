@@ -9,8 +9,8 @@
       },
       "evidences": {
         "type": "array",
-        "description": "Evidence types",
-        "example": ["Cleared areas", "Cut down trees"]
+        "description": "Evidence types (codes). 100 - None, 101 - Cut down trees, 102 - Cleared areas, 103 - Logging equipment, 104 - Loggers at site, 105 - Other",
+        "example": [101, 103]
       },
       "loggingScale": {
         "type": "number",
