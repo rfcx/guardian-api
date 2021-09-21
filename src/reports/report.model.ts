@@ -12,6 +12,8 @@ dayjs.extend(utc)
 export class Report {
   @prop({ required: true }) public guardianId?: string
   @prop({ required: true }) public investigatedAt?: Date
+  @prop({ required: true }) public startedAt?: Date
+  @prop({ required: true }) public submittedAt?: Date
   @prop({ required: true, default: Date.now() }) public createdAt?: Date
   @prop({ required: true, default: Date.now() }) public updatedAt?: Date
   @prop({ required: true, type: [Number], enum: Object.keys(evidences).map(k => parseInt(k)) }) public evidences?: number[]

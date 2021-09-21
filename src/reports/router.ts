@@ -36,6 +36,8 @@ router.post('/', (req: Request, res: Response): void => {
   const user = (req as any).user
   const converter = new Converter(req.body, {})
   converter.convert('investigatedAt').toMomentUtc()
+  converter.convert('startedAt').toMomentUtc()
+  converter.convert('submittedAt').toMomentUtc()
   converter.convert('evidences').toArray().nonEmpty().isEqualToAny(Object.keys(evidences).map(k => parseInt(k)))
   converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
   converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
