@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { ReportPayload } from '../types'
 import { createReport } from './service'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
+import { evidences, responseActions } from './constants'
 
 const router = Router()
 
@@ -34,12 +35,13 @@ const router = Router()
 router.post('/', (req: Request, res: Response): void => {
   const user = (req as any).user
   const converter = new Converter(req.body, {})
-  converter.convert('encounteredAt').toMomentUtc()
-  converter.convert('isLoggerEncountered').toBoolean()
-  converter.convert('isEvidenceEncountered').toBoolean()
-  converter.convert('evidences').toArray()
-  converter.convert('loggingScale').toNonNegativeInt()
-  converter.convert('responseActions').toArray()
+  converter.convert('investigatedAt').toMomentUtc()
+  converter.convert('startedAt').toMomentUtc()
+  converter.convert('submittedAt').toMomentUtc()
+  converter.convert('evidences').toArray().nonEmpty().isEqualToAny(Object.keys(evidences).map(k => parseInt(k)))
+  converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
+  converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
+  converter.convert('responseActions').toArray().nonEmpty().isEqualToAny(Object.keys(responseActions).map(k => parseInt(k)))
   converter.convert('note').optional().toString()
   converter.convert('guardianId').toString()
   converter.validate()

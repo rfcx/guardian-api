@@ -4,20 +4,22 @@ import { getModelForClass, prop, ReturnModelType, DocumentType, Ref, modelOption
 import { FilterQuery, QueryOptions } from 'mongoose'
 import { User } from '../users/user.model'
 import { Attachment, ReportsFilters, QueryOptionsRFCx } from '../types'
+import { evidences, responseActions } from './constants'
 
 dayjs.extend(utc)
 
 @modelOptions({ options: { allowMixed: 0 } })
 export class Report {
   @prop({ required: true }) public guardianId?: string
-  @prop({ required: true }) public encounteredAt?: Date
+  @prop({ required: true }) public investigatedAt?: Date
+  @prop({ required: true }) public startedAt?: Date
+  @prop({ required: true }) public submittedAt?: Date
   @prop({ required: true, default: Date.now() }) public createdAt?: Date
   @prop({ required: true, default: Date.now() }) public updatedAt?: Date
-  @prop({ required: true }) public isLoggerEncountered?: boolean
-  @prop({ required: true }) public isEvidenceEncountered?: boolean
-  @prop({ type: () => [String] }) public evidences?: string[]
+  @prop({ required: true, type: [Number], enum: Object.keys(evidences).map(k => parseInt(k)) }) public evidences?: number[]
   @prop({ required: true, enum: [0, 1, 2] }) public loggingScale?: number
-  @prop({ type: () => [String] }) public responseActions?: string[]
+  @prop({ required: true, enum: [0, 1, 2, 3] }) public damageScale?: number
+  @prop({ required: true, type: [Number], enum: Object.keys(responseActions).map(k => parseInt(k)) }) public responseActions?: number[]
   @prop() public attachments?: Attachment[]
   @prop() public note?: string
   @prop({ ref: () => User }) public user?: Ref<User>
@@ -36,11 +38,11 @@ export class Report {
       const startCond: object = { $gte: dayjs.utc(start).valueOf() } ?? undefined
       const endCond: object = { $lt: dayjs.utc(end).valueOf() } ?? undefined
       if (start !== undefined && end !== undefined) {
-        filters.encounteredAt = { $and: { ...startCond, ...endCond } } as any
+        filters.investigatedAt = { $and: { ...startCond, ...endCond } } as any
       } else if (start !== undefined) {
-        filters.encounteredAt = startCond
+        filters.investigatedAt = startCond
       } else if (end !== undefined) {
-        filters.encounteredAt = endCond
+        filters.investigatedAt = endCond
       }
     }
     if (guardians !== undefined) {

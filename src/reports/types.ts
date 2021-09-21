@@ -1,9 +1,16 @@
 import { Schema } from 'mongoose'
 
 enum LoggingScale {
-  Small = 0,
-  Medium = 1,
+  NotSure = 0,
+  Small = 1,
   Large = 2
+}
+
+enum DamageScale {
+  No = 0,
+  Small = 1,
+  Medium = 2,
+  Large = 3
 }
 
 enum AttachmentType {
@@ -19,11 +26,10 @@ interface ReportAttachment {
 }
 
 export interface ReportUpdatableData {
-  encounteredAt?: Date
-  isLoggerEncountered?: boolean
-  isEvidenceEncountered?: boolean
-  evidences?: string[]
+  investigatedAt?: Date
+  evidences?: number[]
   loggingScale?: LoggingScale
+  damageScale?: DamageScale
   responseActions?: string[]
   attachments?: ReportAttachment[]
   note?: string

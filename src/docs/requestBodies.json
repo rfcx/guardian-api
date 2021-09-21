@@ -2,36 +2,42 @@
   "Report": {
     "type": "object",
     "properties": {
-      "encounteredAt": {
+      "investigatedAt": {
         "type": "date",
-        "description": "An incident encountered at date (iso 8601)",
+        "description": "An incident investigated at date (iso 8601)",
         "example": "2020-11-16T09:03:24.928Z"
       },
-      "isLoggerEncountered": {
-        "type": "boolean",
-        "description": "Whether logger was encountered or not",
-        "example": true
+      "startedAt": {
+        "type": "date",
+        "description": "When report started filling up in the app (iso 8601)",
+        "example": "2020-11-17T10:31:55.121Z"
       },
-      "isEvidenceEncountered": {
-        "type": "boolean",
-        "description": "Whether evidences were encountered or not",
-        "example": true
+      "submittedAt": {
+        "type": "date",
+        "description": "When report was submitted in the app (iso 8601)",
+        "example": "2020-11-17T10:35:12.331Z"
       },
       "evidences": {
         "type": "array",
-        "description": "Evidence types",
-        "example": ["Cleared areas", "Cut down trees"]
+        "description": "Evidence types (codes). 100 - None, 101 - Cut down trees, 102 - Cleared areas, 103 - Logging equipment, 104 - Loggers at site, 105 - Other",
+        "example": [101, 103]
       },
       "loggingScale": {
         "type": "number",
-        "description": "Logging scale (1 - small, 2 - medium, 3 - large)",
-        "enum": [1, 2, 3],
+        "description": "Logging scale (0 - not sure, 1 - small, 2 - large)",
+        "enum": [0, 1, 2],
+        "example": 1
+      },
+      "damageScale": {
+        "type": "number",
+        "description": "Damage scale (0 - no visible tree disruption found, 1 - small number of trees cut down, 2 - medium number of trees cut down, 3 - large area substantially clear cut)",
+        "enum": [0, 1, 2, 4],
         "example": 1
       },
       "responseActions": {
         "type": "array",
-        "description": "Actions that were taken",
-        "example": ["Arrest", "Reprimand"]
+        "description": "Actions that were taken (codes). 200 - None, 201 - Confiscated equipment, 202 - Collected evidence, 203 - Submitted report of incident, 204 - Planning to patrol area again in near future, 205 - Other",
+        "example": [201, 203]
       },
       "note": {
         "type": "string",
