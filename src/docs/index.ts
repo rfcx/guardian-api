@@ -62,9 +62,9 @@ const options = {
     './src/streams/router.ts',
     './src/projects/router.ts',
     './src/reports/router.ts',
-    './streams/router.js',
-    './projects/router.js',
-    './reports/router.js'
+    'dist/streams/router.js',
+    'dist/projects/router.js',
+    'dist/reports/router.js'
   ]
 }
 
