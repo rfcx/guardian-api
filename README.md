@@ -23,15 +23,23 @@ yarn
 
 Copy `.env.example` to `.env`. Set DB credentials there.
 
-#### Start local MongoDB using Docker.
-```sh
-yarn start.mongo
-```
-MongoDB will start on `localhost` with port `27017`, db name `admin`, user `admin-user`, and password `test`.
+### Setup TimescaleDB locally using Docker
 
-(When you want to stop MongoDB, use:)
+Start TimescaleDB container
+
 ```sh
-yarn stop.mongo
+yarn start.timescale
+```
+
+Run the migrations
+
+```sh
+yarn migrate
+```
+
+When you want to stop TimescaleDB
+```sh
+yarn stop.timescale
 ```
 
 #### Run local dev server (live reload)

@@ -1,30 +1,28 @@
-import { startDb, stopDb, truncateDbModels, muteConsole, expressApp } from '../common/db/testing/index'
-import { GET, setupMockAxios } from '../common/axios/mock'
-import { DocumentType } from '@typegoose/typegoose'
-import ClassificationModel, { Classification } from '../classifications/classification.model'
-import EventModel from '../events/event.model'
-import UserModel, { User } from '../users/user.model'
-import Report from '../reports/report.model'
-import request from 'supertest'
 import routes from './router'
+import request from 'supertest'
+import Event from '../events/event.model'
+import User from '../users/user.model'
+import Response from '../responses/models/response.model'
+import Classification from '../classifications/classification.model'
 
-let classification: DocumentType<Classification>
-let user: DocumentType<User>
+import { migrate, truncate, expressApp, seed } from '../common/db/testing'
+import { sequelize } from '../common/db'
+import { GET, setupMockAxios } from '../common/axios/mock'
 
-beforeAll(async () => {
-  muteConsole()
-  await startDb()
-  classification = await ClassificationModel.create({ value: 'chainsaw', title: 'Chainsaw' })
-  user = await UserModel.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
-})
-beforeEach(async () => {
-  await truncateDbModels([EventModel])
-})
-afterAll(async () => {
-  await stopDb()
-})
+let classification: Classification
+let user: User
 
 const app = expressApp()
+
+beforeAll(async () => {
+  await migrate(sequelize)
+  await seed()
+  classification = await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  user = await User.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
+})
+beforeEach(async () => {
+  await truncate([Event])
+})
 
 app.use('/', routes)
 
@@ -60,18 +58,18 @@ describe('GET /streams', () => {
       { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null },
       { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null }
     ]
-    await EventModel.create([
-      { externalId: '001', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:06:00.123Z' },
-      { externalId: '002', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:11:00.123Z' },
-      { externalId: '003', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:16:00.123Z' },
-      { externalId: '004', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:21:00.123Z' },
-      { externalId: '005', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', streamId: 'bbbbbbbbbbbb', classification: classification._id, createdAt: '2021-09-15T13:26:00.123Z' },
-      { externalId: '006', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', streamId: 'bbbbbbbbbbbd', classification: classification._id, createdAt: '2021-09-15T14:06:00.123Z' }
+    await Event.bulkCreate([
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de1', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:06:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de2', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:11:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de3', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:16:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de4', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:21:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de5', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:26:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', streamId: 'bbbbbbbbbbbd', classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' }
     ])
-    await Report.create([
-      { guardianId: 'bbbbbbbbbbbb', investigatedAt: '2021-09-11T13:05:00.000Z', startedAt: '2021-09-12T12:21:00.000Z', submittedAt: '2021-09-12T12:26:00.000Z', createdAt: '2021-09-15T13:07:10.000Z', updatedAt: '2021-09-16T11:00:00.000Z', loggingScale: 1, damageScale: 1, user: user._id, schemaVersion: 1 },
-      { guardianId: 'bbbbbbbbbbbc', investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', updatedAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, user: user._id, schemaVersion: 1 },
-      { guardianId: 'bbbbbbbbbbbd', investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', updatedAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, user: user._id, schemaVersion: 1 }
+    await Response.bulkCreate([
+      { guardianId: 'bbbbbbbbbbbb', investigatedAt: '2021-09-11T13:05:00.000Z', startedAt: '2021-09-12T12:21:00.000Z', submittedAt: '2021-09-12T12:26:00.000Z', createdAt: '2021-09-15T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
+      { guardianId: 'bbbbbbbbbbbc', investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
+      { guardianId: 'bbbbbbbbbbbd', investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
     ])
 
     setupMockAxios(GET, endpoint, 200, mockStream)

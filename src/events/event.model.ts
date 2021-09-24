@@ -1,34 +1,28 @@
-import { getModelForClass, prop, ReturnModelType, DocumentType, Ref } from '@typegoose/typegoose'
-import { Classification } from '../classifications/classification.model'
-import { EventFilters, QueryOptionsRFCx } from '../types'
-import { combineFilters, combineOptions } from './helpers'
+import { Table, Column, Model, DataType, PrimaryKey, BelongsTo } from 'sequelize-typescript'
+import Classificaion from '../classifications/classification.model'
 
-export class Event {
-  @prop({ required: true, unique: true }) public externalId?: string
-  @prop({ required: true }) public start?: Date
-  @prop({ required: true }) public end?: Date
-  @prop({ required: true }) public streamId?: string
-  @prop({ ref: () => Classification }) public classification?: Ref<Classification>
-  @prop({ required: true }) public createdAt?: Date
+@Table({
+  tableName: 'events',
+  timestamps: false
+})
+export default class Event extends Model {
+  [x: string]: any
+  @PrimaryKey
+  @Column(DataType.UUID)
+  id!: string
 
-  public static async get (this: ReturnModelType<typeof Event>, id: string): Promise<DocumentType<Event> | null> {
-    return await this.findById(id)
-  }
+  @Column(DataType.DATE)
+  start!: Date
 
-  public static async getByExternalId (this: ReturnModelType<typeof Event>, externalId: string): Promise<DocumentType<Event> | null> {
-    return await this.findOne({ externalId })
-  }
+  @Column(DataType.DATE)
+  end!: Date
 
-  public static async list (this: ReturnModelType<typeof Event>, f: EventFilters = {}, o: QueryOptionsRFCx = {}): Promise<Array<DocumentType<Event>>> {
-    const filters = combineFilters(f)
-    const options = combineOptions(o)
-    return await this.find(filters, null, options)
-  }
+  @Column(DataType.STRING(12))
+  streamId!: string
 
-  public static async total (this: ReturnModelType<typeof Event>, f: EventFilters = {}): Promise<number> {
-    const filters = combineFilters(f)
-    return await this.count(filters)
-  }
+  @BelongsTo(() => Classificaion, 'classificationId')
+  classification!: Classificaion
+
+  @Column(DataType.DATE)
+  createdAt!: Date
 }
-
-export default getModelForClass(Event)

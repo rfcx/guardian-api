@@ -1,25 +1,24 @@
-import { startDb, stopDb, truncateDbModels, expressApp } from '../common/db/testing/index'
-import request from 'supertest'
-import { DocumentType } from '@typegoose/typegoose'
-import ReportModel, { Report } from './report.model'
 import routes from './router'
+import { migrate, truncate, expressApp, seed } from '../common/db/testing'
+import request from 'supertest'
+import { sequelize } from '../common/db'
+import Response from './models/response.model'
+import { list } from './dao'
 
 const app = expressApp()
 
 app.use('/', routes)
 
 beforeAll(async () => {
-  await startDb()
+  await migrate(sequelize)
+  await seed()
 })
 beforeEach(async () => {
-  await truncateDbModels([ReportModel])
-})
-afterAll(async () => {
-  await stopDb()
+  await truncate([Response])
 })
 
-describe('POST /reports', () => {
-  test('creates report', async () => {
+describe('POST /response', () => {
+  test('creates response', async () => {
     const requestBody = {
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-09T15:35:21.000Z',
@@ -31,24 +30,24 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(201)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    const report = reports[0]
-    expect(reports.length).toBe(1)
-    expect(report.investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
-    expect(report.startedAt?.toISOString()).toBe('2021-06-09T15:35:21.000Z')
-    expect(report.submittedAt?.toISOString()).toBe('2021-06-09T15:38:05.000Z')
-    expect(report.evidences?.includes(101)).toBeTruthy()
-    expect(report.evidences?.includes(103)).toBeTruthy()
-    expect(report.loggingScale).toBe(1)
-    expect(report.damageScale).toBe(2)
-    expect(report.responseActions?.includes(201)).toBeTruthy()
-    expect(report.responseActions?.includes(204)).toBeTruthy()
-    expect(report.note).toBe('Test note')
-    expect(report.guardianId).toBe('aaaaaaaaa000')
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list()
+    const response = responses[0]
+    expect(responses.length).toBe(1)
+    expect(response.investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
+    expect(response.startedAt?.toISOString()).toBe('2021-06-09T15:35:21.000Z')
+    expect(response.submittedAt?.toISOString()).toBe('2021-06-09T15:38:05.000Z')
+    expect(response.evidences?.map(e => e.id).includes(101)).toBeTruthy()
+    expect(response.evidences?.map(e => e.id).includes(103)).toBeTruthy()
+    expect(response.loggingScale).toBe(1)
+    expect(response.damageScale).toBe(2)
+    expect(response.actions?.map(e => e.id).includes(201)).toBeTruthy()
+    expect(response.actions?.map(e => e.id).includes(204)).toBeTruthy()
+    // expect(response.note).toBe('Test note')
+    expect(response.guardianId).toBe('aaaaaaaaa000')
   })
-  test('creates two reports', async () => {
+  test('creates two responses', async () => {
     const response1 = await request(app).post('/').send({
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-09T15:35:21.000Z',
@@ -72,10 +71,10 @@ describe('POST /reports', () => {
     })
     expect(response1.statusCode).toBe(201)
     expect(response2.statusCode).toBe(201)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(2)
-    expect(reports[0].investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
-    expect(reports[1].investigatedAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
+    const responses: Response[] = await list({}, { order: { field: 'investigatedAt', dir: 'DESC' } })
+    expect(responses.length).toBe(2)
+    expect(responses[0].investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
+    expect(responses[1].investigatedAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
   })
   test('returns 400 if investigatedAt is not defined', async () => {
     const requestBody = {
@@ -88,10 +87,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if startedAt is not defined', async () => {
     const requestBody = {
@@ -104,10 +103,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if submittedAt is not defined', async () => {
     const requestBody = {
@@ -120,10 +119,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if evidences is not defined', async () => {
     const requestBody = {
@@ -136,10 +135,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if evidences is empty', async () => {
     const requestBody = {
@@ -153,10 +152,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if evidences is not from the list', async () => {
     const requestBody = {
@@ -170,10 +169,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if responseActions is empty', async () => {
     const requestBody = {
@@ -187,10 +186,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if responseActions is not from the list', async () => {
     const requestBody = {
@@ -204,10 +203,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if loggingScale is not defined', async () => {
     const requestBody = {
@@ -220,10 +219,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if damageScale is not defined', async () => {
     const requestBody = {
@@ -236,10 +235,10 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
   test('returns 400 if responseActions is not defined', async () => {
     const requestBody = {
@@ -252,12 +251,12 @@ describe('POST /reports', () => {
       note: 'Test note',
       guardianId: 'aaaaaaaaa000'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
-  test('creates report if note is not defined', async () => {
+  test('creates response if note is not defined', async () => {
     const requestBody = {
       investigatedAt: '2021-05-03T12:31:42.150Z',
       startedAt: '2021-06-09T15:35:21.000Z',
@@ -268,22 +267,22 @@ describe('POST /reports', () => {
       responseActions: [200],
       guardianId: 'aaaaaaaaa012'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(201)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    const report = reports[0]
-    expect(reports.length).toBe(1)
-    expect(report.investigatedAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
-    expect(report.evidences?.length).toBe(3)
-    expect(report.evidences?.includes(102)).toBeTruthy()
-    expect(report.evidences?.includes(104)).toBeTruthy()
-    expect(report.evidences?.includes(105)).toBeTruthy()
-    expect(report.loggingScale).toBe(2)
-    expect(report.damageScale).toBe(3)
-    expect(report.responseActions?.length).toBe(1)
-    expect(report.responseActions?.includes(200)).toBeTruthy()
-    expect(report.note).toBeUndefined()
-    expect(report.guardianId).toBe('aaaaaaaaa012')
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list()
+    const response = responses[0]
+    expect(responses.length).toBe(1)
+    expect(response.investigatedAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
+    expect(response.evidences?.length).toBe(3)
+    expect(response.evidences?.map(e => e.id).includes(102)).toBeTruthy()
+    expect(response.evidences?.map(e => e.id).includes(104)).toBeTruthy()
+    expect(response.evidences?.map(e => e.id).includes(105)).toBeTruthy()
+    expect(response.loggingScale).toBe(2)
+    expect(response.damageScale).toBe(3)
+    expect(response.actions?.length).toBe(1)
+    expect(response.actions?.map(e => e.id).includes(200)).toBeTruthy()
+    // expect(response.note).toBeUndefined()
+    expect(response.guardianId).toBe('aaaaaaaaa012')
   })
   test('returns 400 if guardianId is not defined', async () => {
     const requestBody = {
@@ -296,9 +295,9 @@ describe('POST /reports', () => {
       responseActions: [201, 203],
       note: 'Test note'
     }
-    const response = await request(app).post('/').send(requestBody)
-    expect(response.statusCode).toBe(400)
-    const reports: Array<DocumentType<Report>> = await ReportModel.find()
-    expect(reports.length).toBe(0)
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(400)
+    const responses: Response[] = await list()
+    expect(responses.length).toBe(0)
   })
 })

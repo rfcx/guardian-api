@@ -1,5 +1,3 @@
-import { Schema } from 'mongoose'
-
 enum LoggingScale {
   NotSure = 0,
   Small = 1,
@@ -25,28 +23,34 @@ interface ReportAttachment {
   note: string
 }
 
-export interface ReportUpdatableData {
+export interface ResponseUpdatableData {
   investigatedAt?: Date
   evidences?: number[]
+  attachments?: ReportAttachment[]
   loggingScale?: LoggingScale
   damageScale?: DamageScale
-  responseActions?: string[]
-  attachments?: ReportAttachment[]
+  responseActions?: number[]
   note?: string
 }
 
-export interface ReportPayload extends ReportUpdatableData {
+export interface ResponsePayload extends ResponseUpdatableData {
   guardianId: string
 }
 
-export interface ReportCreationData extends ReportPayload {
-  user: Schema.Types.ObjectId
+export interface ResponseCreationData extends ResponsePayload {
+  createdById: number
   schemaVersion: number
 }
 
-export interface ReportsFilters {
-  start?: Date
-  end?: Date
+export interface ResponseFilters {
+  investigatedAfter?: Date
+  investigatedBefore?: Date
+  startedAfter?: Date
+  startedBefore?: Date
+  submittedAfter?: Date
+  submittedBefore?: Date
+  createdAfter?: Date
+  createdBefore?: Date
   guardians?: string[]
   users?: string[]
 }

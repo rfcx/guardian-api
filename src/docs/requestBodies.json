@@ -1,5 +1,5 @@
 {
-  "Report": {
+  "Response": {
     "type": "object",
     "properties": {
       "investigatedAt": {
@@ -9,12 +9,12 @@
       },
       "startedAt": {
         "type": "date",
-        "description": "When report started filling up in the app (iso 8601)",
+        "description": "When response started filling up in the app (iso 8601)",
         "example": "2020-11-17T10:31:55.121Z"
       },
       "submittedAt": {
         "type": "date",
-        "description": "When report was submitted in the app (iso 8601)",
+        "description": "When response was submitted in the app (iso 8601)",
         "example": "2020-11-17T10:35:12.331Z"
       },
       "evidences": {

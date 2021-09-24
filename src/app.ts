@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import reports from './reports/router'
+import responses from './responses/router'
 import streams from './streams/router'
 import projects from './projects/router'
 import './events/consumer'
@@ -19,7 +19,7 @@ app.use(jwtCheck, parseUserData)
 
 app.use('/streams', streams)
 app.use('/projects', projects)
-app.use('/reports', reports)
+app.use('/responses', responses)
 
 app.use(errorHandler)
 app.use(notFoundHandler)

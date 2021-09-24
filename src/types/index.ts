@@ -5,18 +5,19 @@ export interface Env {
   DB_NAME: string
   DB_USER: string
   DB_PASSWORD: string
-  DB_PORT: string
+  DB_PORT: number
+  DB_SSL_ENABLED: boolean
 }
 
-export interface QuerySort {
+export interface QueryOrder {
   field: string
-  order: 'asc' | 'desc'
+  dir: 'ASC' | 'DESC'
 }
 
 export interface QueryOptionsRFCx {
   limit?: number
   offset?: number
-  sort?: QuerySort
+  order?: QueryOrder
 }
 
 export interface Attachment {
@@ -25,9 +26,14 @@ export interface Attachment {
   note: string
 }
 
+export declare function IsInCustom (arg: string[][] | number[][] | {
+  msg: string
+  args: string[][] | number[][]
+}): Function
+
 export * from '../classifications/types'
 export * from '../events/types'
 export * from '../streams/types'
 export * from '../projects/types'
-export * from '../reports/types'
+export * from '../responses/types'
 export * from '../common/core-api/types'

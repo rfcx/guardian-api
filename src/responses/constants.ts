@@ -9,7 +9,7 @@ export const evidences = {
   107: 'Evidence of poaching'
 }
 
-export const responseActions = {
+export const actions = {
   200: 'None',
   201: 'Collected evidence',
   202: 'Issue a warning',
