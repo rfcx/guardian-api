@@ -58,8 +58,8 @@ spec:
                 label 'slave'
             }
             steps {
+                sh 'find build/${K8S_NAMESPACE} -name "deployment.yaml" -exec sed -i s/:latest/:${BUILD_NUMBER}/g {} +'
                 sh "kubectl apply -f build/${K8S_NAMESPACE} --namespace ${K8S_NAMESPACE}"
-                sh "kubectl set image deployment ${APP} ${APP}=${ECR_HOST}/${ECR_REPO}:$BUILD_NUMBER --namespace ${K8S_NAMESPACE}"
             }
         }
         stage('Verifying') {
