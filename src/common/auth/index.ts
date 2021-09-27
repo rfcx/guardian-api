@@ -3,7 +3,8 @@ import jwks from 'jwks-rsa'
 import config from '../../config'
 import { Request, Response, NextFunction } from 'express'
 
-const metaUrl = 'https://rfcx.org/app_metadata'
+const userMetaUrl = 'https://rfcx.org/user_metadata'
+const appMetaUrl = 'https://rfcx.org/app_metadata'
 
 export const jwtCheck = jwt({
   secret: jwks.expressJwtSecret({
@@ -19,10 +20,12 @@ export const jwtCheck = jwt({
 
 export function parseUserData (req: Request, res: Response, next: NextFunction): void {
   const auth = req.auth
+  const userMetaData = auth?.user_metadata ?? auth[userMetaUrl] ?? {}
+  const appMetaData = auth?.app_metadata ?? auth[appMetaUrl] ?? {}
   req.user = {
-    firstname: auth?.given_name ?? auth.user_metadata.given_name ?? undefined,
-    lastname: auth?.family_name ?? auth.user_metadata.family_name ?? undefined,
-    guid: auth?.guid ?? auth[metaUrl].guid ?? undefined,
+    firstname: auth?.given_name ?? userMetaData.given_name,
+    lastname: auth?.family_name ?? userMetaData.family_name,
+    guid: auth?.guid ?? appMetaData.guid,
     email: auth?.email
   }
   next()
