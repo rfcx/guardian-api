@@ -9,7 +9,8 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
-        unique: true
+        unique: true,
+        allowNull: false
       }
     })
   },

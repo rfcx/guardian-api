@@ -19,7 +19,7 @@ module.exports = {
           allowNull: false
         }
       }, { transaction })
-      await queryInterface.sequelize.query('CREATE UNIQUE INDEX classifications_value_idx ON classifications (value);', { transaction })
+      await queryInterface.sequelize.query('CREATE UNIQUE INDEX classifications_value ON classifications (value);', { transaction })
     })
   },
   down: (queryInterface, Sequelize) => {
