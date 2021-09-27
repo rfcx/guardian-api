@@ -5,7 +5,7 @@ import User from '../users/user.model'
 import Response from '../responses/models/response.model'
 import Classification from '../classifications/classification.model'
 
-import { migrate, truncate, expressApp, seed } from '../common/db/testing'
+import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
 import { GET, setupMockAxios } from '../common/axios/mock'
 
@@ -15,6 +15,7 @@ let user: User
 const app = expressApp()
 
 beforeAll(async () => {
+  muteConsole()
   await migrate(sequelize)
   await seed()
   classification = await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })

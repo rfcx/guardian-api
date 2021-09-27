@@ -1,7 +1,11 @@
 import { GET, setupMockAxios } from '../common/axios/mock'
-import { expressApp } from '../common/db/testing'
+import { expressApp, muteConsole } from '../common/db/testing'
 import request from 'supertest'
 import routes from './router'
+
+beforeAll(() => {
+  muteConsole()
+})
 
 const app = expressApp()
 

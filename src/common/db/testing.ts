@@ -91,4 +91,10 @@ export function expressApp (): Express {
   return app
 }
 
-export default { migrate, truncate, expressApp, seedValues }
+export function muteConsole (levels = ['log', 'info', 'warn', 'error']): void {
+  (typeof levels === 'string' ? [levels] : levels).forEach((f) => {
+    console[f] = function () {}
+  })
+}
+
+export default { migrate, truncate, expressApp, muteConsole, seedValues }

@@ -1,4 +1,4 @@
-import { migrate, truncate, expressApp, seed } from '../common/db/testing'
+import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
 import { createEvent } from './service'
 import Classification from '../classifications/classification.model'
@@ -9,6 +9,7 @@ import classificationDao from '../classifications/dao'
 expressApp()
 
 beforeAll(async () => {
+  muteConsole()
   await migrate(sequelize)
   await seed()
 })

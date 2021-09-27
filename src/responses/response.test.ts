@@ -1,5 +1,5 @@
 import routes from './router'
-import { migrate, truncate, expressApp, seed } from '../common/db/testing'
+import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import request from 'supertest'
 import { sequelize } from '../common/db'
 import Response from './models/response.model'
@@ -10,6 +10,7 @@ const app = expressApp()
 app.use('/', routes)
 
 beforeAll(async () => {
+  muteConsole()
   await migrate(sequelize)
   await seed()
 })
@@ -44,7 +45,6 @@ describe('POST /response', () => {
     expect(response.damageScale).toBe(2)
     expect(response.actions?.map(e => e.id).includes(201)).toBeTruthy()
     expect(response.actions?.map(e => e.id).includes(204)).toBeTruthy()
-    // expect(response.note).toBe('Test note')
     expect(response.guardianId).toBe('aaaaaaaaa000')
   })
   test('creates two responses', async () => {
@@ -281,7 +281,6 @@ describe('POST /response', () => {
     expect(response.damageScale).toBe(3)
     expect(response.actions?.length).toBe(1)
     expect(response.actions?.map(e => e.id).includes(200)).toBeTruthy()
-    // expect(response.note).toBeUndefined()
     expect(response.guardianId).toBe('aaaaaaaaa012')
   })
   test('returns 400 if guardianId is not defined', async () => {
