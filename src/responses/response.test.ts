@@ -29,7 +29,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 204],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(201)
@@ -45,7 +45,7 @@ describe('POST /response', () => {
     expect(response.damageScale).toBe(2)
     expect(response.actions?.map(e => e.id).includes(201)).toBeTruthy()
     expect(response.actions?.map(e => e.id).includes(204)).toBeTruthy()
-    expect(response.guardianId).toBe('aaaaaaaaa000')
+    expect(response.streamId).toBe('aaaaaaaaa000')
   })
   test('creates two responses', async () => {
     const response1 = await request(app).post('/').send({
@@ -57,7 +57,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [202, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     })
     const response2 = await request(app).post('/').send({
       investigatedAt: '2021-05-03T12:31:42.150Z',
@@ -67,7 +67,7 @@ describe('POST /response', () => {
       loggingScale: 2,
       damageScale: 3,
       responseActions: [200],
-      guardianId: 'aaaaaaaaa012'
+      streamId: 'aaaaaaaaa012'
     })
     expect(response1.statusCode).toBe(201)
     expect(response2.statusCode).toBe(201)
@@ -85,7 +85,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203, 205],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -101,7 +101,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203, 205],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -117,7 +117,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203, 205],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -133,7 +133,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -150,7 +150,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -167,7 +167,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [201, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -184,7 +184,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -201,7 +201,7 @@ describe('POST /response', () => {
       damageScale: 2,
       responseActions: [100, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -217,7 +217,7 @@ describe('POST /response', () => {
       evidences: [101, 103],
       responseActions: [201, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -233,7 +233,7 @@ describe('POST /response', () => {
       evidences: [101, 103],
       responseActions: [201, 203],
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -249,7 +249,7 @@ describe('POST /response', () => {
       loggingScale: 1,
       damageScale: 2,
       note: 'Test note',
-      guardianId: 'aaaaaaaaa000'
+      streamId: 'aaaaaaaaa000'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(400)
@@ -265,7 +265,7 @@ describe('POST /response', () => {
       loggingScale: 2,
       damageScale: 3,
       responseActions: [200],
-      guardianId: 'aaaaaaaaa012'
+      streamId: 'aaaaaaaaa012'
     }
     const reqResponse = await request(app).post('/').send(requestBody)
     expect(reqResponse.statusCode).toBe(201)
@@ -281,9 +281,9 @@ describe('POST /response', () => {
     expect(response.damageScale).toBe(3)
     expect(response.actions?.length).toBe(1)
     expect(response.actions?.map(e => e.id).includes(200)).toBeTruthy()
-    expect(response.guardianId).toBe('aaaaaaaaa012')
+    expect(response.streamId).toBe('aaaaaaaaa012')
   })
-  test('returns 400 if guardianId is not defined', async () => {
+  test('returns 400 if streamId is not defined', async () => {
     const requestBody = {
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-09T15:35:21.000Z',

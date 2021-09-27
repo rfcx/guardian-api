@@ -43,7 +43,8 @@ router.post('/', (req: Request, res: Response): void => {
   converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
   converter.convert('responseActions').toArray().nonEmpty().isEqualToAny(Object.keys(actions).map(k => parseInt(k)))
   converter.convert('note').optional().toString()
-  converter.convert('guardianId').toString()
+  converter.convert('streamId').toString()
+  converter.convert('incidentId').toString()
   converter.validate()
     .then(async (responsePayload: ResponsePayload) => {
       const response = await createResponse(responsePayload, user)

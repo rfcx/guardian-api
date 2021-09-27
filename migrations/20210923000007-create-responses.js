@@ -9,7 +9,7 @@ module.exports = {
           primaryKey: true,
           allowNull: false
         },
-        guardian_id: {
+        stream_id: {
           type: Sequelize.STRING(12),
           allowNull: false
         },
@@ -47,6 +47,16 @@ module.exports = {
           references: {
             model: {
               tableName: 'users'
+            },
+            key: 'id'
+          }
+        },
+        incident_id: {
+          type: Sequelize.UUID,
+          allowNull: false,
+          references: {
+            model: {
+              tableName: 'incidents'
             },
             key: 'id'
           }

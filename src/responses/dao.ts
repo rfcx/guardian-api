@@ -22,14 +22,14 @@ export const get = async function (id: string): Promise<Response | null> {
 
 export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): Promise<Response[]> => {
   const where: Response['_attributes'] = {}
-  const { investigatedAfter, investigatedBefore, startedAfter, startedBefore, submittedAfter, submittedBefore, createdAfter, createdBefore, guardians, users } = f
+  const { investigatedAfter, investigatedBefore, startedAfter, startedBefore, submittedAfter, submittedBefore, createdAfter, createdBefore, streams, users } = f
   const { limit, offset, order } = o
   applyTimeRangeToQuery(where, 'investigatedAt', investigatedAfter, investigatedBefore)
   applyTimeRangeToQuery(where, 'startedAt', startedAfter, startedBefore)
   applyTimeRangeToQuery(where, 'submittedAt', submittedAfter, submittedBefore)
   applyTimeRangeToQuery(where, 'creteadAt', createdAfter, createdBefore)
-  if (guardians !== undefined) {
-    where.guardianId = { [Op.in]: guardians }
+  if (streams !== undefined) {
+    where.streamId = { [Op.in]: streams }
   }
   if (users !== undefined) {
     where[Op.and] = {

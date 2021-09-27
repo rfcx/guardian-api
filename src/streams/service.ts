@@ -5,7 +5,7 @@ import eventDao from '../events/dao'
 export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
   for (const stream of streams as StreamResponseWithEventsCount[]) {
     const reports = await responseDao.list({
-      guardians: [stream.id]
+      streams: [stream.id]
     }, {
       limit: 1,
       order: {
