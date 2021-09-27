@@ -1,30 +1,49 @@
-import { connect, connection, Mongoose } from 'mongoose'
 import config from '../../config'
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
+import path from 'path'
 
-const mongoUri: string = `mongodb://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_HOSTNAME}:${config.DB_PORT}/${config.DB_NAME}`
-
-connection.on('connecting', () => {
-  console.log('Connecting to MongoDB')
-})
-connection.on('open', () => {
-  console.log('Connected to MongoDB')
-})
-connection.on('reconnected', () => {
-  console.log('Reconnected to MongoDB')
-})
-connection.on('disconnected', () => {
-  console.log('Disconnected from MongoDB')
-})
-connection.on('reconnectFailed', () => {
-  console.error('Reconnection failed')
-})
-
-async function main (): Promise<Mongoose> {
-  return await connect(mongoUri, {
-    autoIndex: false // https://mongoosejs.com/docs/connections.html#options
-  })
+const baseOptions: SequelizeOptions = {
+  logging: false,
+  models: [path.join(__dirname, '../../**/*.model.*')],
+  define: {
+    underscored: true,
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
+    timestamps: true
+  }
 }
 
-main().catch(err => console.log(err))
+const options: SequelizeOptions = {
+  ...baseOptions,
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: config.DB_SSL_ENABLED
+      ? {
+          require: true,
+          rejectUnauthorized: false // Ref.: https://github.com/brianc/node-postgres/issues/2009
+        }
+      : false
+  },
+  host: config.DB_HOSTNAME,
+  port: config.DB_PORT,
+  database: config.DB_NAME,
+  username: config.DB_USER,
+  password: config.DB_PASSWORD
+}
 
-export default connection
+const optionsTesting: SequelizeOptions = {
+  ...baseOptions,
+  dialect: 'sqlite'
+}
+
+export const sequelize = new Sequelize(process.env.NODE_ENV === 'test' ? optionsTesting : options)
+
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection to TimescaleDB has been established successfully.')
+  })
+  .catch((error) => {
+    console.error('Unable to connect to the database:', error)
+  })
+
+export * from './helpers'

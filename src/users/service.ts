@@ -1,6 +1,6 @@
-import UserModel, { User } from './user.model'
-import { DocumentType } from '@typegoose/typegoose'
+import User from './user.model'
+import { getByGuidOrEmail, create } from './dao'
 
-export async function ensureUserExists (user: User): Promise<DocumentType<User>> {
-  return await UserModel.getByGuidOrEmail(user.guid, user.email) ?? await UserModel.create(user)
+export async function ensureUserExists (user: User): Promise<User> {
+  return await getByGuidOrEmail(user.guid, user.email) ?? await create(user)
 }
