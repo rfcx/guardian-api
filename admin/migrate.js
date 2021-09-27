@@ -20,7 +20,10 @@ const umzug = new Umzug({
   }
 })
 
-;(async () => {
-  await umzug.up()
-  console.log('All migrations performed successfully')
-})()
+umzug.up()
+  .then(() => {
+    console.log('All migrations performed successfully')
+  })
+  .catch((err) => {
+    console.error('Error while performing migrations', err)
+  })
