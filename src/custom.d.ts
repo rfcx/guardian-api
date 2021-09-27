@@ -6,5 +6,8 @@ declare global{
       user: User['_attributes']
       auth: any
     }
+    interface Response {
+      responseTime: string
+    }
   }
 }

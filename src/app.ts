@@ -6,6 +6,7 @@ import streams from './streams/router'
 import projects from './projects/router'
 import './events/consumer'
 import docs from './docs'
+import logger from './common/logging'
 import { jwtCheck, parseUserData } from './common/auth'
 import { errorHandler, notFoundHandler } from './common/error-handlers'
 import './common/db'
@@ -17,6 +18,7 @@ app.use(bodyParser.json())
 app.use('/docs', docs)
 app.use(jwtCheck, parseUserData)
 
+app.use(logger)
 app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/responses', responses)
