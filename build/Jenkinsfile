@@ -74,6 +74,22 @@ spec:
                 slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Deployment completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
             }
         }
+        stage('Migrate database') {
+            agent {
+                label 'slave'
+            }
+            options {
+                skipDefaultCheckout true
+            }
+            steps {
+                sh """kubectl run -i --rm ${APP}-migration --image=${ECR_HOST}/${ECR_REPO}:$BUILD_NUMBER --namespace=${K8S_NAMESPACE} --overrides='
+                { "spec": { "containers": [ { "name": "${APP}-migration", "image": "${ECR_HOST}/${ECR_REPO}:${BUILD_NUMBER}\",
+                "imagePullPolicy": "IfNotPresent", "restartPolicy": "Never", "args": [ "yarn", "migrate" ],
+                "envFrom": [ { "configMapRef": { "name": "${APP}-config" } }, { "secretRef": { "name": "${APP}-secrets" } } ] } ] } }
+                '"""
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Migrations completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+            }
+        }
     }
 }
 
