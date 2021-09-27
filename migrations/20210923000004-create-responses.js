@@ -35,11 +35,11 @@ module.exports = {
           allowNull: false
         },
         logging_scale: {
-          type: Sequelize.INTEGER(1),
+          type: Sequelize.INTEGER,
           allowNull: false
         },
         damage_scale: {
-          type: Sequelize.INTEGER(1),
+          type: Sequelize.INTEGER,
           allowNull: false
         },
         created_by_id: {
@@ -53,7 +53,7 @@ module.exports = {
           }
         },
         schema_version: {
-          type: Sequelize.INTEGER(2),
+          type: Sequelize.INTEGER,
           allowNull: false
         }
       }, { transaction })

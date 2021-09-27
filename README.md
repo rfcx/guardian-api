@@ -33,8 +33,9 @@ yarn start.timescale
 
 Run the migrations
 
+On local machine (to apply env vars from `.env` file)
 ```sh
-yarn migrate
+yarn migrate.dev
 ```
 
 When you want to stop TimescaleDB
