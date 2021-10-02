@@ -1,13 +1,10 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { Op, Transaction } from 'sequelize'
+import { Op, Transactionable } from 'sequelize'
 import { applyTimeRangeToQuery } from '../common/db'
 import Response from './models/response.model'
 import { ResponseFilters, ResponseCreationData, QueryOptionsRFCx } from '../types'
-import User from '../users/user.model'
-import Evidence from './models/evidence.model'
 import ResponseEvidence from './models/response-evidence.model'
-import Action from './models/action.model'
 import ResponseAction from './models/response-action.model'
 
 dayjs.extend(utc)
@@ -22,14 +19,14 @@ export const get = async function (id: string): Promise<Response | null> {
 
 export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): Promise<Response[]> => {
   const where: Response['_attributes'] = {}
-  const { investigatedAfter, investigatedBefore, startedAfter, startedBefore, submittedAfter, submittedBefore, createdAfter, createdBefore, guardians, users } = f
+  const { investigatedAfter, investigatedBefore, startedAfter, startedBefore, submittedAfter, submittedBefore, createdAfter, createdBefore, streams, users } = f
   const { limit, offset, order } = o
   applyTimeRangeToQuery(where, 'investigatedAt', investigatedAfter, investigatedBefore)
   applyTimeRangeToQuery(where, 'startedAt', startedAfter, startedBefore)
   applyTimeRangeToQuery(where, 'submittedAt', submittedAfter, submittedBefore)
   applyTimeRangeToQuery(where, 'creteadAt', createdAfter, createdBefore)
-  if (guardians !== undefined) {
-    where.guardianId = { [Op.in]: guardians }
+  if (streams !== undefined) {
+    where.streamId = { [Op.in]: streams }
   }
   if (users !== undefined) {
     where[Op.and] = {
@@ -47,15 +44,17 @@ export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): P
     attributes: {
       exclude: ['updatedAt']
     },
-    include: [User, Evidence, Action]
+    include: [{ all: true }]
   })
 }
 
-export const create = async (data: ResponseCreationData, transaction?: Transaction): Promise<Response> => {
+export const create = async (data: ResponseCreationData, o: Transactionable = {}): Promise<Response> => {
+  const transaction = o.transaction
   return await Response.create(data, { transaction })
 }
 
-export const assignEvidencesByIds = async (responseId: string, evidences: number[] = [], transaction?: Transaction): Promise<void> => {
+export const assignEvidencesByIds = async (responseId: string, evidences: number[] = [], o: Transactionable = {}): Promise<void> => {
+  const transaction = o.transaction
   const data = evidences.map((e) => {
     return {
       responseId,
@@ -65,7 +64,8 @@ export const assignEvidencesByIds = async (responseId: string, evidences: number
   await ResponseEvidence.bulkCreate(data, { transaction })
 }
 
-export const assignActionsByIds = async (responseId: string, actions: number[] = [], transaction?: Transaction): Promise<void> => {
+export const assignActionsByIds = async (responseId: string, actions: number[] = [], o: Transactionable = {}): Promise<void> => {
+  const transaction = o.transaction
   const data = actions.map((e) => {
     return {
       responseId,

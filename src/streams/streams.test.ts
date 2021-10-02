@@ -8,6 +8,7 @@ import Classification from '../classifications/classification.model'
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
 import { GET, setupMockAxios } from '../common/axios/mock'
+import Incident from '../incidents/incident.model'
 
 let classification: Classification
 let user: User
@@ -54,23 +55,27 @@ describe('GET /streams', () => {
 
   test('get streams with events count since last report', async () => {
     const mockStream = [
-      { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null },
-      { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null },
-      { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null },
-      { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null }
+      { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccd' } },
+      { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'ccccccccccce' } },
+      { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccf' } }
     ]
+    const incident = await Incident.create({
+      streamId: 'bbbbbbbbbbbb',
+      projectId: 'cccccccccccc'
+    })
     await Event.bulkCreate([
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de1', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:06:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de2', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:11:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de3', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:16:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de4', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:21:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de5', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', streamId: 'bbbbbbbbbbbb', classificationId: classification.id, createdAt: '2021-09-15T13:26:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', streamId: 'bbbbbbbbbbbd', classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' }
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de1', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:06:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de2', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:11:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de3', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:16:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de4', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:21:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de5', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:26:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' }
     ])
     await Response.bulkCreate([
-      { guardianId: 'bbbbbbbbbbbb', investigatedAt: '2021-09-11T13:05:00.000Z', startedAt: '2021-09-12T12:21:00.000Z', submittedAt: '2021-09-12T12:26:00.000Z', createdAt: '2021-09-15T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
-      { guardianId: 'bbbbbbbbbbbc', investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
-      { guardianId: 'bbbbbbbbbbbd', investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
+      { streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-11T13:05:00.000Z', startedAt: '2021-09-12T12:21:00.000Z', submittedAt: '2021-09-12T12:26:00.000Z', createdAt: '2021-09-15T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
+      { streamId: 'bbbbbbbbbbbc', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
+      { streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
     ])
 
     setupMockAxios(GET, endpoint, 200, mockStream)

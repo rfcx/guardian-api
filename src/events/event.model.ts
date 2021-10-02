@@ -1,5 +1,6 @@
 import { Table, Column, Model, DataType, PrimaryKey, BelongsTo } from 'sequelize-typescript'
 import Classificaion from '../classifications/classification.model'
+import Incident from '../incidents/incident.model'
 
 @Table({
   tableName: 'events',
@@ -20,8 +21,14 @@ export default class Event extends Model {
   @Column(DataType.STRING(12))
   streamId!: string
 
+  @Column(DataType.STRING(12))
+  projectId!: string
+
   @BelongsTo(() => Classificaion, 'classificationId')
   classification!: Classificaion
+
+  @BelongsTo(() => Incident, 'incidentId')
+  incident!: Incident
 
   @Column(DataType.DATE)
   createdAt!: Date

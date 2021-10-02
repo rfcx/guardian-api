@@ -44,9 +44,9 @@
         "description": "Additional note",
         "example": "I found a machete"
       },
-      "guardianId": {
+      "streamId": {
         "type": "string",
-        "description": "A guardian id from which the event was received",
+        "description": "A stream id from which the event was received",
         "example": "skhedl36rxb2"
       }
     }

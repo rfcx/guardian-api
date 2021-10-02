@@ -6,6 +6,7 @@ import Action from './action.model'
 import ResponseAction from './response-action.model'
 import Asset from '../../assets/asset.model'
 import User from '../../users/user.model'
+import Incident from '../../incidents/incident.model'
 
 @Table({
   tableName: 'responses'
@@ -20,7 +21,10 @@ export default class Response extends Model {
   id!: string
 
   @Column(DataType.STRING(12))
-  guardianId!: string
+  streamId!: string
+
+  @Column(DataType.STRING(12))
+  projectId!: string
 
   @Column(DataType.DATE)
   investigatedAt!: Date
@@ -56,6 +60,9 @@ export default class Response extends Model {
 
   @BelongsTo(() => User, 'createdById')
   user!: User
+
+  @BelongsTo(() => Incident, 'incidentId')
+  incident!: Incident
 
   @Column(DataType.INTEGER)
   schemaVersion!: number

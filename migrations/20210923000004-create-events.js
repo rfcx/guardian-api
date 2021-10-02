@@ -22,12 +22,26 @@ module.exports = {
           type: Sequelize.STRING(12),
           allowNull: false
         },
+        project_id: {
+          type: Sequelize.STRING(12),
+          allowNull: false
+        },
         classification_id: {
           type: Sequelize.INTEGER,
           allowNull: false,
           references: {
             model: {
               tableName: 'classifications'
+            },
+            key: 'id'
+          }
+        },
+        incident_id: {
+          type: Sequelize.UUID,
+          allowNull: false,
+          references: {
+            model: {
+              tableName: 'incidents'
             },
             key: 'id'
           }

@@ -34,12 +34,14 @@ export interface ResponseUpdatableData {
 }
 
 export interface ResponsePayload extends ResponseUpdatableData {
-  guardianId: string
+  streamId: string
+  projectId: string
 }
 
 export interface ResponseCreationData extends ResponsePayload {
   createdById: number
   schemaVersion: number
+  incidentId: string
 }
 
 export interface ResponseFilters {
@@ -51,6 +53,6 @@ export interface ResponseFilters {
   submittedBefore?: Date
   createdAfter?: Date
   createdBefore?: Date
-  guardians?: string[]
+  streams?: string[]
   users?: string[]
 }

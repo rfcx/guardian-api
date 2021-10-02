@@ -15,7 +15,7 @@ export const list = async function (f: ClassificationFilters = {}, o: QueryOptio
   const { values } = f
   const { limit, offset, order } = o
   if (values !== undefined) {
-    where.guardianId = { [Op.in]: values }
+    where.value = { [Op.in]: values }
   }
   return await Classification.findAll({
     where,
