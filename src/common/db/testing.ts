@@ -8,6 +8,7 @@ import ResponseModel from '../../responses/models/response.model'
 import Evidence from '../../responses/models/evidence.model'
 import Action from '../../responses/models/action.model'
 import { evidences, actions } from '../../responses/constants'
+import User from '../../users/user.model'
 
 interface Migration {
   name: string
@@ -64,9 +65,15 @@ export async function seed (): Promise<void> {
   await Action.bulkCreate(Object.keys(actions).map((a) => {
     return { id: parseInt(a), title: actions[a] }
   }))
+  await User.create({
+    firstname: primaryFirstname,
+    lastname: primaryLastname,
+    email: primaryEmail,
+    guid: primaryGuid
+  })
 }
 
-export async function truncate (models: [any] = [ResponseModel]): Promise<void> {
+export async function truncate (models: any[] = [ResponseModel]): Promise<void> {
   if (!Array.isArray(models)) {
     models = [models]
   }

@@ -1,5 +1,5 @@
 import axios from '../axios'
-import { ProjectResponse, StreamResponse, ForwardedResponse } from './types'
+import { ProjectResponse, StreamResponse, ForwardedResponse, ForwardedArrayResponse } from './types'
 import { snakeToCamel } from '../serializers/snake-camel'
 
 const coreHeaders = ['total-items']
@@ -13,7 +13,7 @@ function extractCoreHeaders (headers: any = {}): object {
     }, {})
 }
 
-export const getStreams = async (token: string, params: any = {}): Promise<ForwardedResponse<StreamResponse>> => {
+export const getStreams = async (token: string, params: any = {}): Promise<ForwardedArrayResponse<StreamResponse>> => {
   const options = {
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
@@ -25,7 +25,19 @@ export const getStreams = async (token: string, params: any = {}): Promise<Forwa
   }
 }
 
-export const getProjects = async (token: string, params: unknown = {}): Promise<ForwardedResponse<ProjectResponse>> => {
+export const getStream = async (token: string, id: string, params: any = {}): Promise<ForwardedResponse<StreamResponse>> => {
+  const options = {
+    headers: { Authorization: token },
+    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
+  }
+  const response = await axios.get(`/streams/${id}`, options)
+  return {
+    data: snakeToCamel(response.data),
+    headers: extractCoreHeaders(response.headers)
+  }
+}
+
+export const getProjects = async (token: string, params: unknown = {}): Promise<ForwardedArrayResponse<ProjectResponse>> => {
   const options = {
     headers: { Authorization: token },
     params

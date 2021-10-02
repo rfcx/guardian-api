@@ -1,9 +1,11 @@
 import Event from './event.model'
+import { CreateOptions } from 'sequelize'
 import { EventFilters, QueryOptionsRFCx, EventCreationData } from '../types'
 import { combineWhere } from './helpers'
 
-export const create = async function (data: EventCreationData): Promise<Event> {
-  return await Event.create(data)
+export const create = async function (data: EventCreationData, o: CreateOptions = {}): Promise<Event> {
+  const transaction = o.transaction
+  return await Event.create(data, { transaction })
 }
 
 export const get = async function (id: string): Promise<Event | null> {

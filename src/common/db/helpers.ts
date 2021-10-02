@@ -4,6 +4,9 @@ import { Op } from 'sequelize'
 dayjs.extend(utc)
 
 export const applyTimeRangeToQuery = function (where: any, columnName: string, start?: Date, end?: Date): void {
+  if (where === undefined) {
+    where = {}
+  }
   if (start !== undefined || end !== undefined) {
     const startCond: object = { [Op.gte]: dayjs.utc(start).valueOf() } ?? undefined
     const endCond: object = { [Op.lt]: dayjs.utc(end).valueOf() } ?? undefined

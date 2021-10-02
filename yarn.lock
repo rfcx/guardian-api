@@ -616,10 +616,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@rfcx/http-utils@1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.5.tgz#9c1d370c71826fbc7c90332c1448cb2f2b09a067"
-  integrity sha512-niavKU9ZbJU4rCVf7fckhZq+djTYnInWNRNKxM4fSWS27ujJ8ljvXhWkIrDE4k4ja+G7Wv1JpDX9ya2/HjJRqg==
+"@rfcx/http-utils@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.6.tgz#4bc4c617eaa548245af8cb638724a40952bcc5ca"
+  integrity sha512-i1eSJyyaL8vWg3k6qM3B7ONiVBHgTBN3oQVttteCsQDOKuMSms1UFWaKnK+T1rkfuhVyEppAs9DjlpWgrWSiiQ==
   dependencies:
     moment-timezone "0.5.31"
 
@@ -4030,6 +4030,11 @@ mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+mockdate@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/mockdate/-/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
+  integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
 moment-timezone@0.5.31:
   version "0.5.31"

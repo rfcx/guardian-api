@@ -5,6 +5,7 @@ export interface EventSQSMessage {
   start: string
   end: string
   streamId: string
+  projectId: string
   classification: Classification['_attributes']
   createdAt: string
 }
@@ -23,6 +24,8 @@ export interface EventCreationData {
   start: Date
   end: Date
   streamId: string
+  projectId: string
+  incidentId: string
   classificationId: number
   createdAt: Date
 }

@@ -23,6 +23,9 @@ export default class Response extends Model {
   @Column(DataType.STRING(12))
   streamId!: string
 
+  @Column(DataType.STRING(12))
+  projectId!: string
+
   @Column(DataType.DATE)
   investigatedAt!: Date
 

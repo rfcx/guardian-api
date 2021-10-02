@@ -33,6 +33,7 @@ export declare function IsInCustom (arg: string[][] | number[][] | {
 
 export * from '../classifications/types'
 export * from '../events/types'
+export * from '../incidents/types'
 export * from '../streams/types'
 export * from '../projects/types'
 export * from '../responses/types'

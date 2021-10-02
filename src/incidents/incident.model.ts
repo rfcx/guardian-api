@@ -1,6 +1,9 @@
-import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull, CreatedAt, UpdatedAt } from 'sequelize-typescript'
+// import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull, CreatedAt, UpdatedAt, BelongsTo, HasOne } from 'sequelize-typescript'
+// import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript'
+import { Table, Column, Model, DataType, PrimaryKey, HasMany, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript'
 import Event from '../events/event.model'
 import Response from '../responses/models/response.model'
+import Classificaion from '../classifications/classification.model'
 
 @Table({
   tableName: 'incidents'
@@ -29,17 +32,18 @@ export default class Incident extends Model {
   @UpdatedAt
   updatedAt!: Date
 
-  @HasMany(() => Event, 'id')
+  @HasMany(() => Event, 'incidentId')
   events!: Event[]
 
-  @HasMany(() => Response, 'id')
+  @HasMany(() => Response, 'incidentId')
   responses!: Response[]
 
-  @AllowNull
-  @Column(DataType.UUID)
-  firstEventId!: string
+  @BelongsTo(() => Classificaion, 'classificationId')
+  classification!: Classificaion
 
-  @AllowNull
-  @Column(DataType.UUID)
-  firstResponseId!: string
+  @BelongsTo(() => Event, 'firstEventId')
+  firstEvent!: Event
+
+  @BelongsTo(() => Response, 'firstResponseId')
+  firstResponse!: Response
 }

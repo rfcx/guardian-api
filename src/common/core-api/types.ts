@@ -1,4 +1,9 @@
 export interface ForwardedResponse<T> {
+  data: T
+  headers: any
+}
+
+export interface ForwardedArrayResponse<T> {
   data: T[]
   headers: any
 }

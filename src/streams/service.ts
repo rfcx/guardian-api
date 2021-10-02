@@ -9,7 +9,7 @@ export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): 
     }, {
       limit: 1,
       order: {
-        field: 'created_at',
+        field: 'createdAt',
         dir: 'DESC'
       }
     })

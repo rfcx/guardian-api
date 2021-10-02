@@ -13,6 +13,10 @@ module.exports = {
           type: Sequelize.STRING(12),
           allowNull: false
         },
+        project_id: {
+          type: Sequelize.STRING(12),
+          allowNull: false
+        },
         investigated_at: {
           type: Sequelize.DATE,
           allowNull: false
