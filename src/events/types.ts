@@ -29,3 +29,12 @@ export interface EventCreationData {
   classificationId: number
   createdAt: Date
 }
+
+export interface EventsQuery {
+  start: Date
+  end: Date
+  classifications?: string[]
+  limit: number
+  offset: number
+  sort: string
+}
