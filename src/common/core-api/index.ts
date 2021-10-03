@@ -1,6 +1,7 @@
 import axios from '../axios'
 import { ProjectResponse, StreamResponse, ForwardedResponse, ForwardedArrayResponse } from './types'
 import { snakeToCamel } from '../serializers/snake-camel'
+import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
 
 const coreHeaders = ['total-items']
 
@@ -18,11 +19,14 @@ export const getStreams = async (token: string, params: any = {}): Promise<Forwa
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
   }
-  const response = await axios.get('/streams', options)
-  return {
-    data: snakeToCamel(response.data),
-    headers: extractCoreHeaders(response.headers)
-  }
+  return await axios.get('/streams', options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
 
 export const getStream = async (token: string, id: string, params: any = {}): Promise<ForwardedResponse<StreamResponse>> => {
@@ -30,11 +34,14 @@ export const getStream = async (token: string, id: string, params: any = {}): Pr
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
   }
-  const response = await axios.get(`/streams/${id}`, options)
-  return {
-    data: snakeToCamel(response.data),
-    headers: extractCoreHeaders(response.headers)
-  }
+  return await axios.get(`/streams/${id}`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
 
 export const getProjects = async (token: string, params: unknown = {}): Promise<ForwardedArrayResponse<ProjectResponse>> => {
@@ -42,9 +49,12 @@ export const getProjects = async (token: string, params: unknown = {}): Promise<
     headers: { Authorization: token },
     params
   }
-  const response = await axios.get('/projects', options)
-  return {
-    data: snakeToCamel(response.data),
-    headers: extractCoreHeaders(response.headers)
-  }
+  return await axios.get('/projects', options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
 }

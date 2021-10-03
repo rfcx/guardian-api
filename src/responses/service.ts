@@ -4,13 +4,26 @@ import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
 import Response from './models/response.model'
-import { create, assignEvidencesByIds, assignActionsByIds } from './dao'
+import { create, list, assignEvidencesByIds, assignActionsByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse } from '../incidents/service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
+
+export const getLastResponseForStream = async (streamId: string): Promise<Response | null> => {
+  const responses = await list({
+    streams: [streamId]
+  }, {
+    limit: 1,
+    order: {
+      field: 'createdAt',
+      dir: 'DESC'
+    }
+  })
+  return responses.length !== 0 ? responses[0] : null
+}
 
 export const createResponse = async (responseData: ResponsePayload, userData: User): Promise<Response> => {
   const user = await ensureUserExists(userData)

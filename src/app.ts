@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import responses from './responses/router'
 import streams from './streams/router'
+import events from './events/router'
 import projects from './projects/router'
 import './events/consumer'
 import docs from './docs'
@@ -22,6 +23,7 @@ app.use(logger)
 app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/responses', responses)
+app.use('/', events)
 
 app.use(errorHandler)
 app.use(notFoundHandler)

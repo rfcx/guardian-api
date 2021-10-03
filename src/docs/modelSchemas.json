@@ -57,5 +57,67 @@
         "example": 1910
       }
     }
+  },
+  "IncidentLite": {
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "7b8c15a9-5bc0-4059-b8cd-ec26aea92b11"
+      },
+      "createdAt": {
+        "type": "date",
+        "example": "2021-07-01T12:03:52.912Z"
+      },
+      "closedAt": {
+        "type": "date",
+        "example": "2021-08-14T19:59:48.795Z"
+      }
+    }
+  },
+  "Classification": {
+    "properties": {
+      "value": {
+        "type": "string",
+        "example": "chainsaw"
+      },
+      "title": {
+        "type": "string",
+        "example": "Chainsaw"
+      }
+    }
+  },
+  "Event": {
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "cf8a7ac9-0dd2-40b6-b03f-a067d6c43325"
+      },
+      "stream_id": {
+        "type": "string",
+        "example": "01a2ucztj8ax"
+      },
+      "project_id": {
+        "type": "string",
+        "example": "xu82jDgX49"
+      },
+      "start": {
+        "type": "date",
+        "example": "2020-05-12T07:30:21.500Z"
+      },
+      "end": {
+        "type": "date",
+        "example": "2020-05-12T07:30:22.500Z"
+      },
+      "createdAt": {
+        "type": "date",
+        "example": "2021-07-01T12:03:51.912Z"
+      },
+      "classification": {
+        "$ref": "#/components/schemas/Classification"
+      },
+      "incident": {
+        "$ref": "#/components/schemas/IncidentLite"
+      }
+    }
   }
 }

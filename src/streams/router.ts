@@ -3,7 +3,7 @@ import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 import { StreamQuery } from './types'
-import { getEventsCountSinceLastReport } from './service'
+import { getEventsCountSinceLastReport } from '../events/service'
 
 const router = Router()
 

@@ -1,14 +1,33 @@
 import { Transaction } from 'sequelize'
-import { EventSQSMessage } from '../types'
+import { EventSQSMessage, StreamResponse, StreamResponseWithEventsCount } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
-import { get, create } from './dao'
+import { get, create, list, count } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
+import { getLastResponseForStream } from '../responses/service'
 import incidentsDao from '../incidents/dao'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
+
+export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
+  for (const stream of streams as StreamResponseWithEventsCount[]) {
+    const lastReport = await getLastResponseForStream(stream.id)
+    stream.eventsCount = await count({
+      streams: [stream.id],
+      ...lastReport !== null ? { createdAfter: lastReport.createdAt } : {}
+    })
+  }
+}
+
+export const getEventsSinceLastReport = async (streamId: string): Promise<Event[]> => {
+  const lastReport = await getLastResponseForStream(streamId)
+  return await list({
+    streams: [streamId],
+    ...lastReport !== null ? { createdAfter: lastReport.createdAt } : {}
+  })
+}
 
 /*
   1. If there is no open incident for the site then create new incident
