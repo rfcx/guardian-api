@@ -62,7 +62,8 @@ describe('GET /streams', () => {
     ]
     const incident = await Incident.create({
       streamId: 'bbbbbbbbbbbb',
-      projectId: 'cccccccccccc'
+      projectId: 'cccccccccccc',
+      ref: 1
     })
     await Event.bulkCreate([
       { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de1', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:06:00.123Z' },

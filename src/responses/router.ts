@@ -5,6 +5,7 @@ import { createResponse } from './service'
 import { Converter, httpErrorHandler, ValidationError } from '@rfcx/http-utils'
 import { evidences, actions } from './constants'
 import { getStream } from '../common/core-api'
+import incidentDao from '../incidents/dao'
 
 const router = Router()
 
@@ -27,9 +28,18 @@ const router = Router()
  *         description: Created
  *         headers:
  *           Location:
- *             description: Path of the created resource (e.g. `/responses/121`)
+ *             description: Path of the created resource (e.g. `/responses/897da0ed-4098-4f93-8a6f-b94c4e8c78b5`)
  *             schema:
  *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 incidentRef:
+ *                   type: string
+ *                   description: Incident reference id to which Response belongs to
+ *                   example: 1
  *       400:
  *         description: Invalid parameters
  */
@@ -53,7 +63,8 @@ router.post('/', (req: Request, res: Response, next): void => {
         throw new ValidationError('Project id is not defined for stream')
       }
       const response = await createResponse({ ...responsePayload, projectId: forwardedResponse.data.project.id }, user)
-      res.location(`/responses/${response.id}`).sendStatus(201)
+      const incident = await incidentDao.get((response as any).incidentId)
+      res.location(`/responses/${response.id}`).status(201).json({ incidentRef: (incident as any).ref })
     })
     .catch(httpErrorHandler(req, res, 'Failed creating response.'))
 })

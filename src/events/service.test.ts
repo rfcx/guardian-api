@@ -45,7 +45,7 @@ describe('createEvent function', () => {
     expect(event.end?.toISOString()).toBe('2021-09-14T20:03:21.795Z')
     expect(event.streamId).toBe('stream000001')
     expect(event.projectId).toBe('project000001')
-    expect(event.classificationId).toBe(classification.id)
+    expect(event.classification.value).toBe(classification.value)
     expect(event.createdAt?.toISOString()).toBe('2021-09-14T20:10:01.312Z')
     expect(classifications.length).toBe(1)
     expect(classification.value).toBe('chainsaw')
@@ -73,7 +73,6 @@ describe('createEvent function', () => {
       expect(incidents.length).toBe(1)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
-      expect(incident.classification.value).toBe('chainsaw')
       expect(incident.closedAt).toBeNull()
       expect(incident.events.map(e => e.id).includes(event.id)).toBeTruthy()
       expect(incident.responses.length).toBe(0)
@@ -84,7 +83,7 @@ describe('createEvent function', () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
-        classificationId: 1
+        ref: 1
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -117,7 +116,6 @@ describe('createEvent function', () => {
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
-      expect(incident.classification.value).toBe('chainsaw')
       expect(incident.closedAt).toBeNull()
       expect(incident.events.map(e => e.id).includes(event.id)).toBeTruthy()
       expect(incident.responses.length).toBe(0)
@@ -128,7 +126,7 @@ describe('createEvent function', () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
-        classificationId: 1
+        ref: 1
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -174,7 +172,6 @@ describe('createEvent function', () => {
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
-      expect(incident.classification.value).toBe('chainsaw')
       expect(incident.closedAt).toBeNull()
       expect(incident.events.map(e => e.id).includes(event.id)).toBeTruthy()
       expect(incident.responses.length).toBe(0)
@@ -185,7 +182,7 @@ describe('createEvent function', () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
-        classificationId: 1
+        ref: 1
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -219,7 +216,6 @@ describe('createEvent function', () => {
       expect(incidents.length).toBe(1)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
-      expect(incident.classification.value).toBe('chainsaw')
       expect(incident.closedAt).toBeNull()
       expect(incident.responses.length).toBe(0)
       expect(incident.events.length).toBe(2)
@@ -230,7 +226,7 @@ describe('createEvent function', () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
-        classificationId: 1
+        ref: 1
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -263,6 +259,7 @@ describe('createEvent function', () => {
       expect(incidents[1].closedAt).toBeNull()
       expect(incidents[0].events.length).toBe(1)
       expect(incidents[1].events.length).toBe(1)
+      expect(incidents[1].ref).toBe(2)
     })
   })
 })

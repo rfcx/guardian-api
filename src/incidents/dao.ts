@@ -34,4 +34,13 @@ export const update = async function (id: string, data: IncidentUpdatableData, o
   await Incident.update(data, { where: { id }, transaction })
 }
 
+export const getNextRefForProject = async function (projectId: string, o: Transactionable = {}): Promise<number> {
+  const transaction = o.transaction
+  const maxRef: number = await Incident.max('ref', {
+    where: { projectId },
+    transaction
+  })
+  return isNaN(maxRef) ? 1 : maxRef + 1
+}
+
 export default { create, get, list, update }

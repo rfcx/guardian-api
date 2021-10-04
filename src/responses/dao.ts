@@ -13,7 +13,8 @@ export const get = async function (id: string): Promise<Response | null> {
   return await Response.findByPk(id, {
     attributes: {
       exclude: ['updatedAt']
-    }
+    },
+    include: [{ all: true }]
   })
 }
 
