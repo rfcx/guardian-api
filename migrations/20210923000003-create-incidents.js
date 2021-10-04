@@ -9,6 +9,10 @@ module.exports = {
           primaryKey: true,
           allowNull: false
         },
+        ref: {
+          type: Sequelize.INTEGER,
+          allowNull: false
+        },
         stream_id: {
           type: Sequelize.STRING(12),
           allowNull: false
@@ -36,20 +40,10 @@ module.exports = {
         first_response_id: {
           type: Sequelize.UUID,
           allowNull: true
-        },
-        classification_id: {
-          type: Sequelize.INTEGER,
-          allowNull: true,
-          references: {
-            model: {
-              tableName: 'classifications'
-            },
-            key: 'id'
-          }
         }
       }, { transaction })
       const type = queryInterface.sequelize.QueryTypes.RAW
-      await queryInterface.sequelize.query('CREATE INDEX incidents_project_id_classification_id ON incidents (project_id, classification_id);', { type, transaction })
+      await queryInterface.sequelize.query('CREATE INDEX incidents_project_id_ref ON incidents (project_id, ref);', { type, transaction })
       await queryInterface.sequelize.query('CREATE INDEX incidents_stream_id_closed_at ON incidents (stream_id, closed_at);', { type, transaction })
       await queryInterface.sequelize.query('CREATE INDEX incidents_created_at ON incidents (created_at);', { type, transaction })
     })

@@ -44,7 +44,7 @@ export default class Response extends Model {
   @BelongsToMany(() => Evidence, () => ResponseEvidence)
   evidences!: Evidence[]
 
-  @(IsIn as typeof IsInCustom)([[0, 1, 2]])
+  @(IsIn as typeof IsInCustom)([[0, 1, 2, 3]])
   @Column(DataType.INTEGER)
   loggingScale!: number
 

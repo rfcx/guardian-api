@@ -1,9 +1,6 @@
-// import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull, CreatedAt, UpdatedAt, BelongsTo, HasOne } from 'sequelize-typescript'
-// import { Table, Column, Model, DataType, PrimaryKey, HasMany, AllowNull, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript'
 import { Table, Column, Model, DataType, PrimaryKey, HasMany, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript'
 import Event from '../events/event.model'
 import Response from '../responses/models/response.model'
-import Classificaion from '../classifications/classification.model'
 
 @Table({
   tableName: 'incidents'
@@ -16,6 +13,9 @@ export default class Incident extends Model {
     defaultValue: DataType.UUIDV4
   })
   id!: string
+
+  @Column(DataType.INTEGER)
+  ref!: number
 
   @Column(DataType.STRING(12))
   streamId!: string
@@ -37,9 +37,6 @@ export default class Incident extends Model {
 
   @HasMany(() => Response, 'incidentId')
   responses!: Response[]
-
-  @BelongsTo(() => Classificaion, 'classificationId')
-  classification!: Classificaion
 
   @BelongsTo(() => Event, 'firstEventId')
   firstEvent!: Event

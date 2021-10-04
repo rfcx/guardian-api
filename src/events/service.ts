@@ -6,6 +6,7 @@ import { get, create, list, count } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
 import incidentsDao from '../incidents/dao'
+import { findOrCreateIncidentForEvent } from '../incidents/service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
@@ -37,29 +38,13 @@ export const getEventsSinceLastReport = async (streamId: string): Promise<Event[
 */
 export const createEvent = async (eventData: EventSQSMessage): Promise<Event> => {
   // in case SQS message was received more than one time...
-  const existingEvent = await get(eventData.id)
-  if (existingEvent !== null) {
-    return existingEvent
-  }
-  const classification = await ensureClassificationExists(eventData.classification)
-  let incidentForEvent
-  const existingIncidents = await incidentsDao.list({
-    streams: [eventData.streamId],
-    closedAtIsNull: true
-  }, { order: { field: 'createdAt', dir: 'DESC' } })
-  const activeIncidents = existingIncidents.filter((incident) => {
-    return incident.firstEvent !== null && dayjs().diff(incident.firstEvent.createdAt, 'd', true) < 7
-  })
   return await sequelize.transaction(async (transaction: Transaction) => {
-    if (activeIncidents.length === 0) {
-      incidentForEvent = await incidentsDao.create({
-        streamId: eventData.streamId,
-        projectId: eventData.projectId,
-        classificationId: classification.id
-      }, { transaction })
-    } else {
-      incidentForEvent = activeIncidents[0]
+    const existingEvent = await get(eventData.id)
+    if (existingEvent !== null) {
+      return existingEvent
     }
+    const classification = await ensureClassificationExists(eventData.classification)
+    const incidentForEvent = await findOrCreateIncidentForEvent(eventData, { transaction })
     const event = await create({
       id: eventData.id,
       start: eventData.start !== undefined ? dayjs.utc(eventData.start).toDate() : undefined as any,

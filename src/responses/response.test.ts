@@ -360,7 +360,7 @@ describe('POST /response', () => {
     const incident = await Incident.create({
       streamId: 'aaaaaaaaa000',
       projectId: 'project000001',
-      classificationId: 1
+      ref: 1
     })
     const event = await Event.create({
       id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -394,13 +394,14 @@ describe('POST /response', () => {
     expect(incidents[1].streamId).toBe('aaaaaaaaa000')
     expect(incidents[1].projectId).toBe('project000001')
     expect(incidents[1].firstResponse.id).toBe(responses[0].id)
+    expect(incidents[1].ref).toBe(2)
   })
   test('creates response and assigns it to existing incident if previous event is in last 7 days', async () => {
     MockDate.set('2021-06-01T20:12:01.312Z')
     const incident = await Incident.create({
       streamId: 'aaaaaaaaa000',
       projectId: 'project000001',
-      classificationId: 1
+      ref: 1
     })
     const event = await Event.create({
       id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
@@ -434,5 +435,46 @@ describe('POST /response', () => {
     expect(incidents[0].streamId).toBe('aaaaaaaaa000')
     expect(incidents[0].projectId).toBe('project000001')
     expect(incidents[0].firstResponse.id).toBe(responses[0].id)
+  })
+  test('creates response and another incident if existing incident relates to another project', async () => {
+    MockDate.set('2021-06-14T20:10:01.312Z')
+    const incident = await Incident.create({
+      streamId: 'aaaaaaaaa001',
+      projectId: 'project000002',
+      ref: 1
+    })
+    const event = await Event.create({
+      id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
+      start: '2021-06-01T20:05:01.312Z',
+      end: '2021-06-01T20:07:01.312Z',
+      streamId: 'aaaaaaaaa001',
+      projectId: 'project000002',
+      classificationId: 1,
+      createdAt: '2021-06-01T20:10:01.312Z',
+      incidentId: incident.id
+    })
+    await incident.update({ firstEventId: event.id })
+    const requestBody = {
+      investigatedAt: '2021-06-09T19:26:40.000Z',
+      startedAt: '2021-06-10T15:35:21.000Z',
+      submittedAt: '2021-06-10T15:38:05.000Z',
+      evidences: [101, 103],
+      loggingScale: 1,
+      damageScale: 2,
+      responseActions: [201, 204],
+      note: 'Test note',
+      streamId: 'aaaaaaaaa000'
+    }
+    MockDate.reset()
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    expect(responses.length).toBe(1)
+    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    expect(incidents.length).toBe(2)
+    expect(incidents[1].streamId).toBe('aaaaaaaaa000')
+    expect(incidents[1].projectId).toBe('project000001')
+    expect(incidents[1].firstResponse.id).toBe(responses[0].id)
+    expect(incidents[1].ref).toBe(1)
   })
 })
