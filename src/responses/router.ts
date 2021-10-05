@@ -51,7 +51,7 @@ router.post('/', (req: Request, res: Response, next): void => {
   converter.convert('startedAt').toMomentUtc()
   converter.convert('submittedAt').toMomentUtc()
   converter.convert('evidences').toArray().nonEmpty().isEqualToAny(Object.keys(evidences).map(k => parseInt(k)))
-  converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2])
+  converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2, 3])
   converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
   converter.convert('responseActions').toArray().nonEmpty().isEqualToAny(Object.keys(actions).map(k => parseInt(k)))
   converter.convert('note').optional().toString()
