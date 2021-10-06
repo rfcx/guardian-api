@@ -20,18 +20,16 @@ const router = Router()
  *         description: Match streams belonging to one or more projects (by id)
  *         in: query
  *         type: array
- *       - name: only_public
- *         description: Return public or private streams
- *         in: query
- *         type: boolean
  *       - name: keyword
  *         description: Match streams with name
  *         in: query
  *         type: string
+ *         example: "Temb"
  *       - name: with_events_count
  *         description: Include count of events created since last report for this stream
  *         in: query
  *         type: boolean
+ *         example: true
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -75,7 +73,6 @@ router.get('/', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization ?? ''
   const converter = new Converter(req.query, {})
   converter.convert('projects').optional().toArray()
-  converter.convert('only_public').optional().toBoolean()
   converter.convert('keyword').optional().toString()
   converter.convert('with_events_count').optional().toBoolean()
   converter.convert('limit').default(100).toInt()
