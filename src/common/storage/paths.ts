@@ -8,7 +8,7 @@ export function assetPath (asset: Asset): string {
   const year = timestamp.year()
   const month = (timestamp.month() + 1).toString().padStart(2, '0')
   const dayOfMonth = timestamp.date().toString().padStart(2, '0')
-  return `${year}/${month}/${dayOfMonth}/${asset.response.id}/${asset.fileName}`
+  return `${year}/${month}/${dayOfMonth}/${(asset as any).responseId as string}/${asset.fileName}`
 }
 
 export function generateFilename (originalFilename: string): string {

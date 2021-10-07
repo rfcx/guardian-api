@@ -1,10 +1,9 @@
-import { Transaction } from 'sequelize'
+import { Transaction, Transactionable } from 'sequelize'
 import { ResponsePayload } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
 import Response from './models/response.model'
-import Asset from '../assets/asset.model'
 import { create, list, assignEvidencesByIds, assignActionsByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse } from '../incidents/service'
@@ -48,12 +47,20 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
     if (responseData.responseActions?.length !== 0) {
       await assignActionsByIds(response.id, responseData.responseActions, { transaction })
     }
+    if (responseData.note !== undefined) {
+      await uploadFileAndSaveToDb(response, {
+        buffer: Buffer.from(responseData.note, 'utf8'),
+        originalname: `note-${response.id}.txt`,
+        mimetype: 'text/plain'
+      }, userData, { transaction })
+    }
     return response
   })
 }
 
-export const uploadFileAndSaveToDb = async (response: Response, file: any, userData: User): Promise<string> => {
-  const transaction = await sequelize.transaction()
+export const uploadFileAndSaveToDb = async (response: Response, file: any, userData: User, o: Transactionable = {}): Promise<string> => {
+  const isExternalTransaction = o.transaction !== undefined && o.transaction !== null
+  const transaction = isExternalTransaction ? o.transaction : await sequelize.transaction()
   if (file === null) {
     throw new Error('File should not be null')
   }
@@ -63,16 +70,19 @@ export const uploadFileAndSaveToDb = async (response: Response, file: any, userD
     const fileName = generateFilename(file.originalname)
     const mimeType = file.mimetype
     const newAsset = { fileName, mimeType, responseId: response.id, createdById: user.id }
-    let asset = await assetDao.create(newAsset, { transaction })
-    asset = await assetDao.get(asset.id) as Asset // reload model to get nested response model
+    const asset = await assetDao.create(newAsset, { transaction })
     const remotePath = assetPath(asset)
     await uploadFile(remotePath, buf)
-    await transaction.commit()
+    if (!isExternalTransaction) {
+      await (transaction as any).commit()
+    }
     return asset.id
   } catch (error: unknown) {
-    await transaction.rollback()
+    if (!isExternalTransaction) {
+      await (transaction as any).rollback()
+    }
     throw new Error((error as Error).message ?? error)
   }
 }
 
-export default { createResponse }
+export default { getLastResponseForStream, createResponse, uploadFileAndSaveToDb }

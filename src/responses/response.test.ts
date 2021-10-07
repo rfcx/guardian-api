@@ -7,10 +7,11 @@ import { sequelize } from '../common/db'
 import Response from './models/response.model'
 import Incident from '../incidents/incident.model'
 import Event from '../events/event.model'
+import Asset from '../assets/asset.model'
 import { list } from './dao'
 import incidentsDao from '../incidents/dao'
 import Classification from '../classifications/classification.model'
-
+import service from './service'
 const app = expressApp()
 
 app.use('/', routes)
@@ -21,9 +22,10 @@ beforeAll(async () => {
   await seed()
   setupMockAxios(GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  jest.spyOn(service, 'uploadFileAndSaveToDb').mockImplementation(async () => await Promise.resolve(''))
 })
 beforeEach(async () => {
-  await truncate([Response, Event, Incident])
+  await truncate([Asset, Response, Event, Incident])
 })
 
 describe('POST /response', () => {
