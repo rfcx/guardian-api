@@ -59,10 +59,12 @@ const options = {
     ]
   },
   apis: [
+    './src/assets/router.ts',
     './src/streams/router.ts',
     './src/projects/router.ts',
     './src/responses/router.ts',
     './src/events/router.ts',
+    'dist/assets/router.js',
     'dist/streams/router.js',
     'dist/projects/router.js',
     'dist/responses/router.js',

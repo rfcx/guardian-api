@@ -1,11 +1,13 @@
-import type { Request, Response } from 'express'
-import { Router } from 'express'
+import { Request, Response, Router } from 'express'
 import { ResponsePayload } from '../types'
-import { createResponse } from './service'
-import { Converter, httpErrorHandler, ValidationError } from '@rfcx/http-utils'
+import { createResponse, uploadFileAndSaveToDb } from './service'
+import { Converter, EmptyResultError, httpErrorHandler, ValidationError } from '@rfcx/http-utils'
 import { evidences, actions } from './constants'
 import { getStream } from '../common/core-api'
+import { multerFile } from '../common/multer'
+import { get } from './dao'
 import incidentDao from '../incidents/dao'
+import assetDao from '../assets/dao'
 
 const router = Router()
 
@@ -67,6 +69,93 @@ router.post('/', (req: Request, res: Response, next): void => {
       res.location(`/responses/${response.id}`).status(201).json({ incidentRef: (incident as any).ref })
     })
     .catch(httpErrorHandler(req, res, 'Failed creating response.'))
+})
+
+/**
+ * @swagger
+ *
+ * /responses/{id}/assets:
+ *   get:
+ *     summary: Get Assets for the Response
+ *     tags:
+ *       - assets
+ *     parameters:
+ *       - name: id
+ *         description: Response id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "debf4db5-3826-4266-a0cd-d4e38aa139ba"
+ *     responses:
+ *       200:
+ *         description: Asset file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Asset'
+ *       404:
+ *         description: Asset not found
+ */
+router.get('/:id/assets', (req: Request, res: Response): void => {
+  const responseId = req.params.id
+  get(responseId)
+    .then(async response => {
+      if (response === null) {
+        throw new EmptyResultError('Response with given id not found')
+      }
+      const results = await assetDao.query({ responseId })
+      res.json(results)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed getting response.'))
+})
+
+/**
+ * @swagger
+ *
+ * /responses/{id}/assets:
+ *   post:
+ *     summary: Add Assets for the Response
+ *     tags:
+ *       - assets
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - name: id
+ *         description: Response id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "debf4db5-3826-4266-a0cd-d4e38aa139ba"
+ *       - name: file
+ *         in: formData
+ *         type: file
+ *         description: The file to upload.
+ *     responses:
+ *       201:
+ *         description: Created
+ *         headers:
+ *           Location:
+ *             description: Path of the created resource (e.g. `/assets/b8c09041-1b9a-451e-b7c3-762cc64197bc`)
+ *             schema:
+ *               type: string
+ *       404:
+ *         description: Response not found
+ */
+router.post('/:id/assets', multerFile.single('file'), (req: Request, res: Response): void => {
+  const user = (req as any).user
+  const responseId = req.params.id
+  const file = req.file ?? null
+  get(responseId)
+    .then(async response => {
+      if (response === null) {
+        throw new EmptyResultError('Response with given id not found')
+      }
+      const assetId = await uploadFileAndSaveToDb(response, file, user)
+      res.location(`/assets/${assetId}`).sendStatus(201)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed creating asset.'))
 })
 
 export default router

@@ -27,6 +27,16 @@ module.exports = {
             key: 'id'
           }
         },
+        created_by_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: {
+              tableName: 'users'
+            },
+            key: 'id'
+          }
+        },
         created_at: {
           type: Sequelize.DATE,
           allowNull: false
@@ -34,10 +44,15 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE,
           allowNull: false
+        },
+        deleted_at: {
+          type: Sequelize.DATE,
+          allowNull: true
         }
       }, { transaction })
       const type = queryInterface.sequelize.QueryTypes.RAW
       await queryInterface.sequelize.query('CREATE INDEX assets_response_id ON assets (response_id);', { type, transaction })
+      await queryInterface.sequelize.query('CREATE INDEX assets_created_by_id ON assets (created_by_id);', { type, transaction })
     })
   },
   down: (queryInterface, Sequelize) => {

@@ -8,7 +8,11 @@ export const env: Env = {
   DB_USER: process.env.DB_USER ?? 'admin',
   DB_PASSWORD: process.env.DB_PASSWORD ?? 'test',
   DB_PORT: (process.env.DB_PORT !== undefined) ? parseInt(process.env.DB_PORT) : 5432,
-  DB_SSL_ENABLED: process.env.DB_SSL_ENABLED === 'true'
+  DB_SSL_ENABLED: process.env.DB_SSL_ENABLED === 'true',
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID ?? '',
+  AWS_SECRET_KEY: process.env.AWS_SECRET_KEY ?? '',
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET ?? 'rfcx-device-assets-staging',
+  AWS_REGION_ID: process.env.AWS_REGION_ID ?? 'eu-west-1'
 }
 
 export default env

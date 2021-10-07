@@ -616,10 +616,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@rfcx/http-utils@1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.7.tgz#3a75b610c620e9667aa921ccd3ec51344e78180d"
-  integrity sha512-FElUYe4ORNDLlOMYtk2Q1xVJYpA/WQSJ+TcAZx1NWnyD23zoweRy6Y4QH5BPi4B3NqFfQdgNfl6RJ8059dMZig==
+"@rfcx/http-utils@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.8.tgz#2ba008cd40bd95755e091f1ab524b1d02cf572fc"
+  integrity sha512-akg6tf1sTNIjTAzUJul8MM5iQWNWETfrU0xk95lmMehVG7/FMVY8gIdJdk8v8/TyUFBnCdF1qxGBlHEGOAlTdQ==
   dependencies:
     moment-timezone "0.5.31"
 

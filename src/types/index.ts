@@ -7,6 +7,10 @@ export interface Env {
   DB_PASSWORD: string
   DB_PORT: number
   DB_SSL_ENABLED: boolean
+  AWS_ACCESS_KEY_ID: string
+  AWS_SECRET_KEY: string
+  AWS_S3_BUCKET: string
+  AWS_REGION_ID: string
 }
 
 export interface QueryOrder {
@@ -31,6 +35,7 @@ export declare function IsInCustom (arg: string[][] | number[][] | {
   args: string[][] | number[][]
 }): Function
 
+export * from '../assets/types'
 export * from '../classifications/types'
 export * from '../events/types'
 export * from '../incidents/types'
