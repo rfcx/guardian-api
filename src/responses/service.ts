@@ -4,9 +4,13 @@ import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
 import Response from './models/response.model'
+import Asset from '../assets/asset.model'
 import { create, list, assignEvidencesByIds, assignActionsByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse } from '../incidents/service'
+import { assetPath, generateFilename } from '../common/storage/paths'
+import { uploadFile } from '../common/storage'
+import assetDao from '../assets/dao'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
@@ -46,6 +50,29 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
     }
     return response
   })
+}
+
+export const uploadFileAndSaveToDb = async (response: Response, file: any, userData: User): Promise<string> => {
+  const transaction = await sequelize.transaction()
+  if (file === null) {
+    throw new Error('File should not be null')
+  }
+  try {
+    const user = await ensureUserExists(userData)
+    const buf = file.buffer
+    const fileName = generateFilename(file.originalname)
+    const mimeType = file.mimetype
+    const newAsset = { fileName, mimeType, responseId: response.id, createdById: user.id }
+    let asset = await assetDao.create(newAsset, { transaction })
+    asset = await assetDao.get(asset.id) as Asset // reload model to get nested response model
+    const remotePath = assetPath(asset)
+    await uploadFile(remotePath, buf)
+    await transaction.commit()
+    return asset.id
+  } catch (error: unknown) {
+    await transaction.rollback()
+    throw new Error((error as Error).message ?? error)
+  }
 }
 
 export default { createResponse }

@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import assets from './assets/router'
 import responses from './responses/router'
 import streams from './streams/router'
 import events from './events/router'
@@ -20,6 +21,7 @@ app.use('/docs', docs)
 app.use(jwtCheck, parseUserData)
 
 app.use(logger)
+app.use('/assets', assets)
 app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/responses', responses)
