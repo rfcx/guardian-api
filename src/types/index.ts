@@ -22,12 +22,18 @@ export interface QueryOptionsRFCx {
   limit?: number
   offset?: number
   order?: QueryOrder
+  fields?: string[]
 }
 
 export interface Attachment {
   id: string
   url: string
   note: string
+}
+
+export interface ListResults<T> {
+  total: number
+  results: T[]
 }
 
 export declare function IsInCustom (arg: string[][] | number[][] | {

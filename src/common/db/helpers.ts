@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { Op } from 'sequelize'
+import { Op, Model } from 'sequelize'
+import { QueryOptionsRFCx } from '../../types'
 dayjs.extend(utc)
 
 export const applyTimeRangeToQuery = function (where: any, columnName: string, start?: Date, end?: Date): void {
@@ -19,3 +20,19 @@ export const applyTimeRangeToQuery = function (where: any, columnName: string, s
     }
   }
 }
+
+export const querySortToOrder = (sort: string): QueryOptionsRFCx['order'] => {
+  return { field: sort.replace(/^-/, ''), dir: sort.startsWith('-') ? 'DESC' : 'ASC' }
+}
+
+export const includeBuilder = (model: Model, attributes: string[], as: string) => {
+  return (options = {}) => {
+    const defaults = {
+      as,
+      attributes
+    }
+    return { model, ...defaults, ...options }
+  }
+}
+
+export default { applyTimeRangeToQuery, querySortToOrder, includeBuilder }

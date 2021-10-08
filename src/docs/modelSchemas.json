@@ -74,6 +74,41 @@
       }
     }
   },
+  "Incident": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/IncidentLite"
+      },
+      {
+        "properties": {
+          "ref": {
+            "type": "number",
+            "example": 1
+          },
+          "stream_id": {
+            "type": "string",
+            "example": "01a2ucztj8ax"
+          },
+          "project_id": {
+            "type": "string",
+            "example": "xu82jDgX49"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventForIncident"
+            }
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResponseForIncident"
+            }
+          }
+        }
+      }
+    ]
+  },
   "Classification": {
     "properties": {
       "value": {
@@ -114,19 +149,45 @@
       }
     }
   },
-  "Event": {
+  "ResponseForIncident": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ResponseLite"
+      },
+      {
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "5cb87566-f50b-4d14-b940-5c526dbbcbbb"
+          },
+          "investigatedAt": {
+            "type": "Date",
+            "example": "2021-09-21T04:45:16.991Z"
+          },
+          "startedAt": {
+            "type": "Date",
+            "example": "2021-10-05T08:51:25.829Z"
+          },
+          "submittedAt": {
+            "type": "Date",
+            "example": "2021-10-05T08:51:43.517Z"
+          },
+          "createdAt": {
+            "type": "Date",
+            "example": "2021-10-05T08:51:35.855Z"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      }
+    ]
+  },
+  "EventForIncident": {
     "properties": {
       "id": {
         "type": "string",
         "example": "cf8a7ac9-0dd2-40b6-b03f-a067d6c43325"
-      },
-      "stream_id": {
-        "type": "string",
-        "example": "01a2ucztj8ax"
-      },
-      "project_id": {
-        "type": "string",
-        "example": "xu82jDgX49"
       },
       "start": {
         "type": "date",
@@ -142,11 +203,30 @@
       },
       "classification": {
         "$ref": "#/components/schemas/Classification"
-      },
-      "incident": {
-        "$ref": "#/components/schemas/IncidentLite"
       }
     }
+  },
+  "EventWithIncident": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/EventForIncident"
+      },
+      {
+        "properties": {
+          "stream_id": {
+            "type": "string",
+            "example": "01a2ucztj8ax"
+          },
+          "project_id": {
+            "type": "string",
+            "example": "xu82jDgX49"
+          },
+          "incident": {
+            "$ref": "#/components/schemas/IncidentLite"
+          }
+        }
+      }
+    ]
   },
   "Asset": {
     "properties": {

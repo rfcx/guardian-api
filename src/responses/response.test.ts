@@ -5,7 +5,7 @@ import { GET, setupMockAxios } from '../common/axios/mock'
 import request from 'supertest'
 import { sequelize } from '../common/db'
 import Response from './models/response.model'
-import Incident from '../incidents/incident.model'
+import Incident, { incidentAttributes } from '../incidents/incident.model'
 import Event from '../events/event.model'
 import Asset from '../assets/asset.model'
 import { list } from './dao'
@@ -282,7 +282,7 @@ describe('POST /response', () => {
     expect(response.actions?.map(e => e.id).includes(204)).toBeTruthy()
     expect(response.streamId).toBe('aaaaaaaaa000')
     expect(response.projectId).toBe('project000001')
-    const incidents: Incident[] = await incidentsDao.list()
+    const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'firstResponse'] })
     expect(incidents.length).toBe(1)
     expect(incidents[0].streamId).toBe('aaaaaaaaa000')
     expect(incidents[0].projectId).toBe('project000001')
@@ -316,7 +316,7 @@ describe('POST /response', () => {
     expect(responses.length).toBe(2)
     expect(responses[0].investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
     expect(responses[1].investigatedAt?.toISOString()).toBe('2021-06-08T19:51:40.000Z')
-    const incidents: Incident[] = await incidentsDao.list()
+    const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'firstResponse'] })
     expect(incidents.length).toBe(1)
     expect(incidents[0].streamId).toBe('aaaaaaaaa000')
     expect(incidents[0].projectId).toBe('project000001')
@@ -350,7 +350,7 @@ describe('POST /response', () => {
     expect(response2.statusCode).toBe(201)
     const responses: Response[] = await list({}, { order: { field: 'investigatedAt', dir: 'ASC' } })
     expect(responses.length).toBe(2)
-    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' }, fields: [...incidentAttributes.full, 'firstResponse'] })
     expect(incidents.length).toBe(2)
     expect(incidents[0].firstResponse.id).toBe(responses[0].id)
     expect(incidents[1].firstResponse.id).toBe(responses[1].id)
@@ -391,7 +391,7 @@ describe('POST /response', () => {
     expect(reqResponse.statusCode).toBe(201)
     const responses: Response[] = await list({}, { order: { field: 'createdAt', dir: 'ASC' } })
     expect(responses.length).toBe(1)
-    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' }, fields: [...incidentAttributes.full, 'firstResponse'] })
     expect(incidents.length).toBe(2)
     expect(incidents[1].streamId).toBe('aaaaaaaaa000')
     expect(incidents[1].projectId).toBe('project000001')
@@ -432,7 +432,7 @@ describe('POST /response', () => {
     expect(reqResponse.statusCode).toBe(201)
     const responses: Response[] = await list({}, { order: { field: 'createdAt', dir: 'ASC' } })
     expect(responses.length).toBe(1)
-    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' }, fields: [...incidentAttributes.full, 'firstResponseId', 'firstResponse'] })
     expect(incidents.length).toBe(1)
     expect(incidents[0].streamId).toBe('aaaaaaaaa000')
     expect(incidents[0].projectId).toBe('project000001')
@@ -472,7 +472,7 @@ describe('POST /response', () => {
     expect(reqResponse.statusCode).toBe(201)
     const responses: Response[] = await list({}, { order: { field: 'createdAt', dir: 'ASC' } })
     expect(responses.length).toBe(1)
-    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' } })
+    const incidents: Incident[] = await incidentsDao.list({}, { order: { field: 'createdAt', dir: 'ASC' }, fields: [...incidentAttributes.full, 'firstResponse'] })
     expect(incidents.length).toBe(2)
     expect(incidents[1].streamId).toBe('aaaaaaaaa000')
     expect(incidents[1].projectId).toBe('project000001')

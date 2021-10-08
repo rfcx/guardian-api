@@ -6,7 +6,7 @@ import Classification from '../classifications/classification.model'
 import Event from './event.model'
 import { list } from './dao'
 import classificationDao from '../classifications/dao'
-import Incident from '../incidents/incident.model'
+import Incident, { incidentAttributes } from '../incidents/incident.model'
 import incidentsDao from '../incidents/dao'
 import Response from '../responses/models/response.model'
 
@@ -68,7 +68,7 @@ describe('createEvent function', () => {
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(1)
-      const incidents: Incident[] = await incidentsDao.list()
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
       const incident = incidents[0]
       expect(incidents.length).toBe(1)
       expect(incident.streamId).toBe('stream000001')
@@ -111,7 +111,7 @@ describe('createEvent function', () => {
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(2)
-      const incidents: Incident[] = await incidentsDao.list()
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
       const incident = incidents[0]
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
@@ -167,7 +167,7 @@ describe('createEvent function', () => {
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(2)
-      const incidents: Incident[] = await incidentsDao.list()
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
       const incident = incidents[0]
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
@@ -211,7 +211,7 @@ describe('createEvent function', () => {
       MockDate.reset()
       const events: Event[] = await list()
       expect(events.length).toBe(2)
-      const incidents: Incident[] = await incidentsDao.list()
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
       const incident = incidents[0]
       expect(incidents.length).toBe(1)
       expect(incident.streamId).toBe('stream000001')
@@ -253,7 +253,7 @@ describe('createEvent function', () => {
         createdAt: '2021-09-14T20:10:01.312Z'
       })
       MockDate.reset()
-      const incidents: Incident[] = await incidentsDao.list()
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events'] })
       expect(incidents.length).toBe(2)
       expect(incidents[0].closedAt.toISOString()).toBe('2021-09-14T20:09:01.312Z')
       expect(incidents[1].closedAt).toBeNull()

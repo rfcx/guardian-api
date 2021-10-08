@@ -1,8 +1,7 @@
 export interface IncidentFilters {
   streams?: string[]
   projects?: string[]
-  classifications?: string[]
-  closedAtIsNull?: boolean
+  isClosed?: boolean
   noResponses?: boolean
   closedAfter?: Date
   closedBefore?: Date
@@ -22,4 +21,13 @@ export interface IncidentCreationData extends IncidentUpdatableData {
   streamId: string
   projectId: string
   classificationId?: number
+}
+
+export interface IncidentQuery {
+  streams?: string[]
+  projects?: string[]
+  closed?: boolean
+  limit: number
+  offset: number
+  sort: string
 }

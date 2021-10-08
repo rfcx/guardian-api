@@ -22,7 +22,7 @@ const router = Router()
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Event'
+ *                 $ref: '#/components/schemas/EventWithIncident'
  *       403:
  *         description: Insufficient privileges
  *       404:
