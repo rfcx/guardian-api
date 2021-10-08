@@ -44,3 +44,8 @@ export default class Incident extends Model {
   @BelongsTo(() => Response, 'firstResponseId')
   firstResponse!: Response
 }
+
+export const incidentAttributes = {
+  full: ['id', 'ref', 'streamId', 'projectId', 'closedAt', 'createdAt'],
+  lite: ['id', 'ref', 'streamId', 'closedAt']
+}

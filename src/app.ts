@@ -5,6 +5,7 @@ import assets from './assets/router'
 import responses from './responses/router'
 import streams from './streams/router'
 import events from './events/router'
+import incidents from './incidents/router'
 import projects from './projects/router'
 import './events/consumer'
 import docs from './docs'
@@ -22,6 +23,7 @@ app.use(jwtCheck, parseUserData)
 
 app.use(logger)
 app.use('/assets', assets)
+app.use('/incidents', incidents)
 app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/responses', responses)

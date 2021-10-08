@@ -1,17 +1,44 @@
-import Incident from './incident.model'
-import { list, get, getNextRefForProject } from './dao'
-import { EventSQSMessage, ResponsePayload } from '../types/'
+import Incident, { incidentAttributes } from './incident.model'
+import { list, get, count, getNextRefForProject } from './dao'
+import { EventSQSMessage, ResponsePayload, IncidentQuery, ListResults } from '../types/'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { Transactionable } from 'sequelize'
+import { querySortToOrder } from '../common/db/helpers'
 
 dayjs.extend(utc)
+
+export const getIncidents = async (params: IncidentQuery): Promise<ListResults<Incident>> => {
+  const { streams, projects, closed, limit, offset, sort } = params
+  const total = await count({
+    streams,
+    projects,
+    isClosed: closed
+  })
+  const results = await list({
+    streams,
+    projects,
+    isClosed: closed
+  }, {
+    limit,
+    offset,
+    order: querySortToOrder(sort),
+    fields: [...incidentAttributes.full, 'events', 'responses']
+  })
+  return { total, results }
+}
 
 export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {
   const existingIncidents = await list({
     streams: [eventData.streamId],
-    closedAtIsNull: true
-  }, { order: { field: 'createdAt', dir: 'DESC' } })
+    isClosed: false
+  }, {
+    order: {
+      field: 'createdAt',
+      dir: 'DESC'
+    },
+    fields: ['id', 'firstEvent']
+  })
   const activeIncidents = existingIncidents.filter((incident) => {
     return incident.firstEvent !== null && dayjs().diff(incident.firstEvent.createdAt, 'd', true) < 7
   })
@@ -37,7 +64,13 @@ export const findOrCreateIncidentForResponse = async (responseData: ResponsePayl
   let incidents = await list({
     streams: [responseData.streamId],
     noResponses: true
-  }, { order: { field: 'createdAt', dir: 'DESC' } })
+  }, {
+    order: {
+      field: 'createdAt',
+      dir: 'DESC'
+    },
+    fields: ['id', 'firstEvent', 'firstResponse']
+  })
   let lastIncident: Incident | undefined | null
   lastIncident = incidents.find((incident) => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -49,7 +82,13 @@ export const findOrCreateIncidentForResponse = async (responseData: ResponsePayl
 
   incidents = await list({
     streams: [responseData.streamId]
-  }, { order: { field: 'createdAt', dir: 'DESC' } })
+  }, {
+    order: {
+      field: 'createdAt',
+      dir: 'DESC'
+    },
+    fields: ['id', 'firstEvent', 'firstResponse']
+  })
   lastIncident = incidents.find((incident) => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     return incident.firstResponse !== null && dayjs(responseData.investigatedAt).diff(incident.firstResponse.investigatedAt, 'h', true) < 24

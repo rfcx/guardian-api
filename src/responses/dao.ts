@@ -32,8 +32,8 @@ export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): P
   if (users !== undefined) {
     where[Op.and] = {
       [Op.or]: {
-        '$user.email$': { [Op.in]: users },
-        '$user.guid$': { [Op.in]: users }
+        '$createdBy.email$': { [Op.in]: users },
+        '$createdBy.guid$': { [Op.in]: users }
       }
     }
   }

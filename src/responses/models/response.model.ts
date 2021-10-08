@@ -59,7 +59,7 @@ export default class Response extends Model {
   assets!: Asset[]
 
   @BelongsTo(() => User, 'createdById')
-  user!: User
+  createdBy!: User
 
   @BelongsTo(() => Incident, 'incidentId')
   incident!: Incident

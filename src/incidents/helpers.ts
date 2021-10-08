@@ -10,11 +10,11 @@ dayjs.extend(utc)
 export const combineWhere = function (f: IncidentFilters = {}): Incident['_attributes'] {
   const where: Incident['_attributes'] = {}
   const {
-    closedAtIsNull, noResponses, closedAfter, closedBefore, streams, projects, classifications
+    isClosed, noResponses, closedAfter, closedBefore, streams, projects
   } = f
   applyTimeRangeToQuery(where, 'closedAt', closedAfter, closedBefore)
-  if (closedAtIsNull !== undefined) {
-    where.closedAt = { [closedAtIsNull ? Op.is : Op.ne]: null }
+  if (isClosed !== undefined) {
+    where.closedAt = { [isClosed ? Op.ne : Op.is]: null }
   }
   if (noResponses !== undefined) {
     where.firstResponseId = { [Op.is]: null }
@@ -24,9 +24,6 @@ export const combineWhere = function (f: IncidentFilters = {}): Incident['_attri
   }
   if (projects !== undefined) {
     where.projectId = { [Op.in]: projects }
-  }
-  if (classifications !== undefined) {
-    where['$classification.id$'] = { [Op.in]: classifications }
   }
   return where
 }

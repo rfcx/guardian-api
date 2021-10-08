@@ -62,6 +62,7 @@ router.post('/', (req: Request, res: Response, next): void => {
     .then(async (responsePayload: ResponsePayload) => {
       const forwardedResponse = await getStream(idToken, responsePayload.streamId)
       if (forwardedResponse.data.project === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new ValidationError('Project id is not defined for stream')
       }
       const response = await createResponse({ ...responsePayload, projectId: forwardedResponse.data.project.id }, user)
@@ -103,6 +104,7 @@ router.get('/:id/assets', (req: Request, res: Response): void => {
   get(responseId)
     .then(async response => {
       if (response === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new EmptyResultError('Response with given id not found')
       }
       const results = await assetDao.query({ responseId })
@@ -150,6 +152,7 @@ router.post('/:id/assets', multerFile.single('file'), (req: Request, res: Respon
   get(responseId)
     .then(async response => {
       if (response === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new EmptyResultError('Response with given id not found')
       }
       const assetId = await uploadFileAndSaveToDb(response, file, user)
