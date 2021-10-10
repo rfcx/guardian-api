@@ -23,13 +23,13 @@ export const getIncidents = async (params: IncidentQuery): Promise<ListResults<I
     limit,
     offset,
     order: querySortToOrder(sort),
-    fields: [...incidentAttributes.full, 'events', 'responses']
+    fields: [...incidentAttributes.full, 'closedBy', 'events', 'responses']
   })
   return { total, results }
 }
 
 export const getIncident = async (id: string): Promise<Incident | null> => {
-  return await get(id, [...incidentAttributes.full, 'events', 'responses'])
+  return await get(id, [...incidentAttributes.full, 'closedBy', 'events', 'responses'])
 }
 
 export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {

@@ -6,6 +6,16 @@ import Response from '../responses/models/response.model'
 
 export const availableIncludes = [
   {
+    model: User,
+    as: 'closedBy',
+    attributes: {
+      exclude: ['id', 'classificationId', 'streamId', 'projectId']
+    },
+    on: {
+      id: { [Op.eq]: col('Incident.closed_by_id') }
+    }
+  },
+  {
     model: Event,
     as: 'events',
     attributes: {
