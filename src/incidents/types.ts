@@ -11,8 +11,13 @@ export interface IncidentFilters {
   firstResponseBefore?: Date
 }
 
+export interface IncidentPatchPayload {
+  closed?: boolean
+}
+
 export interface IncidentUpdatableData {
-  closedAt?: Date
+  closedAt?: Date | null
+  closedById?: number | null
   firstEventId?: string
   firstResponseId?: string
 }

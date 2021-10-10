@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
 import { httpErrorHandler, Converter, EmptyResultError } from '@rfcx/http-utils'
-import { IncidentQuery } from '../types'
-import { getIncidents, getIncident } from './service'
+import { IncidentQuery, IncidentPatchPayload } from '../types'
+import { getIncidents, getIncident, updateIncident } from './service'
 
 const router = Router()
 
@@ -106,6 +106,47 @@ router.get('/:id', (req: Request, res: Response): void => {
       res.json(incident)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting incident.'))
+})
+
+/**
+ * @swagger
+ *
+ * /incidents/{id}:
+ *   patch:
+ *     summary: Update incident data
+ *     tags:
+ *       - incidents
+ *     parameters:
+ *       - name: id
+ *         description: Incident id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "debf4db5-3826-4266-a0cd-d4e38aa139ba"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/requestBodies/Incident'
+ *     responses:
+ *       200:
+ *         description: Updated
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Incident not found
+ */
+router.patch('/:id', (req: Request, res: Response): void => {
+  const user = (req as any).user
+  const converter = new Converter(req.body, {})
+  converter.convert('closed').optional().toBoolean()
+  converter.validate()
+    .then(async (params: IncidentPatchPayload) => {
+      await updateIncident(req.params.id, params, user)
+      res.sendStatus(200)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed updating incident.'))
 })
 
 export default router

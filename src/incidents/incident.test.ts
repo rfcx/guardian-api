@@ -1,12 +1,13 @@
 import MockDate from 'mockdate'
 import routes from './router'
-import { migrate, expressApp, seed, muteConsole } from '../common/db/testing'
+import { migrate, expressApp, seed, muteConsole, seedValues } from '../common/db/testing'
 import request from 'supertest'
 import { sequelize } from '../common/db'
 import Incident from '../incidents/incident.model'
 import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
 import Classification from '../classifications/classification.model'
+import { get } from './dao'
 const app = expressApp()
 
 app.use('/', routes)
@@ -97,9 +98,6 @@ beforeAll(async () => {
   MockDate.reset()
   await incident3.update({ firstResponseId: response2.id })
 })
-// beforeEach(async () => {
-//   await truncate([Asset, Response, Event, Incident])
-// })
 
 describe('GET /incidents', () => {
   test('returns all incidents', async () => {
@@ -156,5 +154,45 @@ describe('GET /incidents/{id}', () => {
   test('returns 404 when incident not found', async () => {
     const response = await request(app).get('/some')
     expect(response.statusCode).toBe(404)
+  })
+})
+
+describe('PATCH /incidents/{id}', () => {
+  test('should set closedAt and closedBy fields', async () => {
+    const incident4 = await Incident.create({ streamId: 'stream000003', projectId: 'project000003', ref: 1 })
+    MockDate.set('2021-08-15T10:04:25.795Z')
+    const response3 = await Response.create({
+      streamId: 'stream000003',
+      projectId: 'project000003',
+      investigatedAt: '2021-09-14T15:54:21.110Z',
+      startedAt: '2021-09-14T15:55:33.110Z',
+      submittedAt: '2021-09-14T15:55:42.110Z',
+      loggingScale: 1,
+      damageScale: 1,
+      createdById: 1,
+      incidentId: incident3.id,
+      schemaVersion: 1
+    })
+    MockDate.reset()
+    await incident4.update({ firstResponseId: response3.id })
+
+    MockDate.set('2021-09-16T08:30:00.125Z')
+    const response = await request(app).patch(`/${incident4.id}`).send({ closed: true })
+    MockDate.reset()
+    expect(response.statusCode).toBe(200)
+    const inc = await get(incident4.id)
+    expect(inc?.closedAt.toISOString()).toBe('2021-09-16T08:30:00.125Z')
+    expect(inc?.closedBy.guid).toBe(seedValues.primaryGuid)
+    expect(inc?.closedBy.email).toBe(seedValues.primaryEmail)
+    expect(inc?.closedBy.firstname).toBe(seedValues.primaryFirstname)
+    expect(inc?.closedBy.lastname).toBe(seedValues.primaryLastname)
+  })
+  test('should set closedAt and closedBy fields to null', async () => {
+    const incident5 = await Incident.create({ streamId: 'stream000003', projectId: 'project000003', ref: 1, closedAt: '2021-09-16T09:22:00.125Z', closedById: 1 })
+    const response = await request(app).patch(`/${incident5.id}`).send({ closed: false })
+    expect(response.statusCode).toBe(200)
+    const inc = await get(incident5.id)
+    expect(inc?.closedAt).toBeNull()
+    expect(inc?.closedBy).toBeNull()
   })
 })

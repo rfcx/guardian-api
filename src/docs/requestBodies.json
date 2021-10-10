@@ -50,5 +50,14 @@
         "example": "skhedl36rxb2"
       }
     }
+  },
+  "Incident": {
+    "type": "object",
+    "properties": {
+      "closed": {
+        "type": "boolean",
+        "example": "true"
+      }
+    }
   }
 }
