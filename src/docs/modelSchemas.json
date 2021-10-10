@@ -74,6 +74,29 @@
       }
     }
   },
+  "IncidentForResponse": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/IncidentLite"
+      },
+      {
+        "properties": {
+          "ref": {
+            "type": "number",
+            "example": 1
+          },
+          "stream_id": {
+            "type": "string",
+            "example": "01a2ucztj8ax"
+          },
+          "project_id": {
+            "type": "string",
+            "example": "xu82jDgX49"
+          }
+        }
+      }
+    ]
+  },
   "Incident": {
     "allOf": [
       {
@@ -178,6 +201,48 @@
           },
           "createdBy": {
             "$ref": "#/components/schemas/User"
+          }
+        }
+      }
+    ]
+  },
+  "Response": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ResponseForIncident"
+      },
+      {
+        "properties": {
+          "loggingScale": {
+            "type": "number",
+            "example": 1
+          },
+          "damageScale": {
+            "type": "number",
+            "example": 2
+          },
+          "evidences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Cut down trees",
+              "Loggers at site"
+            ]
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Collected evidence",
+              "Issue a fine"
+            ]
+          },
+          "incident": {
+            "$ref": "#/components/schemas/IncidentForResponse"
           }
         }
       }

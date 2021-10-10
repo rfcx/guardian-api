@@ -1,6 +1,6 @@
 import MockDate from 'mockdate'
 import routes from './router'
-import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
+import { migrate, truncate, expressApp, seed, muteConsole, seedValues } from '../common/db/testing'
 import { GET, setupMockAxios } from '../common/axios/mock'
 import request from 'supertest'
 import { sequelize } from '../common/db'
@@ -12,6 +12,8 @@ import { list } from './dao'
 import incidentsDao from '../incidents/dao'
 import Classification from '../classifications/classification.model'
 import service from './service'
+import ResponseEvidence from './models/response-evidence.model'
+import ResponseAction from './models/response-action.model'
 const app = expressApp()
 
 app.use('/', routes)
@@ -28,7 +30,7 @@ beforeEach(async () => {
   await truncate([Asset, Response, Event, Incident])
 })
 
-describe('POST /response', () => {
+describe('POST /responses', () => {
   describe('validation', () => {
     test('returns 400 if investigatedAt is not defined', async () => {
       const requestBody = {
@@ -478,5 +480,65 @@ describe('POST /response', () => {
     expect(incidents[1].projectId).toBe('project000001')
     expect(incidents[1].firstResponse.id).toBe(responses[0].id)
     expect(incidents[1].ref).toBe(1)
+  })
+})
+
+describe('GET /responses/{id}', () => {
+  test('returns response data', async () => {
+    const incident1 = await Incident.create({ streamId: 'stream000000', projectId: 'project000000', ref: 1 })
+    MockDate.set('2021-08-15T10:04:25.795Z')
+    const response1 = await Response.create({
+      streamId: 'stream000000',
+      projectId: 'project000000',
+      investigatedAt: '2021-08-15T10:02:22.795Z',
+      startedAt: '2021-08-15T10:03:22.795Z',
+      submittedAt: '2021-08-15T10:04:22.795Z',
+      loggingScale: 1,
+      damageScale: 1,
+      createdById: 1,
+      incidentId: incident1.id,
+      schemaVersion: 1
+    })
+    await ResponseEvidence.bulkCreate([
+      { responseId: response1.id, evidenceId: 101 },
+      { responseId: response1.id, evidenceId: 102 }
+    ])
+    await ResponseAction.bulkCreate([
+      { responseId: response1.id, actionId: 202 },
+      { responseId: response1.id, actionId: 204 }
+    ])
+    MockDate.reset()
+    await incident1.update({ firstResponseId: response1.id })
+
+    const response = await request(app).get(`/${response1.id}`)
+    expect(response.statusCode).toBe(200)
+    const resp = response.body
+    expect(resp.id).toBe(response1.id)
+    expect(resp.streamId).toBe('stream000000')
+    expect(resp.projectId).toBe('project000000')
+    expect(resp.investigatedAt).toBe('2021-08-15T10:02:22.795Z')
+    expect(resp.startedAt).toBe('2021-08-15T10:03:22.795Z')
+    expect(resp.submittedAt).toBe('2021-08-15T10:04:22.795Z')
+    expect(resp.loggingScale).toBe(1)
+    expect(resp.damageScale).toBe(1)
+    expect(resp.createdBy.firstname).toBe(seedValues.primaryFirstname)
+    expect(resp.createdBy.lastname).toBe(seedValues.primaryLastname)
+    expect(resp.createdBy.guid).toBe(seedValues.primaryGuid)
+    expect(resp.createdBy.email).toBe(seedValues.primaryEmail)
+    expect(resp.evidences.includes('Cut down trees')).toBeTruthy()
+    expect(resp.evidences.includes('Cleared areas')).toBeTruthy()
+    expect(resp.actions.includes('Issue a warning')).toBeTruthy()
+    expect(resp.actions.includes('Issue a fine')).toBeTruthy()
+    expect(resp.incident.id).toBe(incident1.id)
+    expect(resp.incident.ref).toBe(1)
+    expect(resp.incident.streamId).toBe('stream000000')
+    expect(resp.incident.projectId).toBe('project000000')
+    expect(resp.incident.createdAt).toBeDefined()
+    expect(resp.incident.closedAt).toBeNull()
+  })
+
+  test('returns 404 when response not found', async () => {
+    const response = await request(app).get('/some')
+    expect(response.statusCode).toBe(404)
   })
 })
