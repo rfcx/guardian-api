@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, PrimaryKey, HasMany, CreatedAt, UpdatedAt, BelongsTo } from 'sequelize-typescript'
 import Event from '../events/event.model'
 import Response from '../responses/models/response.model'
+import User from '../users/user.model'
 
 @Table({
   tableName: 'incidents'
@@ -25,6 +26,9 @@ export default class Incident extends Model {
 
   @Column(DataType.DATE)
   closedAt!: Date
+
+  @BelongsTo(() => User, 'closedById')
+  closedBy!: User
 
   @CreatedAt
   createdAt!: Date

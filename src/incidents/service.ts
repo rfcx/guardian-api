@@ -1,10 +1,13 @@
 import Incident, { incidentAttributes } from './incident.model'
-import { list, get, count, getNextRefForProject } from './dao'
-import { EventSQSMessage, ResponsePayload, IncidentQuery, ListResults } from '../types/'
+import { list, get, update, count, getNextRefForProject } from './dao'
+import { EventSQSMessage, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { Transactionable } from 'sequelize'
 import { querySortToOrder } from '../common/db/helpers'
+import User from '../users/user.model'
+import { EmptyResultError } from '@rfcx/http-utils'
+import { ensureUserExists } from '../users/service'
 
 dayjs.extend(utc)
 
@@ -23,13 +26,29 @@ export const getIncidents = async (params: IncidentQuery): Promise<ListResults<I
     limit,
     offset,
     order: querySortToOrder(sort),
-    fields: [...incidentAttributes.full, 'events', 'responses']
+    fields: [...incidentAttributes.full, 'closedBy', 'events', 'responses']
   })
   return { total, results }
 }
 
 export const getIncident = async (id: string): Promise<Incident | null> => {
-  return await get(id, [...incidentAttributes.full, 'events', 'responses'])
+  return await get(id, [...incidentAttributes.full, 'closedBy', 'events', 'responses'])
+}
+
+export const updateIncident = async (id: string, payload: IncidentPatchPayload, userData: User): Promise<void> => {
+  const incident = await get(id)
+  const user = await ensureUserExists(userData)
+  if (incident === null) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw new EmptyResultError('Incident with given id not found')
+  }
+  const { closed } = payload
+  const data: IncidentUpdatableData = {}
+  if (closed !== undefined) {
+    data.closedAt = closed ? dayjs.utc().toDate() : null
+    data.closedById = closed ? user.id : null
+  }
+  await update(id, data)
 }
 
 export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {

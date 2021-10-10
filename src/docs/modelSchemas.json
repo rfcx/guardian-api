@@ -116,6 +116,9 @@
             "type": "string",
             "example": "xu82jDgX49"
           },
+          "closedBy": {
+            "$ref": "#/components/schemas/User"
+          },
           "events": {
             "type": "array",
             "items": {
