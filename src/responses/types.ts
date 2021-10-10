@@ -1,3 +1,5 @@
+import { UserFormatted, IncidentFormatted } from '../types'
+
 enum LoggingScale {
   NotSure = 0,
   Small = 1,
@@ -55,4 +57,20 @@ export interface ResponseFilters {
   createdBefore?: Date
   streams?: string[]
   users?: string[]
+}
+
+export interface ResponseFormatted {
+  id: string
+  streamId: string
+  projectId: string
+  investigatedAt: string
+  startedAt: string
+  submittedAt: string
+  loggingScale: number
+  damageScale: number
+  createdAt: string
+  createdBy: UserFormatted
+  evidences: string[]
+  actions: string[]
+  incident: IncidentFormatted
 }

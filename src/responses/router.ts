@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { ResponsePayload } from '../types'
-import { createResponse, uploadFileAndSaveToDb } from './service'
+import { createResponse, getResponse, uploadFileAndSaveToDb } from './service'
 import { Converter, EmptyResultError, httpErrorHandler, ValidationError } from '@rfcx/http-utils'
 import { evidences, actions } from './constants'
 import { getStream } from '../common/core-api'
@@ -10,6 +10,39 @@ import incidentDao from '../incidents/dao'
 import assetDao from '../assets/dao'
 
 const router = Router()
+
+/**
+ * @swagger
+ *
+ * /responses/{id}:
+ *   get:
+ *     summary: Get response data
+ *     tags:
+ *       - responses
+ *     parameters:
+ *       - name: id
+ *         description: Response id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "debf4db5-3826-4266-a0cd-d4e38aa139ba"
+ *     responses:
+ *       200:
+ *         description: Response object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *       404:
+ *         description: Response not found
+ */
+router.get('/:id', (req: Request, res: Response): void => {
+  getResponse(req.params.id)
+    .then((response) => {
+      res.json(response)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed getting response.'))
+})
 
 /**
  * @swagger

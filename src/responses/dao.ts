@@ -6,15 +6,16 @@ import Response from './models/response.model'
 import { ResponseFilters, ResponseCreationData, QueryOptionsRFCx } from '../types'
 import ResponseEvidence from './models/response-evidence.model'
 import ResponseAction from './models/response-action.model'
+import { availableIncludes } from './misc'
 
 dayjs.extend(utc)
 
 export const get = async function (id: string): Promise<Response | null> {
   return await Response.findByPk(id, {
     attributes: {
-      exclude: ['updatedAt']
+      exclude: ['updatedAt', 'schemaVersion', 'incidentId', 'createdById']
     },
-    include: [{ all: true }]
+    include: availableIncludes
   })
 }
 

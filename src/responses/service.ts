@@ -1,10 +1,10 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { ResponsePayload } from '../types'
+import { ResponsePayload, ResponseFormatted } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
 import Response from './models/response.model'
-import { create, list, assignEvidencesByIds, assignActionsByIds } from './dao'
+import { create, list, get, assignEvidencesByIds, assignActionsByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse } from '../incidents/service'
 import { assetPath, generateFilename } from '../common/storage/paths'
@@ -12,6 +12,7 @@ import { uploadFile } from '../common/storage'
 import assetDao from '../assets/dao'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { EmptyResultError } from '@rfcx/http-utils'
 
 dayjs.extend(utc)
 
@@ -26,6 +27,18 @@ export const getLastResponseForStream = async (streamId: string): Promise<Respon
     }
   })
   return responses.length !== 0 ? responses[0] : null
+}
+
+export const getResponse = async (id: string): Promise<ResponseFormatted> => {
+  return await get(id)
+    .then((response) => {
+      if (response === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw new EmptyResultError('Response with given id not found')
+      } else {
+        return format(response)
+      }
+    })
 }
 
 export const createResponse = async (responseData: ResponsePayload, userData: User): Promise<Response> => {
@@ -85,4 +98,26 @@ export const uploadFileAndSaveToDb = async (response: Response, file: any, userD
   }
 }
 
-export default { getLastResponseForStream, createResponse, uploadFileAndSaveToDb }
+export const format = (response: Response): ResponseFormatted => {
+  const {
+    id, streamId, projectId, investigatedAt, startedAt, submittedAt,
+    loggingScale, damageScale, createdAt, createdBy, evidences, actions, incident
+  } = response
+  return {
+    id,
+    streamId,
+    projectId,
+    investigatedAt: investigatedAt.toISOString(),
+    startedAt: startedAt.toISOString(),
+    submittedAt: submittedAt.toISOString(),
+    createdAt: createdAt.toISOString(),
+    loggingScale,
+    damageScale,
+    createdBy,
+    evidences: evidences.map((e) => e.title),
+    actions: actions.map(a => a.title),
+    incident: incident as any
+  }
+}
+
+export default { getLastResponseForStream, createResponse, uploadFileAndSaveToDb, format }

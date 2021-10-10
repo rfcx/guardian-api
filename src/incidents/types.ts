@@ -31,3 +31,12 @@ export interface IncidentQuery {
   offset: number
   sort: string
 }
+
+export interface IncidentFormatted {
+  id: string
+  ref: number
+  streamId: string
+  projectId: string
+  createdAt: string
+  closedAt: string
+}
