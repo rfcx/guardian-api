@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
-import { httpErrorHandler, Converter } from '@rfcx/http-utils'
+import { httpErrorHandler, Converter, EmptyResultError } from '@rfcx/http-utils'
 import { IncidentQuery } from '../types'
-import { getIncidents } from './service'
+import { getIncidents, getIncident } from './service'
 
 const router = Router()
 
@@ -69,6 +69,43 @@ router.get('/', (req: Request, res: Response): void => {
       res.header('Total-Items', data.total.toString()).json(data.results)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting incidents.'))
+})
+
+/**
+ * @swagger
+ *
+ * /incidents/{id}:
+ *   get:
+ *     summary: Get incident data
+ *     tags:
+ *       - incidents
+ *     parameters:
+ *       - name: id
+ *         description: Incident id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "debf4db5-3826-4266-a0cd-d4e38aa139ba"
+ *     responses:
+ *       200:
+ *         description: Incident object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Incident'
+ *       404:
+ *         description: Incident not found
+ */
+router.get('/:id', (req: Request, res: Response): void => {
+  getIncident(req.params.id)
+    .then((incident) => {
+      if (incident === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw new EmptyResultError('Incident with given id not found')
+      }
+      res.json(incident)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed getting incident.'))
 })
 
 export default router
