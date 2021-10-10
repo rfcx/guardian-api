@@ -32,6 +32,7 @@ router.get('/:id', (req: Request, res: Response): void => {
   get(req.params.id)
     .then(asset => {
       if (asset === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new EmptyResultError('Asset not found')
       } else {
         res.header('Content-Type', asset.mimeType)
@@ -70,9 +71,11 @@ router.delete('/:id', (req: Request, res: Response): void => {
   get(req.params.id)
     .then(async (asset) => {
       if (asset === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new EmptyResultError('Asset not found')
       }
       if (asset.createdBy.email !== userData.email && asset.createdBy.guid !== userData.guid) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new ForbiddenError('You are not allowed to delete this asset')
       }
       await remove(req.params.id)

@@ -28,6 +28,10 @@ export const getIncidents = async (params: IncidentQuery): Promise<ListResults<I
   return { total, results }
 }
 
+export const getIncident = async (id: string): Promise<Incident | null> => {
+  return await get(id, [...incidentAttributes.full, 'events', 'responses'])
+}
+
 export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {
   const existingIncidents = await list({
     streams: [eventData.streamId],
