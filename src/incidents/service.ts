@@ -53,7 +53,7 @@ export const updateIncident = async (id: string, payload: IncidentPatchPayload, 
 
 export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {
   const existingIncidents = await list({
-    streams: [eventData.streamId],
+    streams: [eventData.stream.id],
     isClosed: false
   }, {
     order: {
@@ -69,10 +69,10 @@ export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o
     return activeIncidents[0]
   } else {
     const transaction = o.transaction
-    const ref = await getNextRefForProject(eventData.projectId, { transaction })
+    const ref = await getNextRefForProject(eventData.project.id, { transaction })
     return await Incident.create({
-      streamId: eventData.streamId,
-      projectId: eventData.projectId,
+      streamId: eventData.stream.id,
+      projectId: eventData.project.id,
       ref
     }, { transaction })
   }

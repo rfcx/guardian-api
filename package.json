@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@rfcx/http-utils": "1.0.8",
-    "@rfcx/message-queue": "^1.0.4",
+    "@rfcx/message-queue": "^1.0.5",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

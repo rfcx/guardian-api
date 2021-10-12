@@ -1,11 +1,12 @@
 import Classification from '../classifications/classification.model'
+import { Stream, Project } from '../types'
 
 export interface EventSQSMessage {
   id: string
   start: string
   end: string
-  streamId: string
-  projectId: string
+  stream: Stream
+  project: Project
   classification: Classification['_attributes']
   createdAt: string
 }
