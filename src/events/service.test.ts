@@ -27,8 +27,16 @@ describe('createEvent function', () => {
       id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
       start: '2021-09-14T19:59:48.795Z',
       end: '2021-09-14T20:03:21.795Z',
-      streamId: 'stream000001',
-      projectId: 'project000001',
+      stream: {
+        id: 'stream000001',
+        name: 'Stream 000001',
+        latitude: 10,
+        longitude: 20
+      },
+      project: {
+        id: 'project000001',
+        name: 'Project 000001'
+      },
       classification: {
         value: 'chainsaw',
         title: 'Chainsaw'
@@ -57,8 +65,16 @@ describe('createEvent function', () => {
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
         start: '2021-09-14T19:59:48.795Z',
         end: '2021-09-14T20:03:21.795Z',
-        streamId: 'stream000001',
-        projectId: 'project000001',
+        stream: {
+          id: 'stream000001',
+          name: 'Stream 000001',
+          latitude: 10,
+          longitude: 20
+        },
+        project: {
+          id: 'project000001',
+          name: 'Project 000001'
+        },
         classification: {
           value: 'chainsaw',
           title: 'Chainsaw'
@@ -100,8 +116,16 @@ describe('createEvent function', () => {
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
         start: '2021-09-14T19:59:48.795Z',
         end: '2021-09-14T20:03:21.795Z',
-        streamId: 'stream000001',
-        projectId: 'project000001',
+        stream: {
+          id: 'stream000001',
+          name: 'Stream 000001',
+          latitude: 10,
+          longitude: 20
+        },
+        project: {
+          id: 'project000001',
+          name: 'Project 000001'
+        },
         classification: {
           value: 'chainsaw',
           title: 'Chainsaw'
@@ -156,8 +180,16 @@ describe('createEvent function', () => {
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
         start: '2021-09-14T20:05:48.795Z',
         end: '2021-09-14T20:08:21.795Z',
-        streamId: 'stream000001',
-        projectId: 'project000001',
+        stream: {
+          id: 'stream000001',
+          name: 'Stream 000001',
+          latitude: 10,
+          longitude: 20
+        },
+        project: {
+          id: 'project000001',
+          name: 'Project 000001'
+        },
         classification: {
           value: 'chainsaw',
           title: 'Chainsaw'
@@ -200,8 +232,16 @@ describe('createEvent function', () => {
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
         start: '2021-09-14T20:05:48.795Z',
         end: '2021-09-14T20:08:21.795Z',
-        streamId: 'stream000001',
-        projectId: 'project000001',
+        stream: {
+          id: 'stream000001',
+          name: 'Stream 000001',
+          latitude: 10,
+          longitude: 20
+        },
+        project: {
+          id: 'project000001',
+          name: 'Project 000001'
+        },
         classification: {
           value: 'chainsaw',
           title: 'Chainsaw'
@@ -244,8 +284,16 @@ describe('createEvent function', () => {
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
         start: '2021-09-14T20:05:48.795Z',
         end: '2021-09-14T20:08:21.795Z',
-        streamId: 'stream000001',
-        projectId: 'project000001',
+        stream: {
+          id: 'stream000001',
+          name: 'Stream 000001',
+          latitude: 10,
+          longitude: 20
+        },
+        project: {
+          id: 'project000001',
+          name: 'Project 000001'
+        },
         classification: {
           value: 'chainsaw',
           title: 'Chainsaw'

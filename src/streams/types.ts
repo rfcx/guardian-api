@@ -14,3 +14,10 @@ export interface StreamQuery {
 export interface StreamResponseWithEventsCount extends StreamResponse {
   eventsCount: number
 }
+
+export interface Stream {
+  id: string
+  name: string
+  latitude: number
+  longitude: number
+}

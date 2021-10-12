@@ -49,8 +49,8 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<Event> =>
       id: eventData.id,
       start: eventData.start !== undefined ? dayjs.utc(eventData.start).toDate() : undefined as any,
       end: eventData.end !== undefined ? dayjs(eventData.end).toDate() : undefined as any,
-      streamId: eventData.streamId,
-      projectId: eventData.projectId,
+      streamId: eventData.stream.id,
+      projectId: eventData.project.id,
       classificationId: classification.id,
       createdAt: eventData.createdAt !== undefined ? dayjs.utc(eventData.createdAt).toDate() : undefined as any,
       incidentId: incidentForEvent.id
