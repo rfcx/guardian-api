@@ -6,4 +6,4 @@ metadata:
 data:
   CORE_URL: https://staging-api.rfcx.org
   EVENTS_SQS_QUEUE_ENABLED: true'
-  EVENTS_SQS_QUEUE: 'ranger-api-events-staging'
+  EVENTS_SQS_QUEUE: 'ranger-api-events-staging
