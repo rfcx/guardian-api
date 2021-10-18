@@ -93,7 +93,7 @@ router.post('/', (req: Request, res: Response, next): void => {
   converter.convert('streamId').toString()
   converter.validate()
     .then(async (responsePayload: ResponsePayload) => {
-      const forwardedResponse = await getStream(idToken, responsePayload.streamId)
+      const forwardedResponse = await getStream(responsePayload.streamId, idToken)
       if (forwardedResponse.data.project === null) {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new ValidationError('Project id is not defined for stream')

@@ -1,6 +1,6 @@
 import Incident, { incidentAttributes } from './incident.model'
 import { list, get, update, count, getNextRefForProject } from './dao'
-import { EventSQSMessage, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
+import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { Transactionable } from 'sequelize'
@@ -51,9 +51,9 @@ export const updateIncident = async (id: string, payload: IncidentPatchPayload, 
   await update(id, data)
 }
 
-export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o: Transactionable = {}): Promise<Incident> => {
+export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o: Transactionable = {}): Promise<Incident> => {
   const existingIncidents = await list({
-    streams: [eventData.stream.id],
+    streams: [streamData.id],
     isClosed: false
   }, {
     order: {
@@ -69,10 +69,10 @@ export const findOrCreateIncidentForEvent = async (eventData: EventSQSMessage, o
     return activeIncidents[0]
   } else {
     const transaction = o.transaction
-    const ref = await getNextRefForProject(eventData.project.id, { transaction })
+    const ref = await getNextRefForProject((streamData.project as any).id, { transaction })
     return await Incident.create({
-      streamId: eventData.stream.id,
-      projectId: eventData.project.id,
+      streamId: streamData.id,
+      projectId: (streamData.project as any).id,
       ref
     }, { transaction })
   }

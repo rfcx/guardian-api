@@ -60,7 +60,7 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
     if (responseData.responseActions?.length !== 0) {
       await assignActionsByIds(response.id, responseData.responseActions, { transaction })
     }
-    if (responseData.note !== undefined) {
+    if (responseData.note !== undefined && responseData.note.length > 0) {
       await uploadFileAndSaveToDb(response, {
         buffer: Buffer.from(responseData.note, 'utf8'),
         originalname: `note-${response.id}.txt`,

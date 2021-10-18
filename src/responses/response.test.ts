@@ -1,7 +1,7 @@
 import MockDate from 'mockdate'
 import routes from './router'
 import { migrate, truncate, expressApp, seed, muteConsole, seedValues } from '../common/db/testing'
-import { GET, setupMockAxios } from '../common/axios/mock'
+import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import request from 'supertest'
 import { sequelize } from '../common/db'
 import Response from './models/response.model'
@@ -15,6 +15,11 @@ import service from './service'
 import ResponseEvidence from './models/response-evidence.model'
 import ResponseAction from './models/response-action.model'
 const app = expressApp()
+jest.mock('../common/auth', () => {
+  return {
+    getM2MToken: jest.fn(() => 'mocked token')
+  }
+})
 
 app.use('/', routes)
 
@@ -28,6 +33,9 @@ beforeAll(async () => {
 })
 beforeEach(async () => {
   await truncate([Asset, Response, Event, Incident])
+})
+afterAll(() => {
+  resetMockAxios()
 })
 
 describe('POST /responses', () => {

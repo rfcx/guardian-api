@@ -1,5 +1,6 @@
 import MockDate from 'mockdate'
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
+import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import { sequelize } from '../common/db'
 import { createEvent } from './service'
 import Classification from '../classifications/classification.model'
@@ -9,6 +10,11 @@ import classificationDao from '../classifications/dao'
 import Incident, { incidentAttributes } from '../incidents/incident.model'
 import incidentsDao from '../incidents/dao'
 import Response from '../responses/models/response.model'
+jest.mock('../common/auth', () => {
+  return {
+    getM2MToken: jest.fn(() => 'mocked token')
+  }
+})
 
 expressApp()
 
@@ -16,33 +22,49 @@ beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
   await seed()
+  setupMockAxios(GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
+    streamId: 'stream000001',
+    start: '2021-09-14T19:59:48.795Z',
+    end: '2021-09-14T20:03:21.795Z',
+    createdAt: '2021-09-14T20:10:01.312Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
+  setupMockAxios(GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
+    streamId: 'stream000001',
+    start: '2021-09-14T19:59:48.795Z',
+    end: '2021-09-14T20:03:21.795Z',
+    createdAt: '2021-09-14T20:10:01.312Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
+  setupMockAxios(GET, 'streams/stream000001', 200, {
+    id: 'stream000001',
+    name: 'Stream 000001',
+    latitude: 10,
+    longitude: 20,
+    project: {
+      id: 'project000001',
+      name: 'Project 000001'
+    }
+  })
 })
 beforeEach(async () => {
   await truncate([Event, Response, Incident])
 })
+afterAll(() => {
+  resetMockAxios()
+})
 
 describe('createEvent function', () => {
   test('creates event', async () => {
-    await createEvent({
-      id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
-      start: '2021-09-14T19:59:48.795Z',
-      end: '2021-09-14T20:03:21.795Z',
-      stream: {
-        id: 'stream000001',
-        name: 'Stream 000001',
-        latitude: 10,
-        longitude: 20
-      },
-      project: {
-        id: 'project000001',
-        name: 'Project 000001'
-      },
-      classification: {
-        value: 'chainsaw',
-        title: 'Chainsaw'
-      },
-      createdAt: '2021-09-14T20:10:01.312Z'
-    })
+    await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11' })
     const events: Event[] = await list()
     const event = events[0]
     const classifications: Classification[] = await classificationDao.list()
@@ -61,26 +83,7 @@ describe('createEvent function', () => {
   })
   describe('incidents creation', () => {
     test('creates incident if there are no open incidents', async () => {
-      await createEvent({
-        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
-        start: '2021-09-14T19:59:48.795Z',
-        end: '2021-09-14T20:03:21.795Z',
-        stream: {
-          id: 'stream000001',
-          name: 'Stream 000001',
-          latitude: 10,
-          longitude: 20
-        },
-        project: {
-          id: 'project000001',
-          name: 'Project 000001'
-        },
-        classification: {
-          value: 'chainsaw',
-          title: 'Chainsaw'
-        },
-        createdAt: '2021-09-14T20:10:01.312Z'
-      })
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11' })
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(1)
@@ -112,26 +115,7 @@ describe('createEvent function', () => {
         incidentId: inc.id
       })
       await inc.update({ firstEventId: event1.id })
-      await createEvent({
-        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
-        start: '2021-09-14T19:59:48.795Z',
-        end: '2021-09-14T20:03:21.795Z',
-        stream: {
-          id: 'stream000001',
-          name: 'Stream 000001',
-          latitude: 10,
-          longitude: 20
-        },
-        project: {
-          id: 'project000001',
-          name: 'Project 000001'
-        },
-        classification: {
-          value: 'chainsaw',
-          title: 'Chainsaw'
-        },
-        createdAt: '2021-09-14T20:10:01.312Z'
-      })
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12' })
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(2)
@@ -176,26 +160,7 @@ describe('createEvent function', () => {
         schemaVersion: 1
       })
       await inc.update({ firstResponseId: resp.id })
-      await createEvent({
-        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
-        start: '2021-09-14T20:05:48.795Z',
-        end: '2021-09-14T20:08:21.795Z',
-        stream: {
-          id: 'stream000001',
-          name: 'Stream 000001',
-          latitude: 10,
-          longitude: 20
-        },
-        project: {
-          id: 'project000001',
-          name: 'Project 000001'
-        },
-        classification: {
-          value: 'chainsaw',
-          title: 'Chainsaw'
-        },
-        createdAt: '2021-09-14T20:10:01.312Z'
-      })
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12' })
       const events: Event[] = await list()
       const event = events[0]
       expect(events.length).toBe(2)
@@ -228,26 +193,7 @@ describe('createEvent function', () => {
       })
       await inc.update({ firstEventId: event1.id })
       MockDate.set('2021-09-14T20:12:00.000Z')
-      await createEvent({
-        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
-        start: '2021-09-14T20:05:48.795Z',
-        end: '2021-09-14T20:08:21.795Z',
-        stream: {
-          id: 'stream000001',
-          name: 'Stream 000001',
-          latitude: 10,
-          longitude: 20
-        },
-        project: {
-          id: 'project000001',
-          name: 'Project 000001'
-        },
-        classification: {
-          value: 'chainsaw',
-          title: 'Chainsaw'
-        },
-        createdAt: '2021-09-14T20:10:01.312Z'
-      })
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12' })
       MockDate.reset()
       const events: Event[] = await list()
       expect(events.length).toBe(2)
@@ -280,26 +226,7 @@ describe('createEvent function', () => {
       })
       await inc.update({ firstEventId: event1.id, closedAt: '2021-09-14T20:09:01.312Z' })
       MockDate.set('2021-09-14T20:12:00.000Z')
-      await createEvent({
-        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
-        start: '2021-09-14T20:05:48.795Z',
-        end: '2021-09-14T20:08:21.795Z',
-        stream: {
-          id: 'stream000001',
-          name: 'Stream 000001',
-          latitude: 10,
-          longitude: 20
-        },
-        project: {
-          id: 'project000001',
-          name: 'Project 000001'
-        },
-        classification: {
-          value: 'chainsaw',
-          title: 'Chainsaw'
-        },
-        createdAt: '2021-09-14T20:10:01.312Z'
-      })
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12' })
       MockDate.reset()
       const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events'] })
       expect(incidents.length).toBe(2)
