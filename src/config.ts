@@ -2,6 +2,9 @@ import { Env } from './types'
 
 export const env: Env = {
   AUTH0_DOMAIN: process.env.AUTH0_DOMAIN ?? 'auth.rfcx.org',
+  AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID ?? '',
+  AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET ?? '',
+  AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE ?? '',
   CORE_URL: process.env.CORE_URL ?? 'https://staging-api.rfcx.org',
   DB_HOSTNAME: process.env.DB_HOSTNAME ?? 'localhost',
   DB_NAME: process.env.DB_NAME ?? 'postgres',

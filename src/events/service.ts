@@ -5,6 +5,7 @@ import Event from './event.model'
 import { get, create, list, count } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
+import { getEvent, getStream } from '../common/core-api/index'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForEvent } from '../incidents/service'
 import dayjs from 'dayjs'
@@ -43,16 +44,21 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<Event> =>
     if (existingEvent !== null) {
       return existingEvent
     }
-    const classification = await ensureClassificationExists(eventData.classification)
-    const incidentForEvent = await findOrCreateIncidentForEvent(eventData, { transaction })
+    const coreEvent = await getEvent(eventData.id).then(e => e.data)
+    const coreStream = await getStream(coreEvent.streamId).then(e => e.data)
+    if (coreStream.project === null) {
+      throw new Error('Stream must be associated with a project')
+    }
+    const classification = await ensureClassificationExists(coreEvent.classification)
+    const incidentForEvent = await findOrCreateIncidentForEvent(coreStream, { transaction })
     const event = await create({
       id: eventData.id,
-      start: eventData.start !== undefined ? dayjs.utc(eventData.start).toDate() : undefined as any,
-      end: eventData.end !== undefined ? dayjs(eventData.end).toDate() : undefined as any,
-      streamId: eventData.stream.id,
-      projectId: eventData.project.id,
+      start: coreEvent.start !== undefined ? dayjs.utc(coreEvent.start).toDate() : undefined as any,
+      end: coreEvent.end !== undefined ? dayjs(coreEvent.end).toDate() : undefined as any,
+      streamId: coreStream.id,
+      projectId: (coreStream.project as any).id,
       classificationId: classification.id,
-      createdAt: eventData.createdAt !== undefined ? dayjs.utc(eventData.createdAt).toDate() : undefined as any,
+      createdAt: coreEvent.createdAt !== undefined ? dayjs.utc(coreEvent.createdAt).toDate() : undefined as any,
       incidentId: incidentForEvent.id
     }, { transaction })
     if (incidentForEvent.firstEvent === undefined) {

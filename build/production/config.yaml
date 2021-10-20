@@ -7,3 +7,4 @@ data:
   CORE_URL: https://api.rfcx.org
   EVENTS_SQS_QUEUE_ENABLED: "true"
   EVENTS_SQS_QUEUE: "ranger-api-events-production"
+  AUTH0_DOMAIN: "auth.rfcx.org"
