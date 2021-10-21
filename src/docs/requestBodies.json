@@ -17,27 +17,10 @@
         "description": "When response was submitted in the app (iso 8601)",
         "example": "2020-11-17T10:35:12.331Z"
       },
-      "evidences": {
+      "items": {
         "type": "array",
-        "description": "Evidence types (codes). 100 - None, 101 - Cut down trees, 102 - Cleared areas, 103 - Logging equipment, 104 - Loggers at site, 105 - Illegal camps, 106 - Fired/burned areas, 107 - Evidence of poaching",
-        "example": [101, 103]
-      },
-      "loggingScale": {
-        "type": "number",
-        "description": "Logging scale (0 - none, 1 - not sure, 2 - small, 3 - large)",
-        "enum": [0, 1, 2],
-        "example": 1
-      },
-      "damageScale": {
-        "type": "number",
-        "description": "Damage scale (0 - no visible tree disruption found, 1 - small number of trees cut down, 2 - medium number of trees cut down, 3 - large area substantially clear cut)",
-        "enum": [0, 1, 2, 4],
-        "example": 1
-      },
-      "responseActions": {
-        "type": "array",
-        "description": "Actions that were taken (codes). 200 - None, 201 - Collected evidence, 202 - Issue a warning, 203 - Confiscated equipment, 204 - Issue a fine, 205 - Arrests, 206 - Planning to come back with security enforcement, 207 - Other",
-        "example": [201, 203]
+        "description": "A list of coded answers",
+        "example": [103, 201, 203, 306, 4002]
       },
       "note": {
         "type": "string",

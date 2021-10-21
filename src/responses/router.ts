@@ -2,7 +2,6 @@ import { Request, Response, Router } from 'express'
 import { ResponsePayload } from '../types'
 import { createResponse, getResponse, uploadFileAndSaveToDb } from './service'
 import { Converter, EmptyResultError, httpErrorHandler, ValidationError } from '@rfcx/http-utils'
-import { evidences, actions } from './constants'
 import { getStream } from '../common/core-api'
 import { multerFile } from '../common/multer'
 import { get } from './dao'
@@ -85,10 +84,7 @@ router.post('/', (req: Request, res: Response, next): void => {
   converter.convert('investigatedAt').toMomentUtc()
   converter.convert('startedAt').toMomentUtc()
   converter.convert('submittedAt').toMomentUtc()
-  converter.convert('evidences').toArray().nonEmpty().isEqualToAny(Object.keys(evidences).map(k => parseInt(k)))
-  converter.convert('loggingScale').toInt().isEqualToAny([0, 1, 2, 3])
-  converter.convert('damageScale').toInt().isEqualToAny([0, 1, 2, 3])
-  converter.convert('responseActions').toArray().nonEmpty().isEqualToAny(Object.keys(actions).map(k => parseInt(k)))
+  converter.convert('answers').toArray()
   converter.convert('note').optional().toString()
   converter.convert('streamId').toString()
   converter.validate()

@@ -1,9 +1,6 @@
-import { Table, Column, Model, DataType, PrimaryKey, HasMany, BelongsTo, BelongsToMany, CreatedAt, UpdatedAt, IsIn } from 'sequelize-typescript'
-import { IsInCustom } from '../../types' // see https://github.com/RobinBuschmann/sequelize-typescript/issues/866
-import Evidence from './evidence.model'
-import ResponseEvidence from './response-evidence.model'
-import Action from './action.model'
-import ResponseAction from './response-action.model'
+import { Table, Column, Model, DataType, PrimaryKey, HasMany, BelongsTo, BelongsToMany, CreatedAt, UpdatedAt } from 'sequelize-typescript'
+import Answer from './answer.model'
+import ResponseAnswer from './response-answer.model'
 import Asset from '../../assets/asset.model'
 import User from '../../users/user.model'
 import Incident from '../../incidents/incident.model'
@@ -41,19 +38,8 @@ export default class Response extends Model {
   @UpdatedAt
   updatedAt!: Date
 
-  @BelongsToMany(() => Evidence, () => ResponseEvidence)
-  evidences!: Evidence[]
-
-  @(IsIn as typeof IsInCustom)([[0, 1, 2, 3]])
-  @Column(DataType.INTEGER)
-  loggingScale!: number
-
-  @(IsIn as typeof IsInCustom)([[0, 1, 2, 3]])
-  @Column(DataType.INTEGER)
-  damageScale!: number
-
-  @BelongsToMany(() => Action, () => ResponseAction)
-  actions!: Action[]
+  @BelongsToMany(() => Answer, () => ResponseAnswer)
+  answers!: Answer[]
 
   @HasMany(() => Asset, 'id')
   assets!: Asset[]

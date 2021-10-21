@@ -1,17 +1,5 @@
 import { UserFormatted, IncidentFormatted } from '../types'
-
-enum LoggingScale {
-  NotSure = 0,
-  Small = 1,
-  Large = 2
-}
-
-enum DamageScale {
-  No = 0,
-  Small = 1,
-  Medium = 2,
-  Large = 3
-}
+import Answer from './models/answer.model'
 
 enum AttachmentType {
   photo = 0,
@@ -27,11 +15,8 @@ interface ReportAttachment {
 
 export interface ResponseUpdatableData {
   investigatedAt?: Date
-  evidences?: number[]
   attachments?: ReportAttachment[]
-  loggingScale?: LoggingScale
-  damageScale?: DamageScale
-  responseActions?: number[]
+  answers?: number[]
   note?: string
 }
 
@@ -66,11 +51,18 @@ export interface ResponseFormatted {
   investigatedAt: string
   startedAt: string
   submittedAt: string
-  loggingScale: number
-  damageScale: number
   createdAt: string
   createdBy: UserFormatted
-  evidences: string[]
-  actions: string[]
+  answers: GroupedAnswers[]
   incident: IncidentFormatted
+}
+
+export interface QuestionFormatted {
+  id: string
+  text: string
+}
+
+export interface GroupedAnswers {
+  question: QuestionFormatted
+  answers: Answer[]
 }

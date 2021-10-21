@@ -12,8 +12,7 @@ import { list } from './dao'
 import incidentsDao from '../incidents/dao'
 import Classification from '../classifications/classification.model'
 import service from './service'
-import ResponseEvidence from './models/response-evidence.model'
-import ResponseAction from './models/response-action.model'
+import ResponseAnswer from './models/response-answer.model'
 const app = expressApp()
 jest.mock('../common/auth', () => {
   return {
@@ -44,10 +43,7 @@ describe('POST /responses', () => {
       const requestBody = {
         startedAt: '2021-06-09T15:35:21.000Z',
         submittedAt: '2021-06-09T15:38:05.000Z',
-        evidences: [101, 103],
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203, 205],
+        answers: [102, 104, 105, 201, 301, 401],
         note: 'Test note',
         streamId: 'aaaaaaaaa000'
       }
@@ -60,10 +56,7 @@ describe('POST /responses', () => {
       const requestBody = {
         investigatedAt: '2021-05-03T12:31:42.150Z',
         submittedAt: '2021-06-09T15:38:05.000Z',
-        evidences: [101, 103],
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203, 205],
+        answers: [102, 104, 105, 201, 301, 401],
         note: 'Test note',
         streamId: 'aaaaaaaaa000'
       }
@@ -76,142 +69,7 @@ describe('POST /responses', () => {
       const requestBody = {
         investigatedAt: '2021-05-03T12:31:42.150Z',
         startedAt: '2021-06-09T15:35:21.000Z',
-        evidences: [101, 103],
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203, 205],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if evidences is not defined', async () => {
-      const requestBody = {
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if evidences is empty', async () => {
-      const requestBody = {
-        evidences: [],
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if evidences is not from the list', async () => {
-      const requestBody = {
-        evidences: [200],
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [201, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if responseActions is empty', async () => {
-      const requestBody = {
-        evidences: [101, 103],
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if responseActions is not from the list', async () => {
-      const requestBody = {
-        evidences: [200],
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        damageScale: 2,
-        responseActions: [100, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if loggingScale is not defined', async () => {
-      const requestBody = {
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        damageScale: 2,
-        evidences: [101, 103],
-        responseActions: [201, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if damageScale is not defined', async () => {
-      const requestBody = {
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        loggingScale: 1,
-        evidences: [101, 103],
-        responseActions: [201, 203],
-        note: 'Test note',
-        streamId: 'aaaaaaaaa000'
-      }
-      const reqResponse = await request(app).post('/').send(requestBody)
-      expect(reqResponse.statusCode).toBe(400)
-      const responses: Response[] = await list()
-      expect(responses.length).toBe(0)
-    })
-    test('returns 400 if responseActions is not defined', async () => {
-      const requestBody = {
-        investigatedAt: '2021-06-08T19:26:40.000Z',
-        startedAt: '2021-06-09T15:35:21.000Z',
-        submittedAt: '2021-06-09T15:38:05.000Z',
-        evidences: [101, 103],
-        loggingScale: 1,
-        damageScale: 2,
+        answers: [102, 104, 105, 201, 301, 401],
         note: 'Test note',
         streamId: 'aaaaaaaaa000'
       }
@@ -225,10 +83,7 @@ describe('POST /responses', () => {
         investigatedAt: '2021-05-03T12:31:42.150Z',
         startedAt: '2021-06-09T15:35:21.000Z',
         submittedAt: '2021-06-09T15:38:05.000Z',
-        evidences: [102, 104, 105],
-        loggingScale: 2,
-        damageScale: 3,
-        responseActions: [200],
+        answers: [102, 104, 105, 201, 301, 401],
         streamId: 'aaaaaaaaa000'
       }
       const reqResponse = await request(app).post('/').send(requestBody)
@@ -237,14 +92,13 @@ describe('POST /responses', () => {
       const response = responses[0]
       expect(responses.length).toBe(1)
       expect(response.investigatedAt?.toISOString()).toBe('2021-05-03T12:31:42.150Z')
-      expect(response.evidences?.length).toBe(3)
-      expect(response.evidences?.map(e => e.id).includes(102)).toBeTruthy()
-      expect(response.evidences?.map(e => e.id).includes(104)).toBeTruthy()
-      expect(response.evidences?.map(e => e.id).includes(105)).toBeTruthy()
-      expect(response.loggingScale).toBe(2)
-      expect(response.damageScale).toBe(3)
-      expect(response.actions?.length).toBe(1)
-      expect(response.actions?.map(e => e.id).includes(200)).toBeTruthy()
+      expect(response.answers?.length).toBe(6)
+      expect(response.answers?.map(e => e.id).includes(102)).toBeTruthy()
+      expect(response.answers?.map(e => e.id).includes(104)).toBeTruthy()
+      expect(response.answers?.map(e => e.id).includes(105)).toBeTruthy()
+      expect(response.answers?.map(e => e.id).includes(201)).toBeTruthy()
+      expect(response.answers?.map(e => e.id).includes(301)).toBeTruthy()
+      expect(response.answers?.map(e => e.id).includes(401)).toBeTruthy()
       expect(response.streamId).toBe('aaaaaaaaa000')
     })
     test('returns 400 if streamId is not defined', async () => {
@@ -252,10 +106,7 @@ describe('POST /responses', () => {
         investigatedAt: '2021-06-08T19:26:40.000Z',
         startedAt: '2021-06-09T15:35:21.000Z',
         submittedAt: '2021-06-09T15:38:05.000Z',
-        evidences: [100],
-        loggingScale: 0,
-        damageScale: 0,
-        responseActions: [201, 203],
+        answers: [102, 104, 105, 201, 301, 401],
         note: 'Test note'
       }
       const reqResponse = await request(app).post('/').send(requestBody)
@@ -269,10 +120,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-09T15:35:21.000Z',
       submittedAt: '2021-06-09T15:38:05.000Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [201, 204],
+      answers: [101, 103, 201, 204, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     }
@@ -284,12 +132,12 @@ describe('POST /responses', () => {
     expect(response.investigatedAt?.toISOString()).toBe('2021-06-08T19:26:40.000Z')
     expect(response.startedAt?.toISOString()).toBe('2021-06-09T15:35:21.000Z')
     expect(response.submittedAt?.toISOString()).toBe('2021-06-09T15:38:05.000Z')
-    expect(response.evidences?.map(e => e.id).includes(101)).toBeTruthy()
-    expect(response.evidences?.map(e => e.id).includes(103)).toBeTruthy()
-    expect(response.loggingScale).toBe(1)
-    expect(response.damageScale).toBe(2)
-    expect(response.actions?.map(e => e.id).includes(201)).toBeTruthy()
-    expect(response.actions?.map(e => e.id).includes(204)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(101)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(103)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(201)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(204)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(301)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(402)).toBeTruthy()
     expect(response.streamId).toBe('aaaaaaaaa000')
     expect(response.projectId).toBe('project000001')
     const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'firstResponse'] })
@@ -303,10 +151,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-08T19:30:02.000Z',
       submittedAt: '2021-06-08T19:32:06.000Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [202, 203],
+      answers: [101, 103, 202, 203, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     })
@@ -314,10 +159,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-08T19:51:40.000Z',
       startedAt: '2021-06-08T19:55:02.000Z',
       submittedAt: '2021-06-08T19:57:06.000Z',
-      evidences: [100],
-      loggingScale: 2,
-      damageScale: 3,
-      responseActions: [200],
+      answers: [100, 200, 302, 403],
       streamId: 'aaaaaaaaa000'
     })
     expect(response1.statusCode).toBe(201)
@@ -339,10 +181,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-08T19:26:40.000Z',
       startedAt: '2021-06-08T19:30:02.000Z',
       submittedAt: '2021-06-08T19:32:06.000Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [202, 203],
+      answers: [101, 103, 202, 203, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     })
@@ -350,10 +189,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-10T19:51:40.000Z',
       startedAt: '2021-06-10T19:55:02.000Z',
       submittedAt: '2021-06-10T19:57:06.000Z',
-      evidences: [100],
-      loggingScale: 2,
-      damageScale: 3,
-      responseActions: [200],
+      answers: [101, 103, 202, 203, 301, 402],
       streamId: 'aaaaaaaaa000'
     })
     expect(response1.statusCode).toBe(201)
@@ -389,10 +225,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-09T19:26:40.000Z',
       startedAt: '2021-06-10T15:35:21.000Z',
       submittedAt: '2021-06-10T15:38:05.000Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [201, 204],
+      answers: [101, 103, 202, 203, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     }
@@ -430,10 +263,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-05T20:10:01.312Z',
       startedAt: '2021-06-05T21:10:01.312Z',
       submittedAt: '2021-06-05T21:12:01.312Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [201, 204],
+      answers: [101, 103, 202, 203, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     }
@@ -470,10 +300,7 @@ describe('POST /responses', () => {
       investigatedAt: '2021-06-09T19:26:40.000Z',
       startedAt: '2021-06-10T15:35:21.000Z',
       submittedAt: '2021-06-10T15:38:05.000Z',
-      evidences: [101, 103],
-      loggingScale: 1,
-      damageScale: 2,
-      responseActions: [201, 204],
+      answers: [101, 103, 202, 203, 301, 402],
       note: 'Test note',
       streamId: 'aaaaaaaaa000'
     }
@@ -501,19 +328,17 @@ describe('GET /responses/{id}', () => {
       investigatedAt: '2021-08-15T10:02:22.795Z',
       startedAt: '2021-08-15T10:03:22.795Z',
       submittedAt: '2021-08-15T10:04:22.795Z',
-      loggingScale: 1,
-      damageScale: 1,
       createdById: 1,
       incidentId: incident1.id,
       schemaVersion: 1
     })
-    await ResponseEvidence.bulkCreate([
-      { responseId: response1.id, evidenceId: 101 },
-      { responseId: response1.id, evidenceId: 102 }
-    ])
-    await ResponseAction.bulkCreate([
-      { responseId: response1.id, actionId: 202 },
-      { responseId: response1.id, actionId: 204 }
+    await ResponseAnswer.bulkCreate([
+      { responseId: response1.id, answerId: 101 },
+      { responseId: response1.id, answerId: 102 },
+      { responseId: response1.id, answerId: 202 },
+      { responseId: response1.id, answerId: 204 },
+      { responseId: response1.id, answerId: 301 },
+      { responseId: response1.id, answerId: 401 }
     ])
     MockDate.reset()
     await incident1.update({ firstResponseId: response1.id })
@@ -527,16 +352,35 @@ describe('GET /responses/{id}', () => {
     expect(resp.investigatedAt).toBe('2021-08-15T10:02:22.795Z')
     expect(resp.startedAt).toBe('2021-08-15T10:03:22.795Z')
     expect(resp.submittedAt).toBe('2021-08-15T10:04:22.795Z')
-    expect(resp.loggingScale).toBe(1)
-    expect(resp.damageScale).toBe(1)
+    expect(resp.answers.length).toBe(4)
+    expect(resp.answers[0].question.id).toBe(1)
+    expect(resp.answers[0].question.text).toBe(seedValues.questions.find(q => q.id === 1)?.text)
+    expect(resp.answers[0].items.length).toBe(2)
+    expect(resp.answers[0].items[0].id).toBe(101)
+    expect(resp.answers[0].items[0].text).toBe(seedValues.answers.find(a => a.id === 101)?.text)
+    expect(resp.answers[0].items[1].id).toBe(102)
+    expect(resp.answers[0].items[1].text).toBe(seedValues.answers.find(a => a.id === 102)?.text)
+    expect(resp.answers[1].question.id).toBe(2)
+    expect(resp.answers[1].question.text).toBe(seedValues.questions.find(q => q.id === 2)?.text)
+    expect(resp.answers[1].items.length).toBe(2)
+    expect(resp.answers[1].items[0].id).toBe(202)
+    expect(resp.answers[1].items[0].text).toBe(seedValues.answers.find(a => a.id === 202)?.text)
+    expect(resp.answers[1].items[1].id).toBe(204)
+    expect(resp.answers[1].items[1].text).toBe(seedValues.answers.find(a => a.id === 204)?.text)
+    expect(resp.answers[2].question.id).toBe(3)
+    expect(resp.answers[2].question.text).toBe(seedValues.questions.find(q => q.id === 3)?.text)
+    expect(resp.answers[2].items.length).toBe(1)
+    expect(resp.answers[2].items[0].id).toBe(301)
+    expect(resp.answers[2].items[0].text).toBe(seedValues.answers.find(a => a.id === 301)?.text)
+    expect(resp.answers[3].question.id).toBe(4)
+    expect(resp.answers[3].question.text).toBe(seedValues.questions.find(q => q.id === 4)?.text)
+    expect(resp.answers[3].items.length).toBe(1)
+    expect(resp.answers[3].items[0].id).toBe(401)
+    expect(resp.answers[3].items[0].text).toBe(seedValues.answers.find(a => a.id === 401)?.text)
     expect(resp.createdBy.firstname).toBe(seedValues.primaryFirstname)
     expect(resp.createdBy.lastname).toBe(seedValues.primaryLastname)
     expect(resp.createdBy.guid).toBe(seedValues.primaryGuid)
     expect(resp.createdBy.email).toBe(seedValues.primaryEmail)
-    expect(resp.evidences.includes('Cut down trees')).toBeTruthy()
-    expect(resp.evidences.includes('Cleared areas')).toBeTruthy()
-    expect(resp.actions.includes('Issue a warning')).toBeTruthy()
-    expect(resp.actions.includes('Issue a fine')).toBeTruthy()
     expect(resp.incident.id).toBe(incident1.id)
     expect(resp.incident.ref).toBe(1)
     expect(resp.incident.streamId).toBe('stream000000')

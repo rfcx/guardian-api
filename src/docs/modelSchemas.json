@@ -209,6 +209,45 @@
       }
     ]
   },
+  "Question": {
+    "properties": {
+      "id": {
+        "type": "number",
+        "example": 1
+      },
+      "text": {
+        "type": "string",
+        "example": "What evidence did you encounter?"
+      }
+    }
+  },
+  "Answer": {
+    "properties": {
+      "id": {
+        "type": "number",
+        "example": 102
+      },
+      "text": {
+        "type": "string",
+        "example": "Cleared areas"
+      }
+    }
+  },
+  "QuestionWithAnswers": {
+    "properties": {
+      "question": {
+        "$ref": "#/components/schemas/Question"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": {
+            "$ref": "#/components/schemas/Answer"
+          }
+        }
+      }
+    }
+  },
   "Response": {
     "allOf": [
       {
@@ -216,32 +255,39 @@
       },
       {
         "properties": {
-          "loggingScale": {
-            "type": "number",
-            "example": 1
-          },
-          "damageScale": {
-            "type": "number",
-            "example": 2
-          },
-          "evidences": {
+          "answers": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/QuestionWithAnswers"
             },
             "example": [
-              "Cut down trees",
-              "Loggers at site"
-            ]
-          },
-          "actions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "Collected evidence",
-              "Issue a fine"
+              {
+                "question": { "id": "1", "text": "What evidence did you encounter?" },
+                "items": [
+                  { "id": 102, "text": "Cleared areas" },
+                  { "id": 104, "text": "Loggers at site" }
+                ]
+              },
+              {
+                "question": { "id": "2", "text": "What actions did you take?" },
+                "items": [
+                  { "id": 201, "text": "Collected evidence" },
+                  { "id": 202, "text": "Issue a warning" },
+                  { "id": 206, "text": "Planning to come back with security enforcement" }
+                ]
+              },
+              {
+                "question": { "id": "3", "text": "What was the scale of logging operation?" },
+                "items": [
+                  { "id": 303, "text": "Small" }
+                ]
+              },
+              {
+                "question": { "id": "4", "text": "How much damage was done to the area?" },
+                "items": [
+                  { "id": 403, "text": "Medium number of trees cut down" }
+                ]
+              }
             ]
           },
           "incident": {

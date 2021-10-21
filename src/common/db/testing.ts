@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import express, { Express } from 'express'
 import ResponseModel from '../../responses/models/response.model'
-import Evidence from '../../responses/models/evidence.model'
-import Action from '../../responses/models/action.model'
-import { evidences, actions } from '../../responses/constants'
+import QuestionType from '../../responses/models/question-type.model'
+import Question from '../../responses/models/question.model'
+import Answer from '../../responses/models/answer.model'
 import User from '../../users/user.model'
 
 interface Migration {
@@ -28,7 +28,7 @@ export async function migrate (sequelize: Sequelize, table = 'SequelizeMeta'): P
   }
 
   const query = sequelize.getQueryInterface().sequelize.query
-  const regex = /(create_hypertable|INDEX|ADD CONSTRAINT|DROP CONSTRAINT|DELETE FROM .* USING)/ // unsupported by sqlite
+  const regex = /(create_hypertable|ADD CONSTRAINT|DROP CONSTRAINT|DELETE FROM .* USING)/ // unsupported by sqlite
   sequelize.getQueryInterface().sequelize.query = async (sql: string, options: any): Promise<any> => {
     if (regex.test(sql)) {
       // console.log('Skip unsupported query: ' + sql)
@@ -56,15 +56,48 @@ const primaryFirstname = 'John'
 const primaryLastname = 'John'
 const primaryEmail = 'John@test.org'
 const primaryGuid = 'd6509477-7270-4ead-9217-b491d46f2194'
-export const seedValues = { primaryFirstname, primaryLastname, primaryEmail, primaryGuid }
+const questionTypes = [
+  { id: 1, value: 'single', title: 'Single answer' },
+  { id: 2, value: 'multiple', title: 'Multiple answers' }
+]
+const questions = [
+  { id: 1, text: 'What evidence did you encounter?', type_id: 2 },
+  { id: 2, text: 'What actions did you take?', type_id: 2 },
+  { id: 3, text: 'What was the scale of logging operation?', type_id: 1 },
+  { id: 4, text: 'How much damage was done to the area?', type_id: 1 }
+]
+const answers = [
+  { id: 100, text: 'None', question_id: 1 },
+  { id: 101, text: 'Cut down trees', question_id: 1 },
+  { id: 102, text: 'Cleared areas', question_id: 1 },
+  { id: 103, text: 'Logging equipment', question_id: 1 },
+  { id: 104, text: 'Loggers at site', question_id: 1 },
+  { id: 105, text: 'Illegal camps', question_id: 1 },
+  { id: 106, text: 'Fired/burned areas', question_id: 1 },
+  { id: 107, text: 'Evidence of poaching', question_id: 1 },
+  { id: 200, text: 'None', question_id: 2 },
+  { id: 201, text: 'Collected evidence', question_id: 2 },
+  { id: 202, text: 'Issue a warning', question_id: 2 },
+  { id: 203, text: 'Confiscated equipment', question_id: 2 },
+  { id: 204, text: 'Issue a fine', question_id: 2 },
+  { id: 205, text: 'Arrests', question_id: 2 },
+  { id: 206, text: 'Planning to come back with security enforcement', question_id: 2 },
+  { id: 207, text: 'Other', question_id: 2 },
+  { id: 301, text: 'None', question_id: 3 },
+  { id: 302, text: 'Not sure', question_id: 3 },
+  { id: 303, text: 'Small', question_id: 3 },
+  { id: 304, text: 'Large', question_id: 3 },
+  { id: 401, text: 'No visible tree disruption found', question_id: 4 },
+  { id: 402, text: 'Small number of trees cut down', question_id: 4 },
+  { id: 403, text: 'Medium number of trees cut down', question_id: 4 },
+  { id: 404, text: 'Large area substantially clear cut', question_id: 4 }
+]
+export const seedValues = { primaryFirstname, primaryLastname, primaryEmail, primaryGuid, questionTypes, questions, answers }
 
 export async function seed (): Promise<void> {
-  await Evidence.bulkCreate(Object.keys(evidences).map((k) => {
-    return { id: parseInt(k), title: evidences[k] }
-  }))
-  await Action.bulkCreate(Object.keys(actions).map((a) => {
-    return { id: parseInt(a), title: actions[a] }
-  }))
+  await QuestionType.bulkCreate(questionTypes)
+  await Question.bulkCreate(questions)
+  await Answer.bulkCreate(answers)
   await User.create({
     firstname: primaryFirstname,
     lastname: primaryLastname,

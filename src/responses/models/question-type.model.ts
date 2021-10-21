@@ -1,14 +1,17 @@
 import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript'
 
 @Table({
-  tableName: 'evidences',
+  tableName: 'question_types',
   timestamps: false
 })
-export default class Evidence extends Model {
+export default class QuestionType extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
   id!: number
+
+  @Column(DataType.STRING)
+  value!: string
 
   @Column(DataType.STRING)
   title!: string
