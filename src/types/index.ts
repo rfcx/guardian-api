@@ -14,6 +14,8 @@ export interface Env {
   AWS_SECRET_KEY: string
   AWS_S3_BUCKET: string
   AWS_REGION_ID: string
+  FIREBASE_CLIENT_EMAIL: string
+  FIREBASE_PRIVATE_KEY: string
 }
 
 export interface QueryOrder {
@@ -53,3 +55,4 @@ export * from '../projects/types'
 export * from '../responses/types'
 export * from '../users/types'
 export * from '../common/core-api/types'
+export * from '../common/firebase/types'

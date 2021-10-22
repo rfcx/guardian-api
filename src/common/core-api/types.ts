@@ -22,6 +22,7 @@ export interface StreamResponse {
   longitude: number
   altitude: number
   project: ProjectResponse | null
+  timezone: string
 }
 
 export interface EventResponse {

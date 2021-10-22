@@ -30,3 +30,12 @@ export interface EventsQuery {
   offset: number
   sort: string
 }
+
+export interface EventPNData {
+  streamName: string
+  time: string
+  latitude: number
+  longitude: number
+  classificationName: string
+  topic: string
+}
