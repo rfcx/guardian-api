@@ -14,6 +14,11 @@ jest.mock('../common/auth', () => {
     getM2MToken: jest.fn(() => 'mocked token')
   }
 })
+jest.mock('../common/firebase/index', () => {
+  return {
+    sendToTopic: jest.fn(() => 'sent')
+  }
+})
 
 let classification: Classification
 let user: User

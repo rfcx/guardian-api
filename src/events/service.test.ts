@@ -15,6 +15,11 @@ jest.mock('../common/auth', () => {
     getM2MToken: jest.fn(() => 'mocked token')
   }
 })
+jest.mock('../common/firebase', () => {
+  return {
+    sendToTopic: jest.fn(() => 'sent')
+  }
+})
 
 expressApp()
 
