@@ -66,7 +66,10 @@ router.get('/', (req: Request, res: Response): void => {
   converter.validate()
     .then(async (params: IncidentQuery) => {
       const data = await getIncidents(params)
-      res.header('Total-Items', data.total.toString()).json(data.results)
+      res
+        .header('Access-Control-Expose-Headers', 'Total-Items')
+        .header('Total-Items', data.total.toString())
+        .json(data.results)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting incidents.'))
 })
