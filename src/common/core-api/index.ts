@@ -7,12 +7,16 @@ import { getM2MToken } from '../auth'
 const coreHeaders = ['total-items']
 
 function extractCoreHeaders (headers: any = {}): object {
-  return Object.keys(headers)
+  const h = Object.keys(headers)
     .filter(key => coreHeaders.includes(key))
     .reduce((obj: any, key: string) => {
       obj[key] = headers[key]
       return obj
     }, {})
+  if (h['Total-Items'] !== undefined) {
+    h['Access-Control-Expose-Headers'] = 'Total-Items'
+  }
+  return h
 }
 
 export const getStreams = async (token?: string, params: any = {}): Promise<ForwardedArrayResponse<StreamResponse>> => {
