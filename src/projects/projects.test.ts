@@ -1,7 +1,12 @@
-import { GET, setupMockAxios } from '../common/axios/mock'
+import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import { expressApp, muteConsole } from '../common/db/testing'
 import request from 'supertest'
 import routes from './router'
+jest.mock('../common/auth', () => {
+  return {
+    getM2MToken: jest.fn(() => 'mocked token')
+  }
+})
 
 beforeAll(() => {
   muteConsole()
@@ -26,6 +31,7 @@ describe('GET /projects', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body[0]).toEqual(mockProject[0])
     expect(response.body[1]).toEqual(mockProject[1])
+    resetMockAxios()
   })
 
   test('get empty projects', async () => {
@@ -34,5 +40,6 @@ describe('GET /projects', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual([])
+    resetMockAxios()
   })
 })

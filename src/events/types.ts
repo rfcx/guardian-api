@@ -1,14 +1,5 @@
-import Classification from '../classifications/classification.model'
-import { Stream, Project } from '../types'
-
 export interface EventSQSMessage {
   id: string
-  start: string
-  end: string
-  stream: Stream
-  project: Project
-  classification: Classification['_attributes']
-  createdAt: string
 }
 
 export interface EventFilters {
@@ -38,4 +29,13 @@ export interface EventsQuery {
   limit: number
   offset: number
   sort: string
+}
+
+export interface EventPNData {
+  streamName: string
+  time: string
+  latitude: number
+  longitude: number
+  classificationName: string
+  topic: string
 }

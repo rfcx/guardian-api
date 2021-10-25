@@ -5,20 +5,26 @@ export const GET = 'GET'
 export const POST = 'POST'
 export const PATCH = 'PATCH'
 
+const mockAdapter = new MockAdapter(axios)
+
 export function setupMockAxios (request: string, endpoint: string, status: number, mockResponse?: any, headers?: any): MockAdapter | undefined {
-  const mockAdapter = new MockAdapter(axios)
   if (request === GET) {
     const mock = mockAdapter.onGet(`/${endpoint}`)
-    return mock.reply(status, mockResponse, headers)
+    mock.reply(status, mockResponse, headers)
   }
   if (request === POST) {
     const mock = mockAdapter.onPost(`/${endpoint}`)
-    return mock.reply(status, mockResponse, headers)
+    mock.reply(status, mockResponse, headers)
   }
   if (request === PATCH) {
     const mock = mockAdapter.onPatch(`/${endpoint}`)
-    return mock.reply(status, mockResponse, headers)
+    mock.reply(status, mockResponse, headers)
   }
+  return mockAdapter
 }
 
-export default { GET, POST, PATCH, setupMockAxios }
+export function resetMockAxios (): void {
+  mockAdapter.reset()
+}
+
+export default { GET, POST, PATCH, setupMockAxios, resetMockAxios }

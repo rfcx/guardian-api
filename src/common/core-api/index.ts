@@ -1,7 +1,8 @@
 import axios from '../axios'
-import { ProjectResponse, StreamResponse, ForwardedResponse, ForwardedArrayResponse } from './types'
+import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse } from './types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
+import { getM2MToken } from '../auth'
 
 const coreHeaders = ['total-items']
 
@@ -14,7 +15,10 @@ function extractCoreHeaders (headers: any = {}): object {
     }, {})
 }
 
-export const getStreams = async (token: string, params: any = {}): Promise<ForwardedArrayResponse<StreamResponse>> => {
+export const getStreams = async (token?: string, params: any = {}): Promise<ForwardedArrayResponse<StreamResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
   const options = {
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
@@ -26,10 +30,14 @@ export const getStreams = async (token: string, params: any = {}): Promise<Forwa
         headers: extractCoreHeaders(response.headers)
       }
     })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
 
-export const getStream = async (token: string, id: string, params: any = {}): Promise<ForwardedResponse<StreamResponse>> => {
+export const getStream = async (id: string, token?: string, params: any = {}): Promise<ForwardedResponse<StreamResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
   const options = {
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
@@ -41,10 +49,33 @@ export const getStream = async (token: string, id: string, params: any = {}): Pr
         headers: extractCoreHeaders(response.headers)
       }
     })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
 
-export const getProjects = async (token: string, params: unknown = {}): Promise<ForwardedArrayResponse<ProjectResponse>> => {
+export const getEvent = async (id: string, token?: string, params: any = {}): Promise<ForwardedResponse<EventResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options = {
+    headers: { Authorization: token },
+    params: { ...params, fields: ['id', 'start', 'end', 'created_at', 'stream_id', 'classification'] }
+  }
+  return await axios.get(`/events/${id}`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}
+
+export const getProjects = async (token?: string, params: unknown = {}): Promise<ForwardedArrayResponse<ProjectResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
   const options = {
     headers: { Authorization: token },
     params
@@ -56,5 +87,6 @@ export const getProjects = async (token: string, params: unknown = {}): Promise<
         headers: extractCoreHeaders(response.headers)
       }
     })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }

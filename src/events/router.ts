@@ -30,7 +30,7 @@ const router = Router()
  */
 router.get('/streams/:id/last-events', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization ?? ''
-  api.getStream(userToken, req.params.id)
+  api.getStream(req.params.id, userToken)
     .then(async (forwardedResponse) => {
       const stream = forwardedResponse.data
       const events = await getEventsSinceLastReport(stream.id)

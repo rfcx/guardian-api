@@ -4,8 +4,7 @@ import { Op, Transactionable } from 'sequelize'
 import { applyTimeRangeToQuery } from '../common/db'
 import Response from './models/response.model'
 import { ResponseFilters, ResponseCreationData, QueryOptionsRFCx } from '../types'
-import ResponseEvidence from './models/response-evidence.model'
-import ResponseAction from './models/response-action.model'
+import ResponseAnswer from './models/response-answer.model'
 import { availableIncludes } from './misc'
 
 dayjs.extend(utc)
@@ -46,7 +45,7 @@ export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): P
     attributes: {
       exclude: ['updatedAt']
     },
-    include: [{ all: true }]
+    include: availableIncludes
   })
 }
 
@@ -55,26 +54,15 @@ export const create = async (data: ResponseCreationData, o: Transactionable = {}
   return await Response.create(data, { transaction })
 }
 
-export const assignEvidencesByIds = async (responseId: string, evidences: number[] = [], o: Transactionable = {}): Promise<void> => {
+export const assignAnswersByIds = async (responseId: string, answers: number[] = [], o: Transactionable = {}): Promise<void> => {
   const transaction = o.transaction
-  const data = evidences.map((e) => {
+  const data = answers.map((e) => {
     return {
       responseId,
-      evidenceId: e
+      answerId: e
     }
   })
-  await ResponseEvidence.bulkCreate(data, { transaction })
-}
-
-export const assignActionsByIds = async (responseId: string, actions: number[] = [], o: Transactionable = {}): Promise<void> => {
-  const transaction = o.transaction
-  const data = actions.map((e) => {
-    return {
-      responseId,
-      actionId: e
-    }
-  })
-  await ResponseAction.bulkCreate(data, { transaction })
+  await ResponseAnswer.bulkCreate(data, { transaction })
 }
 
 export default { get, list, create }

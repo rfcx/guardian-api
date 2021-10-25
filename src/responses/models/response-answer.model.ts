@@ -1,16 +1,16 @@
 import { Table, Column, Model, ForeignKey } from 'sequelize-typescript'
 import Response from './response.model'
-import Action from './action.model'
+import Answer from './answer.model'
 
 @Table({
   timestamps: false
 })
-export default class ResponseAction extends Model {
+export default class ResponseAnswer extends Model {
   @ForeignKey(() => Response)
   @Column
   responseId!: number
 
-  @ForeignKey(() => Action)
+  @ForeignKey(() => Answer)
   @Column
-  actionId!: number
+  answerId!: number
 }

@@ -1,5 +1,8 @@
 export interface Env {
   AUTH0_DOMAIN: string
+  AUTH0_CLIENT_ID: string
+  AUTH0_CLIENT_SECRET: string
+  AUTH0_AUDIENCE: string
   CORE_URL: string
   DB_HOSTNAME: string
   DB_NAME: string
@@ -11,6 +14,8 @@ export interface Env {
   AWS_SECRET_KEY: string
   AWS_S3_BUCKET: string
   AWS_REGION_ID: string
+  FIREBASE_CLIENT_EMAIL: string
+  FIREBASE_PRIVATE_KEY: string
 }
 
 export interface QueryOrder {
@@ -50,3 +55,4 @@ export * from '../projects/types'
 export * from '../responses/types'
 export * from '../users/types'
 export * from '../common/core-api/types'
+export * from '../common/firebase/types'

@@ -7,8 +7,18 @@ import Classification from '../classifications/classification.model'
 
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
-import { GET, setupMockAxios } from '../common/axios/mock'
+import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import Incident from '../incidents/incident.model'
+jest.mock('../common/auth', () => {
+  return {
+    getM2MToken: jest.fn(() => 'mocked token')
+  }
+})
+jest.mock('../common/firebase/index', () => {
+  return {
+    sendToTopic: jest.fn(() => 'sent')
+  }
+})
 
 let classification: Classification
 let user: User
@@ -43,6 +53,7 @@ describe('GET /streams', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body[0]).toEqual(mockStream[0])
     expect(response.body[1]).toEqual(mockStream[1])
+    resetMockAxios()
   })
 
   test('get empty streams', async () => {
@@ -51,6 +62,7 @@ describe('GET /streams', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual([])
+    resetMockAxios()
   })
 
   test('get streams with events count since last report', async () => {
@@ -95,5 +107,6 @@ describe('GET /streams', () => {
     expect(stream2.eventsCount).toEqual(0)
     expect(stream3.eventsCount).toEqual(0)
     expect(stream4.eventsCount).toEqual(0)
+    resetMockAxios()
   })
 })

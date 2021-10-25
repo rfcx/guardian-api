@@ -1,10 +1,11 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { ResponsePayload, ResponseFormatted } from '../types'
+import { ResponsePayload, ResponseFormatted, GroupedAnswers } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
 import Response from './models/response.model'
-import { create, list, get, assignEvidencesByIds, assignActionsByIds } from './dao'
+import Answer from './models/answer.model'
+import { create, list, get, assignAnswersByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse } from '../incidents/service'
 import { assetPath, generateFilename } from '../common/storage/paths'
@@ -54,13 +55,10 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
     if (incidentForResponse.firstResponse === null) {
       await incidentsDao.update(incidentForResponse.id, { firstResponseId: response.id }, { transaction })
     }
-    if (responseData.evidences?.length !== 0) {
-      await assignEvidencesByIds(response.id, responseData.evidences, { transaction })
+    if (responseData.answers?.length !== 0) {
+      await assignAnswersByIds(response.id, responseData.answers, { transaction })
     }
-    if (responseData.responseActions?.length !== 0) {
-      await assignActionsByIds(response.id, responseData.responseActions, { transaction })
-    }
-    if (responseData.note !== undefined) {
+    if (responseData.note !== undefined && responseData.note.length > 0) {
       await uploadFileAndSaveToDb(response, {
         buffer: Buffer.from(responseData.note, 'utf8'),
         originalname: `note-${response.id}.txt`,
@@ -101,8 +99,21 @@ export const uploadFileAndSaveToDb = async (response: Response, file: any, userD
 export const format = (response: Response): ResponseFormatted => {
   const {
     id, streamId, projectId, investigatedAt, startedAt, submittedAt,
-    loggingScale, damageScale, createdAt, createdBy, evidences, actions, incident
+    createdAt, createdBy, answers, incident
   } = response
+  const questions: any = answers.reduce((acc: any, cur: Answer) => {
+    const questionId = cur.question.id
+    if (acc[questionId] === undefined) {
+      acc[questionId] = {
+        question: cur.question,
+        items: []
+      }
+    }
+    const { id, text, picture } = cur
+    acc[questionId].items.push({ id, text, picture })
+    return acc
+  }, {})
+  const groupedAnswers = Object.values(questions)
   return {
     id,
     streamId,
@@ -111,11 +122,8 @@ export const format = (response: Response): ResponseFormatted => {
     startedAt: startedAt.toISOString(),
     submittedAt: submittedAt.toISOString(),
     createdAt: createdAt.toISOString(),
-    loggingScale,
-    damageScale,
     createdBy,
-    evidences: evidences.map((e) => e.title),
-    actions: actions.map(a => a.title),
+    answers: groupedAnswers as GroupedAnswers[],
     incident: incident as any
   }
 }
