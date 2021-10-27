@@ -56,8 +56,8 @@ const router = Router()
  *         description: Validation error
  */
 router.get('/', (req: Request, res: Response): void => {
+  const userToken = req.headers.authorization as string
   const converter = new Converter(req.query, {})
-  converter.convert('streams').optional().toArray()
   converter.convert('projects').optional().toArray()
   converter.convert('closed').optional().toBoolean()
   converter.convert('limit').default(100).toInt()
@@ -65,7 +65,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('sort').default('-createdAt').toString()
   converter.validate()
     .then(async (params: IncidentQuery) => {
-      const data = await getIncidents(params)
+      const data = await getIncidents(params, userToken)
       res
         .header('Access-Control-Expose-Headers', 'Total-Items')
         .header('Total-Items', data.total.toString())

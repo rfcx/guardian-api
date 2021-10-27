@@ -8,11 +8,23 @@ import { querySortToOrder } from '../common/db/helpers'
 import User from '../users/user.model'
 import { EmptyResultError } from '@rfcx/http-utils'
 import { ensureUserExists } from '../users/service'
+import { getAllUserProjects } from '../projects/service'
 
 dayjs.extend(utc)
 
-export const getIncidents = async (params: IncidentQuery): Promise<ListResults<Incident>> => {
-  const { streams, projects, closed, limit, offset, sort } = params
+async function getUserProjects (projects: string[] | undefined, userToken: string): Promise<string[]> {
+  const coreProjects = await getAllUserProjects(userToken)
+  const coreProjectIds = coreProjects.map(p => p.id)
+  if (projects === undefined) {
+    return coreProjectIds
+  } else {
+    return projects.filter(p => coreProjectIds.includes(p))
+  }
+}
+
+export const getIncidents = async (params: IncidentQuery, userToken: string): Promise<ListResults<Incident>> => {
+  let { streams, projects, closed, limit, offset, sort } = params
+  projects = await getUserProjects(projects, userToken)
   const total = await count({
     streams,
     projects,
