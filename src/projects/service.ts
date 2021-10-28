@@ -8,3 +8,10 @@ export const getAllUserProjects = async (userToken: string): Promise<Project[]> 
   })
   return forwardedResponse.data
 }
+
+export const hasAccessToProject = async (projectId: string, userToken: string): Promise<boolean> => {
+  await api.getProject(projectId, userToken)
+  return true
+}
+
+export default { getAllUserProjects, hasAccessToProject }

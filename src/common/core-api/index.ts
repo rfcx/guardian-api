@@ -94,3 +94,22 @@ export const getProjects = async (token?: string, params: unknown = {}): Promise
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
+
+export const getProject = async (id: string, token?: string, params: any = {}): Promise<ForwardedResponse<ProjectResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options = {
+    headers: { Authorization: token },
+    params: { ...params, fields: ['id', 'name'] }
+  }
+  return await axios.get(`/projects/${id}`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}

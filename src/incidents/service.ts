@@ -8,7 +8,7 @@ import { querySortToOrder } from '../common/db/helpers'
 import User from '../users/user.model'
 import { EmptyResultError } from '@rfcx/http-utils'
 import { ensureUserExists } from '../users/service'
-import { getAllUserProjects } from '../projects/service'
+import { getAllUserProjects, hasAccessToProject } from '../projects/service'
 
 dayjs.extend(utc)
 
@@ -43,8 +43,14 @@ export const getIncidents = async (params: IncidentQuery, userToken: string): Pr
   return { total, results }
 }
 
-export const getIncident = async (id: string): Promise<Incident | null> => {
-  return await get(id, [...incidentAttributes.full, 'closedBy', 'events', 'responses'])
+export const getIncident = async (id: string, userToken: string): Promise<Incident | null> => {
+  const incident = await get(id, [...incidentAttributes.full, 'closedBy', 'events', 'responses'])
+  if (incident === null) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw new EmptyResultError('Incident with given id not found')
+  }
+  await hasAccessToProject(incident.projectId, userToken)
+  return incident
 }
 
 export const updateIncident = async (id: string, payload: IncidentPatchPayload, userData: User): Promise<void> => {

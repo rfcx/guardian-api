@@ -8,6 +8,8 @@ import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
 import Classification from '../classifications/classification.model'
 import { get } from './dao'
+import mockedProjectService from '../projects/service'
+import { ForbiddenError } from '@rfcx/http-utils'
 const app = expressApp()
 jest.mock('../projects/service', () => {
   return {
@@ -16,7 +18,8 @@ jest.mock('../projects/service', () => {
         { id: 'project000000', name: 'Project 0' },
         { id: 'project000001', name: 'Project 1' }
       ]
-    })
+    }),
+    hasAccessToProject: jest.fn(async () => { return await Promise.resolve(true) })
   }
 })
 
@@ -24,6 +27,9 @@ app.use('/', routes)
 
 let incident1, incident2, incident3, incident4
 
+beforeEach(() => {
+  jest.clearAllMocks()
+})
 beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
@@ -177,6 +183,12 @@ describe('GET /incidents/{id}', () => {
   test('returns 404 when incident not found', async () => {
     const response = await request(app).get('/some')
     expect(response.statusCode).toBe(404)
+  })
+  test('returns 403 when incident is from unaccessible project', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    mockedProjectService.hasAccessToProject = jest.fn(async () => { throw new ForbiddenError('Forbidden') })
+    const response = await request(app).get(`/${incident4.id as string}`)
+    expect(response.statusCode).toBe(403)
   })
 })
 
