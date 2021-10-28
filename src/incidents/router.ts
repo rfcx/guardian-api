@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
-import { httpErrorHandler, Converter, EmptyResultError } from '@rfcx/http-utils'
+import { httpErrorHandler, Converter } from '@rfcx/http-utils'
 import { IncidentQuery, IncidentPatchPayload } from '../types'
 import { getIncidents, getIncident, updateIncident } from './service'
 
@@ -56,8 +56,8 @@ const router = Router()
  *         description: Validation error
  */
 router.get('/', (req: Request, res: Response): void => {
+  const userToken = req.headers.authorization as string
   const converter = new Converter(req.query, {})
-  converter.convert('streams').optional().toArray()
   converter.convert('projects').optional().toArray()
   converter.convert('closed').optional().toBoolean()
   converter.convert('limit').default(100).toInt()
@@ -65,7 +65,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('sort').default('-createdAt').toString()
   converter.validate()
     .then(async (params: IncidentQuery) => {
-      const data = await getIncidents(params)
+      const data = await getIncidents(params, userToken)
       res
         .header('Access-Control-Expose-Headers', 'Total-Items')
         .header('Total-Items', data.total.toString())
@@ -100,12 +100,8 @@ router.get('/', (req: Request, res: Response): void => {
  *         description: Incident not found
  */
 router.get('/:id', (req: Request, res: Response): void => {
-  getIncident(req.params.id)
+  getIncident(req.params.id, req.headers.authorization as string)
     .then((incident) => {
-      if (incident === null) {
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        throw new EmptyResultError('Incident with given id not found')
-      }
       res.json(incident)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting incident.'))
