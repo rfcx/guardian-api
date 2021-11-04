@@ -8,7 +8,6 @@ if (process.env.EVENTS_SQS_QUEUE_ENABLED === 'true') {
   console.log(`Subsribing to SQS topic "${topic}"`)
   messageQueue.subscribe(topic, async (data: EventSQSMessage) => {
     try {
-      console.log('New message with event received', data)
       const result = await createEvent(data)
       if (result !== null) {
         await sendPushNotification(result.coreEvent, result.coreStream)
