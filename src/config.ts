@@ -6,6 +6,7 @@ export const env: Env = {
   AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET ?? '',
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE ?? '',
   CORE_URL: process.env.CORE_URL ?? 'https://staging-api.rfcx.org',
+  MEDIA_URL: process.env.MEDIA_URL ?? 'https://staging-api.rfcx.org',
   DB_HOSTNAME: process.env.DB_HOSTNAME ?? 'localhost',
   DB_NAME: process.env.DB_NAME ?? 'postgres',
   DB_USER: process.env.DB_USER ?? 'admin',

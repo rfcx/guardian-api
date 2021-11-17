@@ -5,6 +5,7 @@ metadata:
   namespace: production
 data:
   CORE_URL: https://api.rfcx.org
+  MEDIA_URL: https://media-api.rfcx.org
   EVENTS_SQS_QUEUE_ENABLED: "true"
   EVENTS_SQS_QUEUE: "ranger-api-events-production"
   AUTH0_DOMAIN: "auth.rfcx.org"

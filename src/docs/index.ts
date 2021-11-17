@@ -65,12 +65,14 @@ const options = {
     './src/responses/router.ts',
     './src/events/router.ts',
     './src/incidents/router.ts',
+    './src/media/router.ts',
     'dist/assets/router.js',
     'dist/streams/router.js',
     'dist/projects/router.js',
     'dist/responses/router.js',
     'dist/events/router.js',
-    'dist/incidents/router.js'
+    'dist/incidents/router.js',
+    'dist/media/router.js'
   ]
 }
 

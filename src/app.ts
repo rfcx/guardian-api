@@ -7,6 +7,7 @@ import streams from './streams/router'
 import events from './events/router'
 import incidents from './incidents/router'
 import projects from './projects/router'
+import media from './media/router'
 import './events/consumer'
 import docs from './docs'
 import logger from './common/logging'
@@ -27,6 +28,7 @@ app.use('/incidents', incidents)
 app.use('/streams', streams)
 app.use('/projects', projects)
 app.use('/responses', responses)
+app.use('/media', media)
 app.use('/', events)
 
 app.use(errorHandler)

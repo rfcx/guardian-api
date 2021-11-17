@@ -1,4 +1,5 @@
-import axios from '../axios'
+import { AxiosRequestConfig } from 'axios'
+import { coreApiAxios, mediaApiAxios } from '../axios'
 import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse } from './types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
@@ -27,7 +28,7 @@ export const getStreams = async (token?: string, params: any = {}): Promise<Forw
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
   }
-  return await axios.get('/streams', options)
+  return await coreApiAxios.get('/streams', options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
@@ -46,7 +47,7 @@ export const getStream = async (id: string, token?: string, params: any = {}): P
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
   }
-  return await axios.get(`/streams/${id}`, options)
+  return await coreApiAxios.get(`/streams/${id}`, options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
@@ -65,7 +66,7 @@ export const getEvent = async (id: string, token?: string, params: any = {}): Pr
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'start', 'end', 'created_at', 'stream_id', 'classification'] }
   }
-  return await axios.get(`/events/${id}`, options)
+  return await coreApiAxios.get(`/events/${id}`, options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
@@ -84,7 +85,7 @@ export const getProjects = async (token?: string, params: unknown = {}): Promise
     headers: { Authorization: token },
     params
   }
-  return await axios.get('/projects', options)
+  return await coreApiAxios.get('/projects', options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
@@ -103,13 +104,26 @@ export const getProject = async (id: string, token?: string, params: any = {}): 
     headers: { Authorization: token },
     params: { ...params, fields: ['id', 'name'] }
   }
-  return await axios.get(`/projects/${id}`, options)
+  return await coreApiAxios.get(`/projects/${id}`, options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
         headers: extractCoreHeaders(response.headers)
       }
     })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}
+
+export const getMedia = async (filename: string, token?: string): Promise<any> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options: AxiosRequestConfig = {
+    headers: { Authorization: token },
+    responseType: 'stream'
+  }
+  return await mediaApiAxios.get(`/internal/assets/streams/${filename}`, options)
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
