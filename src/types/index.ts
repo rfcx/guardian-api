@@ -4,6 +4,7 @@ export interface Env {
   AUTH0_CLIENT_SECRET: string
   AUTH0_AUDIENCE: string
   CORE_URL: string
+  MEDIA_URL: string
   DB_HOSTNAME: string
   DB_NAME: string
   DB_USER: string

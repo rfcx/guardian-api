@@ -5,6 +5,7 @@ metadata:
   namespace: staging
 data:
   CORE_URL: https://staging-api.rfcx.org
+  MEDIA_URL: https://staging-api.rfcx.org
   EVENTS_SQS_QUEUE_ENABLED: "true"
   EVENTS_SQS_QUEUE: "ranger-api-events-staging"
   AUTH0_DOMAIN: "auth.rfcx.org"

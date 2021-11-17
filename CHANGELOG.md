@@ -11,3 +11,4 @@
 - Add endpoint to get single response ([CE-1362](https://jira.rfcx.org/browse/CE-1362))
 - Add endpoint to create response attachment ([CE-1390](https://jira.rfcx.org/browse/CE-1390))
 - Add endpoint to update response ([CE-1464](https://jira.rfcx.org/browse/CE-1464))
+- Add endpoint for media api assets ([CE-1538](https://jira.rfcx.org/browse/CE-1538))
