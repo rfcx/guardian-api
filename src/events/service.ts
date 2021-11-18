@@ -31,6 +31,8 @@ export const getEventsSinceLastReport = async (streamId: string): Promise<Event[
   return await list({
     streams: [streamId],
     ...lastReport !== null ? { createdAfter: lastReport.createdAt } : {}
+  }, {
+    limit: 1000000000 // just a big value to overwrite default 100
   })
 }
 
