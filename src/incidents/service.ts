@@ -78,10 +78,10 @@ export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o
       field: 'createdAt',
       dir: 'DESC'
     },
-    fields: ['id', 'firstEvent']
+    fields: ['id', 'firstEvent', 'firstResponse']
   })
   const activeIncidents = existingIncidents.filter((incident) => {
-    return incident.firstEvent !== null && dayjs().diff(incident.firstEvent.createdAt, 'd', true) < 7
+    return incident.firstResponse === null && incident.firstEvent !== null && dayjs().diff(incident.firstEvent.createdAt, 'd', true) < 7
   })
   if (activeIncidents.length !== 0) {
     return activeIncidents[0]

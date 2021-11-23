@@ -47,7 +47,7 @@ describe('GET /streams', () => {
       { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null }
     ]
 
-    setupMockAxios(GET, endpoint, 200, mockStream)
+    setupMockAxios('core', GET, endpoint, 200, mockStream)
     const response = await request(app).get('/')
 
     expect(response.statusCode).toBe(200)
@@ -57,7 +57,7 @@ describe('GET /streams', () => {
   })
 
   test('get empty streams', async () => {
-    setupMockAxios(GET, endpoint, 200, [])
+    setupMockAxios('core', GET, endpoint, 200, [])
     const response = await request(app).get('/')
 
     expect(response.statusCode).toBe(200)
@@ -91,7 +91,7 @@ describe('GET /streams', () => {
       { streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
     ])
 
-    setupMockAxios(GET, endpoint, 200, mockStream)
+    setupMockAxios('core', GET, endpoint, 200, mockStream)
     const response = await request(app).get('/').query({ with_events_count: true })
 
     expect(response.statusCode).toBe(200)

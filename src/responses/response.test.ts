@@ -26,7 +26,7 @@ beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
   await seed()
-  setupMockAxios(GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
+  setupMockAxios('core', GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
   jest.spyOn(service, 'uploadFileAndSaveToDb').mockImplementation(async () => await Promise.resolve(''))
 })

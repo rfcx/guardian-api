@@ -27,7 +27,8 @@ beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
   await seed()
-  setupMockAxios(GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', 200, {
+  await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', 200, {
     id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
     streamId: 'stream000001',
     start: '2021-09-14T19:59:48.795Z',
@@ -38,7 +39,7 @@ beforeAll(async () => {
       title: 'Chainsaw'
     }
   })
-  setupMockAxios(GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', 200, {
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', 200, {
     id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
     streamId: 'stream000001',
     start: '2021-09-14T19:59:48.795Z',
@@ -49,7 +50,7 @@ beforeAll(async () => {
       title: 'Chainsaw'
     }
   })
-  setupMockAxios(GET, 'streams/stream000001', 200, {
+  setupMockAxios('core', GET, 'streams/stream000001', 200, {
     id: 'stream000001',
     name: 'Stream 000001',
     latitude: 10,
@@ -135,7 +136,7 @@ describe('createEvent function', () => {
       expect(incident.firstEvent.id).toBe(event.id)
       expect(incident.firstResponse).toBeNull()
     })
-    test('creates incident if there is another incident with response', async () => {
+    test('creates new incident if current incident has got response', async () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
@@ -143,21 +144,21 @@ describe('createEvent function', () => {
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
-        start: '2021-08-14T19:59:48.795Z',
-        end: '2021-08-14T20:03:21.795Z',
+        start: '2021-09-14T19:59:48.795Z',
+        end: '2021-09-14T20:03:21.795Z',
         streamId: 'stream000001',
         projectId: 'project000001',
         classificationId: 1,
-        createdAt: '2021-09-14T18:10:01.312Z',
+        createdAt: '2021-09-14T20:04:01.312Z',
         incidentId: inc.id
       })
       await inc.update({ firstEventId: event1.id })
       const resp = await Response.create({
         streamId: 'stream000001',
         projectId: 'project000001',
-        investigatedAt: '2021-09-14T19:10:01.312Z',
-        startedAt: '2021-09-14T19:15:01.312Z',
-        submittedAt: '2021-09-14T19:16:01.312Z',
+        investigatedAt: '2021-09-14T21:10:01.312Z',
+        startedAt: '2021-09-14T21:15:01.312Z',
+        submittedAt: '2021-09-14T21:16:01.312Z',
         loggingScale: 1,
         damageScale: 1,
         createdById: 1,
@@ -170,15 +171,15 @@ describe('createEvent function', () => {
       const event = events[0]
       expect(events.length).toBe(2)
       const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
-      const incident = incidents[0]
+      const incident = incidents[1]
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
       expect(incident.closedAt).toBeNull()
       expect(incident.events.map(e => e.id).includes(event.id)).toBeTruthy()
-      expect(incident.responses.length).toBe(0)
+      expect(incident.responses.length).toBe(1)
       expect(incident.firstEvent.id).toBe(event.id)
-      expect(incident.firstResponse).toBeNull()
+      expect(incident.firstResponse.id).toBe(resp.id)
     })
     test('adds event to existing incident', async () => {
       const inc = await Incident.create({
@@ -188,12 +189,12 @@ describe('createEvent function', () => {
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
-        start: '2021-08-14T19:59:48.795Z',
-        end: '2021-08-14T20:03:21.795Z',
+        start: '2021-09-14T19:31:48.795Z',
+        end: '2021-09-14T19:36:21.795Z',
         streamId: 'stream000001',
         projectId: 'project000001',
         classificationId: 1,
-        createdAt: '2021-09-14T18:10:01.312Z',
+        createdAt: '2021-09-14T19:37:01.312Z',
         incidentId: inc.id
       })
       await inc.update({ firstEventId: event1.id })
@@ -221,8 +222,8 @@ describe('createEvent function', () => {
       })
       const event1 = await Event.create({
         id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
-        start: '2021-08-14T19:59:48.795Z',
-        end: '2021-08-14T20:03:21.795Z',
+        start: '2021-09-14T19:59:48.795Z',
+        end: '2021-09-14T20:03:21.795Z',
         streamId: 'stream000001',
         projectId: 'project000001',
         classificationId: 1,

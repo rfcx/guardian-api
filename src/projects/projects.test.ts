@@ -1,12 +1,15 @@
+/* eslint-disable import/first */
+jest.mock('../common/auth', () => {
+  return {
+    getM2MToken: jest.fn(() => 'mocked token'),
+    jwtCheck: jest.fn((req, res, next) => { console.log('\n\nHEREEEEEEEE\n\n'); next(null) }),
+    parseUserData: jest.fn((req, res, next) => { next(null) })
+  }
+})
 import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import { expressApp, muteConsole } from '../common/db/testing'
 import request from 'supertest'
 import routes from './router'
-jest.mock('../common/auth', () => {
-  return {
-    getM2MToken: jest.fn(() => 'mocked token')
-  }
-})
 
 beforeAll(() => {
   muteConsole()
@@ -25,7 +28,7 @@ describe('GET /projects', () => {
       { id: 'bbbbbbbbbbbc', name: 'test-project-2', isPublic: true, externalId: null }
     ]
 
-    setupMockAxios(GET, endpoint, 200, mockProject)
+    setupMockAxios('core', GET, endpoint, 200, mockProject)
     const response = await request(app).get('/')
 
     expect(response.statusCode).toBe(200)
@@ -35,7 +38,7 @@ describe('GET /projects', () => {
   })
 
   test('get empty projects', async () => {
-    setupMockAxios(GET, endpoint, 200, [])
+    setupMockAxios('core', GET, endpoint, 200, [])
     const response = await request(app).get('/')
 
     expect(response.statusCode).toBe(200)
