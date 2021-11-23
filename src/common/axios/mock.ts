@@ -1,13 +1,18 @@
 import MockAdapter from 'axios-mock-adapter'
-import axios from './index'
+import { instance, coreApiAxios, mediaApiAxios } from './index'
+
+type adapterType = 'core' | 'media' | 'default'
 
 export const GET = 'GET'
 export const POST = 'POST'
 export const PATCH = 'PATCH'
 
-const mockAdapter = new MockAdapter(axios)
+const mockAdapterDefault = new MockAdapter(instance)
+const mockAdapterCore = new MockAdapter(coreApiAxios)
+const mockAdapterMedia = new MockAdapter(mediaApiAxios)
 
-export function setupMockAxios (request: string, endpoint: string, status: number, mockResponse?: any, headers?: any): MockAdapter | undefined {
+export function setupMockAxios (type: adapterType, request: string, endpoint: string, status: number, mockResponse?: any, headers?: any): MockAdapter | undefined {
+  const mockAdapter = getMockAdapter(type)
   if (request === GET) {
     const mock = mockAdapter.onGet(`/${endpoint}`)
     mock.reply(status, mockResponse, headers)
@@ -23,8 +28,24 @@ export function setupMockAxios (request: string, endpoint: string, status: numbe
   return mockAdapter
 }
 
-export function resetMockAxios (): void {
-  mockAdapter.reset()
+export function resetMockAxios (type: adapterType = 'default'): void {
+  getMockAdapter(type).reset()
+}
+
+function getMockAdapter (type: adapterType): MockAdapter {
+  let mockAdapter
+  switch (type) {
+    case 'core':
+      mockAdapter = mockAdapterCore
+      break
+    case 'media':
+      mockAdapter = mockAdapterMedia
+      break
+    default:
+      mockAdapter = mockAdapterDefault
+      break
+  }
+  return mockAdapter
 }
 
 export default { GET, POST, PATCH, setupMockAxios, resetMockAxios }
