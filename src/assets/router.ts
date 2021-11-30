@@ -29,7 +29,8 @@ const router = Router()
  *         description: Asset not found
  */
 router.get('/:id', (req: Request, res: Response): void => {
-  get(req.params.id)
+  const id = req.params.id.split('.')[0] // in case we request it with extension
+  get(id)
     .then(asset => {
       if (asset === null) {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
