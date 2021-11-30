@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { Op, Model } from 'sequelize'
 import { QueryOptionsRFCx } from '../../types'
+import { sequelize } from './index'
 dayjs.extend(utc)
 
 export const applyTimeRangeToQuery = function (where: any, columnName: string, start?: Date, end?: Date): void {
@@ -35,4 +36,14 @@ export const includeBuilder = (model: Model, attributes: string[], as: string) =
   }
 }
 
-export default { applyTimeRangeToQuery, querySortToOrder, includeBuilder }
+export const getResponseTime = async (): Promise<number> => {
+  const start = Date.now()
+  try {
+    await sequelize.authenticate()
+  } catch (e) {
+    console.error('Can not get database status')
+  }
+  return Date.now() - start
+}
+
+export default { applyTimeRangeToQuery, querySortToOrder, includeBuilder, getResponseTime }

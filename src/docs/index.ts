@@ -66,13 +66,15 @@ const options = {
     './src/events/router.ts',
     './src/incidents/router.ts',
     './src/media/router.ts',
+    './src/health-check/router.ts',
     'dist/assets/router.js',
     'dist/streams/router.js',
     'dist/projects/router.js',
     'dist/responses/router.js',
     'dist/events/router.js',
     'dist/incidents/router.js',
-    'dist/media/router.js'
+    'dist/media/router.js',
+    'dist/health-check/router.js'
   ]
 }
 

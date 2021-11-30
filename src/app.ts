@@ -10,6 +10,7 @@ import projects from './projects/router'
 import media from './media/router'
 import './events/consumer'
 import docs from './docs'
+import healthCheck from './health-check/router'
 import logger from './common/logging'
 import { jwtCheck, parseUserData } from './common/auth'
 import { errorHandler, notFoundHandler } from './common/error-handlers'
@@ -20,6 +21,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use('/docs', docs)
+app.use('/health-check', healthCheck)
 app.use(jwtCheck, parseUserData)
 
 app.use(logger)
