@@ -1,5 +1,5 @@
 import Incident, { incidentAttributes } from './incident.model'
-import { list, get, update, count, getNextRefForProject } from './dao'
+import { list, get, update, create, count, getNextRefForProject } from './dao'
 import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -9,6 +9,9 @@ import User from '../users/user.model'
 import { EmptyResultError } from '@rfcx/http-utils'
 import { ensureUserExists } from '../users/service'
 import { getAllUserProjects, hasAccessToProject } from '../projects/service'
+import eventsDao from '../events/dao'
+import Response from '../responses/models/response.model'
+import Event from '../events/event.model'
 
 dayjs.extend(utc)
 
@@ -140,10 +143,37 @@ export const findOrCreateIncidentForResponse = async (responseData: ResponsePayl
 
   const transaction = o.transaction
   const ref = await getNextRefForProject(responseData.projectId, { transaction })
-  const incident = await Incident.create({
+  const incident = await create({
     streamId: responseData.streamId,
     projectId: responseData.projectId,
     ref
   }, { transaction })
   return await get(incident.id) as Incident
+}
+
+export const shiftEventsAfterNewResponse = async (incident: Incident, response: Response, o: Transactionable): Promise<number> => {
+  const transaction = o.transaction
+  const events = await eventsDao.list({
+    start: response.submittedAt,
+    incidents: [incident.id]
+  })
+  if (events.length === 0) {
+    return 0
+  }
+  const firstEvent = events.sort((a: Event, b: Event) => {
+    return a.start.valueOf() - b.start.valueOf()
+  })[0]
+  const ref = await getNextRefForProject(response.projectId, { transaction })
+  const newIncident = await create({
+    streamId: response.streamId,
+    projectId: response.projectId,
+    firstEventId: firstEvent.id,
+    ref
+  }, { transaction })
+  await eventsDao.updateBatch({
+    ids: events.map(e => e.id)
+  }, {
+    incidentId: newIncident.id
+  })
+  return events.length
 }

@@ -1,4 +1,3 @@
-// import { credential, initializeApp } from 'firebase-admin'
 import * as admin from 'firebase-admin'
 import { TopicMessage, AndroidConfig, ApnsConfig, WebpushConfig } from 'firebase-admin/messaging'
 import { PNData } from '../../types'

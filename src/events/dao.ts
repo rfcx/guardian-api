@@ -1,6 +1,6 @@
 import Event from './event.model'
-import { CreateOptions } from 'sequelize'
-import { EventFilters, QueryOptionsRFCx, EventCreationData } from '../types'
+import { CreateOptions, Transactionable } from 'sequelize'
+import { EventFilters, QueryOptionsRFCx, EventCreationData, EventUpdatableData } from '../types'
 import { combineWhere } from './helpers'
 import Classification from '../classifications/classification.model'
 import Incident from '../incidents/incident.model'
@@ -39,9 +39,16 @@ export const list = async function (f: EventFilters = {}, o: QueryOptionsRFCx = 
   })
 }
 
+export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number, Event[]]> {
+  const transaction = o.transaction
+  const where = combineWhere(f)
+  const { end, incidentId } = data
+  return await Event.update({ end, incidentId }, { where, transaction })
+}
+
 export const count = async function (f: EventFilters = {}): Promise<number> {
   const where = combineWhere(f)
   return await Event.count({ where })
 }
 
-export default { get, list, count }
+export default { create, get, list, updateBatch, count }
