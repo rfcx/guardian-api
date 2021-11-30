@@ -26,6 +26,7 @@ export interface IncidentCreationData extends IncidentUpdatableData {
   streamId: string
   projectId: string
   classificationId?: number
+  ref?: number
 }
 
 export interface IncidentQuery {

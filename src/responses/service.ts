@@ -7,7 +7,7 @@ import Response from './models/response.model'
 import Answer from './models/answer.model'
 import { create, list, get, assignAnswersByIds } from './dao'
 import incidentsDao from '../incidents/dao'
-import { findOrCreateIncidentForResponse } from '../incidents/service'
+import { findOrCreateIncidentForResponse, shiftEventsAfterNewResponse } from '../incidents/service'
 import { assetPath, generateFilename } from '../common/storage/paths'
 import { uploadFile } from '../common/storage'
 import assetDao from '../assets/dao'
@@ -65,6 +65,7 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
         mimetype: 'text/plain'
       }, userData, { transaction })
     }
+    await shiftEventsAfterNewResponse(incidentForResponse, response, { transaction })
     return response
   })
 }

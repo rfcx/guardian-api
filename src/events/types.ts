@@ -3,12 +3,14 @@ export interface EventSQSMessage {
 }
 
 export interface EventFilters {
+  ids?: string[]
   start?: Date
   end?: Date
   createdAfter?: Date
   createdBefore?: Date
   streams?: string[]
   classifications?: string[]
+  incidents?: string[]
 }
 
 export interface EventCreationData {
@@ -20,6 +22,11 @@ export interface EventCreationData {
   incidentId: string
   classificationId: number
   createdAt: Date
+}
+
+export interface EventUpdatableData {
+  end?: Date
+  incidentId?: string
 }
 
 export interface EventsQuery {
