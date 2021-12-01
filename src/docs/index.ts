@@ -61,6 +61,7 @@ const options = {
   apis: [
     './src/assets/router.ts',
     './src/streams/router.ts',
+    './src/detections/stream/router.ts',
     './src/projects/router.ts',
     './src/responses/router.ts',
     './src/events/router.ts',
@@ -69,6 +70,7 @@ const options = {
     './src/health-check/router.ts',
     'dist/assets/router.js',
     'dist/streams/router.js',
+    'dist/detections/stream/router.js',
     'dist/projects/router.js',
     'dist/responses/router.js',
     'dist/events/router.js',

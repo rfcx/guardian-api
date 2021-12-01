@@ -367,5 +367,28 @@
         "example": "2021-07-01T12:03:52.912Z"
       }
     }
+  },
+  "Detection": {
+    "properties": {
+      "streamId": {
+        "type": "string",
+        "example": "01a2ucztj8ax"
+      },
+      "start": {
+        "type": "date",
+        "example": "2020-05-12T07:30:21.500Z"
+      },
+      "end": {
+        "type": "date",
+        "example": "2020-05-12T07:30:22.500Z"
+      },
+      "confidence": {
+        "type": "number",
+        "example": 0.960682213306427
+      },
+      "classification": {
+        "$ref": "#/components/schemas/Classification"
+      }
+    }
   }
 }

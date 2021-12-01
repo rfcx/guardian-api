@@ -25,6 +25,14 @@ export interface StreamResponse {
   timezone: string
 }
 
+export interface DetectionResponse {
+  stream_id: string
+  start: string
+  end: string
+  confidence: number
+  classification: Classification
+}
+
 export interface EventResponse {
   id: string
   start: string
