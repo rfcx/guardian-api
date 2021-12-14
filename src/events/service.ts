@@ -12,25 +12,33 @@ import { sendToTopic } from '../common/firebase'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import minMax from 'dayjs/plugin/minMax'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+dayjs.extend(minMax)
 
 export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
   for (const stream of streams as StreamResponseWithEventsCount[]) {
     const lastReport = await getLastResponseForStream(stream.id)
+    // TODO: change time period to be project based
+    const sevenDays = dayjs().subtract(7, 'days')
+    const date = lastReport !== null ? dayjs.max(sevenDays, dayjs(lastReport.investigatedAt)) : sevenDays
     stream.eventsCount = await count({
       streams: [stream.id],
-      ...lastReport !== null ? { createdAfter: lastReport.createdAt } : {}
+      start: date.toDate()
     })
   }
 }
 
 export const getEventsSinceLastReport = async (streamId: string): Promise<Event[]> => {
   const lastReport = await getLastResponseForStream(streamId)
+  // TODO: change time period to be project based
+  const sevenDays = dayjs().subtract(7, 'days')
+  const date = lastReport !== null ? dayjs.max(sevenDays, dayjs(lastReport.investigatedAt)) : sevenDays
   return await list({
     streams: [streamId],
-    ...lastReport !== null ? { createdAfter: lastReport.createdAt } : {}
+    start: date.toDate()
   }, {
     limit: 1000000000 // just a big value to overwrite default 100
   })

@@ -84,7 +84,8 @@ export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o
     fields: ['id', 'firstEvent', 'firstResponse']
   })
   const activeIncidents = existingIncidents.filter((incident) => {
-    return incident.firstResponse === null && incident.firstEvent !== null && dayjs().diff(incident.firstEvent.createdAt, 'd', true) < 7
+    // TODO: change time period to be project based
+    return incident.firstResponse === null && incident.firstEvent !== null && dayjs().diff(incident.firstEvent.start, 'd', true) < 7
   })
   if (activeIncidents.length !== 0) {
     return activeIncidents[0]
@@ -118,7 +119,7 @@ export const findOrCreateIncidentForResponse = async (responseData: ResponsePayl
   let lastIncident: Incident | undefined | null
   lastIncident = incidents.find((incident) => {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    return incident.firstEvent !== null && dayjs(responseData.investigatedAt).diff(incident.firstEvent.createdAt, 'd', true) < 7
+    return incident.firstEvent !== null && dayjs(responseData.investigatedAt).diff(incident.firstEvent.start, 'd', true) < 7
   })
   if (lastIncident !== null && lastIncident !== undefined) {
     return lastIncident

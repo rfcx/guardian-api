@@ -1,3 +1,4 @@
+import MockDate from 'mockdate'
 import routes from './router'
 import request from 'supertest'
 import Event from '../events/event.model'
@@ -68,9 +69,9 @@ describe('GET /streams', () => {
   test('get streams with events count since last report', async () => {
     const mockStream = [
       { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
-      { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccd' } },
-      { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'ccccccccccce' } },
-      { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccf' } }
+      { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
     ]
     const incident = await Incident.create({
       streamId: 'bbbbbbbbbbbb',
@@ -83,16 +84,20 @@ describe('GET /streams', () => {
       { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de3', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:16:00.123Z' },
       { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de4', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:21:00.123Z' },
       { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de5', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T13:26:00.123Z' },
-      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' }
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de7', start: '2021-09-01T14:00:00.000Z', end: '2021-09-01T14:05:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbe', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-01T14:06:00.123Z' },
+      { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de8', start: '2021-09-01T14:10:00.000Z', end: '2021-09-01T14:15:00.000Z', incidentId: incident.id, streamId: 'bbbbbbbbbbbe', projectId: 'cccccccccccc', classificationId: classification.id, createdAt: '2021-09-01T14:16:00.123Z' }
     ])
     await Response.bulkCreate([
-      { streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-11T13:05:00.000Z', startedAt: '2021-09-12T12:21:00.000Z', submittedAt: '2021-09-12T12:26:00.000Z', createdAt: '2021-09-15T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
+      { streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-15T13:06:00.000Z', startedAt: '2021-09-16T12:21:00.000Z', submittedAt: '2021-09-16T12:26:00.000Z', createdAt: '2021-09-18T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
       { streamId: 'bbbbbbbbbbbc', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
       { streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', incidentId: incident.id, investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
     ])
 
     setupMockAxios('core', GET, endpoint, 200, mockStream)
+    MockDate.set('2021-09-16T20:10:01.312Z')
     const response = await request(app).get('/').query({ with_events_count: true })
+    MockDate.reset()
 
     expect(response.statusCode).toBe(200)
     const stream1 = response.body[0]
@@ -103,7 +108,7 @@ describe('GET /streams', () => {
     expect(stream2.id).toEqual(mockStream[1].id)
     expect(stream3.id).toEqual(mockStream[2].id)
     expect(stream4.id).toEqual(mockStream[3].id)
-    expect(stream1.eventsCount).toEqual(4)
+    expect(stream1.eventsCount).toEqual(3)
     expect(stream2.eventsCount).toEqual(0)
     expect(stream3.eventsCount).toEqual(0)
     expect(stream4.eventsCount).toEqual(0)
