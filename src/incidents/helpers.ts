@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { Op, FindOptions, WhereOptions, WhereAttributeHash, where, fn, col } from 'sequelize'
+import { Op, FindOptions, WhereOptions, WhereAttributeHash, IncludeOptions, where, fn, col } from 'sequelize'
 import { IncidentFilters, QueryOptionsRFCx } from '../types'
 import Incident, { incidentAttributes } from './incident.model'
 import Event from '../events/event.model'
@@ -55,6 +55,20 @@ export const combineOptions = async function (f: IncidentFilters = {}, o: QueryO
     (options.where as WhereAttributeHash).id = {
       [Op.in]: ids
     }
+  }
+  if (f.firstEventStart !== undefined) {
+    let firstEvent = (options.include as IncludeOptions[]).find(i => i.as === 'firstEvent')
+    if (firstEvent === undefined) {
+      (options.include as IncludeOptions[]).push({ ...availableIncludes.find(i => i.as === 'firstEvent') as IncludeOptions })
+      firstEvent = (options.include as IncludeOptions[]).find(i => i.as === 'firstEvent') as IncludeOptions
+    }
+    if (firstEvent?.where === undefined) {
+      (firstEvent).where = {}
+    }
+    (firstEvent.where as WhereAttributeHash).start = {
+      [Op.gte]: f.firstEventStart
+    }
+    options.subQuery = false
   }
   return options
 }

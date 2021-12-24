@@ -26,14 +26,16 @@ async function getUserProjects (projects: string[] | undefined, userToken: strin
 }
 
 export const getIncidents = async (params: IncidentQuery, userToken: string): Promise<ListResults<Incident>> => {
-  let { streams, projects, closed, minEvents, limit, offset, sort } = params
+  let { streams, projects, closed, minEvents, firstEventStart, limit, offset, sort } = params
   projects = await getUserProjects(projects, userToken)
   const filters = {
     streams,
     projects,
     isClosed: closed,
-    minEvents
+    minEvents,
+    firstEventStart
   }
+  console.log('\n\nfilters', filters, '\n\n')
   const options = {
     limit,
     offset,

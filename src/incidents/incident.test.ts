@@ -191,6 +191,13 @@ describe('GET /incidents', () => {
     expect(response.headers['total-items']).toBe('0')
     expect(response.body.length).toBe(0)
   })
+  test('returns incidents with first event datetime greater than 2021-09-01T00:00:21.110Z', async () => {
+    const response = await request(app).get('/').query({ first_event_start: '2021-09-01T00:00:21.110Z' })
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['total-items']).toBe('1')
+    expect(response.body.length).toBe(1)
+    expect(response.body[0].id).toBe(incident2.id)
+  })
 })
 
 describe('GET /incidents/{id}', () => {

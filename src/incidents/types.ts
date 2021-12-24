@@ -3,6 +3,7 @@ export interface IncidentFilters {
   projects?: string[]
   isClosed?: boolean
   minEvents?: number
+  firstEventStart?: Date
   noResponses?: boolean
   closedAfter?: Date
   closedBefore?: Date
@@ -35,6 +36,7 @@ export interface IncidentQuery {
   projects?: string[]
   closed?: boolean
   minEvents?: number
+  firstEventStart?: Date
   limit: number
   offset: number
   sort: string

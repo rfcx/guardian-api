@@ -25,8 +25,8 @@ export const list = async function (f: IncidentFilters = {}, o: QueryOptionsRFCx
 }
 
 export const count = async function (f: IncidentFilters = {}): Promise<number> {
-  const { where } = await combineOptions(f)
-  return await Incident.count({ where })
+  const { where, include } = await combineOptions(f)
+  return await Incident.count({ where, include })
 }
 
 export const update = async function (id: string, data: IncidentUpdatableData, o: Transactionable = {}): Promise<void> {

@@ -31,6 +31,12 @@ const router = Router()
  *         description: Minimum number of events in the incident
  *         in: query
  *         type: number
+ *       - name: first_event_start
+ *         description: Limit to a start date of the first event on or after (iso8601 or epoch)
+ *         in: query
+ *         required: true
+ *         type: string
+ *         example: 2020-01-01T00:00:00.000Z
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -66,6 +72,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('projects').optional().toArray()
   converter.convert('closed').optional().toBoolean()
   converter.convert('min_events').optional().toInt().minimum(0)
+  converter.convert('first_event_start').optional().toMomentUtc()
   converter.convert('limit').default(100).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('sort').default('-createdAt').toString()
