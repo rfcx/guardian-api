@@ -27,6 +27,10 @@ const router = Router()
  *         description: Open or closed incidents
  *         in: query
  *         type: boolean
+ *       - name: min_events
+ *         description: Minimum number of events in the incident
+ *         in: query
+ *         type: number
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -57,9 +61,11 @@ const router = Router()
  */
 router.get('/', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization as string
-  const converter = new Converter(req.query, {})
+  const converter = new Converter(req.query, {}, { camelize: true })
+  converter.convert('streams').optional().toArray()
   converter.convert('projects').optional().toArray()
   converter.convert('closed').optional().toBoolean()
+  converter.convert('min_events').optional().toInt().minimum(0)
   converter.convert('limit').default(100).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('sort').default('-createdAt').toString()

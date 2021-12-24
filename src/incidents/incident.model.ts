@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, PrimaryKey, HasMany, CreatedAt, Updated
 import Event from '../events/event.model'
 import Response from '../responses/models/response.model'
 import User from '../users/user.model'
+import { ModelAttributesLists } from '../types'
 
 @Table({
   tableName: 'incidents'
@@ -49,7 +50,7 @@ export default class Incident extends Model {
   firstResponse!: Response
 }
 
-export const incidentAttributes = {
+export const incidentAttributes: ModelAttributesLists = {
   full: ['id', 'ref', 'streamId', 'projectId', 'closedAt', 'createdAt'],
   lite: ['id', 'ref', 'streamId', 'closedAt']
 }

@@ -1,6 +1,6 @@
 import Incident, { incidentAttributes } from './incident.model'
 import { IncidentFilters, QueryOptionsRFCx, IncidentCreationData, IncidentUpdatableData } from '../types'
-import { combineWhere } from './helpers'
+import { combineOptions } from './helpers'
 import { CreateOptions, Transactionable } from 'sequelize'
 import { availableIncludes } from './misc'
 
@@ -20,25 +20,12 @@ export const get = async function (id: string, fields: string[] = []): Promise<I
 }
 
 export const list = async function (f: IncidentFilters = {}, o: QueryOptionsRFCx = {}): Promise<Incident[]> {
-  const where = combineWhere(f)
-  const { limit, offset, order, fields } = o
-
-  const hasFields = fields !== undefined && fields.length > 0
-  const attributes = hasFields ? incidentAttributes.full.filter(a => fields.includes(a)) : incidentAttributes.lite
-  const include = hasFields ? availableIncludes.filter(i => fields.includes(i.as)) : []
-
-  return await Incident.findAll({
-    where,
-    limit: limit ?? 100,
-    offset: offset ?? 0,
-    include,
-    attributes,
-    order: order !== undefined ? [[order.field, order.dir]] : [['createdAt', 'DESC']]
-  })
+  const options = await combineOptions(f, o)
+  return await Incident.findAll(options)
 }
 
 export const count = async function (f: IncidentFilters = {}): Promise<number> {
-  const where = combineWhere(f)
+  const { where } = await combineOptions(f)
   return await Incident.count({ where })
 }
 

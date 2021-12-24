@@ -26,23 +26,22 @@ async function getUserProjects (projects: string[] | undefined, userToken: strin
 }
 
 export const getIncidents = async (params: IncidentQuery, userToken: string): Promise<ListResults<Incident>> => {
-  let { streams, projects, closed, limit, offset, sort } = params
+  let { streams, projects, closed, minEvents, limit, offset, sort } = params
   projects = await getUserProjects(projects, userToken)
-  const total = await count({
+  const filters = {
     streams,
     projects,
-    isClosed: closed
-  })
-  const results = await list({
-    streams,
-    projects,
-    isClosed: closed
-  }, {
+    isClosed: closed,
+    minEvents
+  }
+  const options = {
     limit,
     offset,
     order: querySortToOrder(sort),
     fields: [...incidentAttributes.full, 'closedBy', 'events', 'responses']
-  })
+  }
+  const total = await count(filters)
+  const results = await list(filters, options)
   return { total, results }
 }
 

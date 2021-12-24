@@ -42,6 +42,11 @@ export interface ListResults<T> {
   results: T[]
 }
 
+export interface ModelAttributesLists {
+  full: string[]
+  lite: string[]
+}
+
 export declare function IsInCustom (arg: string[][] | number[][] | {
   msg: string
   args: string[][] | number[][]

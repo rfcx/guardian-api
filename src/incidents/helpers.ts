@@ -1,14 +1,16 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { Op } from 'sequelize'
-import { IncidentFilters } from '../types'
-import Incident from './incident.model'
+import { Op, FindOptions, WhereOptions, WhereAttributeHash, where, fn, col } from 'sequelize'
+import { IncidentFilters, QueryOptionsRFCx } from '../types'
+import Incident, { incidentAttributes } from './incident.model'
+import Event from '../events/event.model'
 import { applyTimeRangeToQuery } from '../common/db'
+import { availableIncludes } from './misc'
 
 dayjs.extend(utc)
 
-export const combineWhere = function (f: IncidentFilters = {}): Incident['_attributes'] {
-  const where: Incident['_attributes'] = {}
+export const combineWhere = function (f: IncidentFilters = {}): WhereOptions<any> {
+  const where: WhereOptions<any> = {}
   const {
     isClosed, noResponses, closedAfter, closedBefore, streams, projects
   } = f
@@ -28,4 +30,33 @@ export const combineWhere = function (f: IncidentFilters = {}): Incident['_attri
   return where
 }
 
-export default { combineWhere }
+export const combineOptions = async function (f: IncidentFilters = {}, o: QueryOptionsRFCx = {}): Promise<FindOptions<Incident['_attributes']>> {
+  const { limit, offset, order, fields } = o
+  const hasFields = fields !== undefined && fields.length > 0
+  const options: FindOptions<Incident['_attributes']> = {
+    where: combineWhere(f),
+    include: hasFields ? availableIncludes.filter(i => fields.includes(i.as)) : [],
+    attributes: { include: hasFields ? incidentAttributes.full.filter(a => fields.includes(a)) : incidentAttributes.lite },
+    limit: limit ?? 100,
+    offset: offset ?? 0,
+    order: order !== undefined ? [[order.field, order.dir]] : [['createdAt', 'DESC']]
+  }
+  if (f.minEvents !== undefined) {
+    const ids = (await Incident.findAll({
+      attributes: ['id'],
+      where: options.where,
+      raw: true,
+      include: [{ model: Event, as: 'events', attributes: [] }],
+      having: where(fn('count', col('events.id')), { [Op.gte]: f.minEvents }),
+      group: ['Incident.id'],
+      order: options.order
+    })).map(i => i.id);
+
+    (options.where as WhereAttributeHash).id = {
+      [Op.in]: ids
+    }
+  }
+  return options
+}
+
+export default { combineWhere, combineOptions }

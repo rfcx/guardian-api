@@ -170,6 +170,27 @@ describe('GET /incidents', () => {
     expect(response.body.map(i => i.id).includes(incident2.id)).toBeTruthy()
     expect(response.body.map(i => i.id).includes(incident3.id)).toBeTruthy()
   })
+  test('returns incidents with min events value >= 1', async () => {
+    const response = await request(app).get('/').query({ min_events: 1 })
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['total-items']).toBe('2')
+    expect(response.body.length).toBe(2)
+    expect(response.body.map(i => i.id).includes(incident1.id)).toBeTruthy()
+    expect(response.body.map(i => i.id).includes(incident2.id)).toBeTruthy()
+  })
+  test('returns incidents with min events value >= 3', async () => {
+    const response = await request(app).get('/').query({ min_events: 3 })
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['total-items']).toBe('1')
+    expect(response.body.length).toBe(1)
+    expect(response.body.map(i => i.id).includes(incident1.id)).toBeTruthy()
+  })
+  test('returns incidents with min events value >= 10', async () => {
+    const response = await request(app).get('/').query({ min_events: 10 })
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['total-items']).toBe('0')
+    expect(response.body.length).toBe(0)
+  })
 })
 
 describe('GET /incidents/{id}', () => {
