@@ -397,6 +397,50 @@ describe('POST /responses', () => {
     expect(incidents[1].ref).toBe(2)
     expect(incidents[1].events.length).toBe(3)
   })
+  test('creates response with logging and poaching type', async () => {
+    const requestBody = {
+      investigatedAt: '2021-06-08T19:26:40.000Z',
+      startedAt: '2021-06-09T15:35:21.000Z',
+      submittedAt: '2021-06-09T15:38:05.000Z',
+      answers: [101, 103, 201, 204, 301, 402, 501, 502, 601, 602, 702],
+      note: 'Test note',
+      streamId: 'aaaaaaaaa000'
+    }
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list()
+    const response = responses[0]
+    expect(responses.length).toBe(1)
+    expect(response.answers?.length).toBe(11)
+    expect(response.answers?.map(e => e.id).includes(101)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(103)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(201)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(204)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(301)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(402)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(501)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(502)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(601)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(602)).toBeTruthy()
+    expect(response.answers?.map(e => e.id).includes(702)).toBeTruthy()
+  })
+  test('creates response with other type', async () => {
+    const requestBody = {
+      investigatedAt: '2021-06-08T19:26:40.000Z',
+      startedAt: '2021-06-09T15:35:21.000Z',
+      submittedAt: '2021-06-09T15:38:05.000Z',
+      answers: [503],
+      note: 'Test note',
+      streamId: 'aaaaaaaaa000'
+    }
+    const reqResponse = await request(app).post('/').send(requestBody)
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list()
+    const response = responses[0]
+    expect(responses.length).toBe(1)
+    expect(response.answers?.length).toBe(1)
+    expect(response.answers?.map(e => e.id).includes(503)).toBeTruthy()
+  })
 })
 
 describe('GET /responses/{id}', () => {

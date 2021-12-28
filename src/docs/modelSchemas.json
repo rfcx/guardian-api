@@ -262,6 +262,12 @@
             },
             "example": [
               {
+                "question": { "id": "5", "text": "What did you investigate" },
+                "items": [
+                  { "id": 501, "text": "Logging" }
+                ]
+              },
+              {
                 "question": { "id": "1", "text": "What evidence did you encounter?" },
                 "items": [
                   { "id": 102, "text": "Cleared areas" },

@@ -35,7 +35,6 @@ export const getIncidents = async (params: IncidentQuery, userToken: string): Pr
     minEvents,
     firstEventStart
   }
-  console.log('\n\nfilters', filters, '\n\n')
   const options = {
     limit,
     offset,

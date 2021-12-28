@@ -19,7 +19,7 @@
       },
       "items": {
         "type": "array",
-        "description": "A list of coded answers",
+        "description": "A list of coded answers\n\nWhat did you investigate?\n\n- 501 - Logging\n\n- 502 - Poaching\n\n- 503 - Other\n\nWhat logging evidence did you encounter?\n\n- 100 - None\n\n- 101 - Cut down trees\n\n- 102 - Cleared areas\n\n- 103 - Logging equipment\n\n- 104 - Loggers at site\n\n- 105 - Illegal camps\n\n- 106 - Fired/burned areas\n\n- 107 - Evidence of poaching\n\nWhat actions were taken? Select all that apply\n\n- 200 - None\n\n- 201 - Collected evidence\n\n- 202 - Issue a warning\n\n- 203 - Confiscated equipment\n\n- 204 - Issue a fine\n\n- 205 - Arrests\n\n- 206 - Planning to come back with security enforcement\n\n- 207 - Other\n\nWhat was the scale of logging operation?\n\n- 301 - None\n\n- 302 - Not sure\n\n- 303 - Small\n\n- 304 - Large\n\nHow much damage was done to the area?\n\n- 401 - No visible tree disruption found\n\n- 402 - Small number of trees cut down\n\n- 403 - Medium number of trees cut down\n\n- 404 - Large area substantially clear cut\n\nWhat poaching evidence did you encounter? Select all that apply\n\n- 601 - Bullet shells / gun remains\n\n- 602 - Footprints (human)\n\n- 603 - Dog tracks\n\n- 604 - Other\n\nWhat was the scale of poaching operation?\n\n- 701 - Small (individual, informal)\n\n- 702 - Large (many vehicles, coordinated)\n\n- 703 - None\n\n",
         "example": [103, 201, 203, 306, 402]
       },
       "note": {

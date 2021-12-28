@@ -61,10 +61,13 @@ const questionTypes = [
   { id: 2, value: 'multiple', title: 'Multiple answers' }
 ]
 const questions = [
-  { id: 1, text: 'What evidence did you encounter?', type_id: 2 },
-  { id: 2, text: 'What actions did you take?', type_id: 2 },
+  { id: 1, text: 'What logging evidence did you encounter?', type_id: 2 },
+  { id: 2, text: 'What actions were taken? Select all that apply', type_id: 2 },
   { id: 3, text: 'What was the scale of logging operation?', type_id: 1 },
-  { id: 4, text: 'How much damage was done to the area?', type_id: 1 }
+  { id: 4, text: 'How much damage was done to the area?', type_id: 1 },
+  { id: 5, text: 'What did you investigate?', type_id: 2 },
+  { id: 6, text: 'What poaching evidence did you encounter? Select all that apply', type_id: 2 },
+  { id: 7, text: 'What was the scale of poaching operation?', type_id: 1 }
 ]
 const answers = [
   { id: 100, text: 'None', question_id: 1 },
@@ -90,7 +93,17 @@ const answers = [
   { id: 401, text: 'No visible tree disruption found', question_id: 4 },
   { id: 402, text: 'Small number of trees cut down', question_id: 4 },
   { id: 403, text: 'Medium number of trees cut down', question_id: 4 },
-  { id: 404, text: 'Large area substantially clear cut', question_id: 4 }
+  { id: 404, text: 'Large area substantially clear cut', question_id: 4 },
+  { id: 501, text: 'Logging', question_id: 5 },
+  { id: 502, text: 'Poaching', question_id: 5 },
+  { id: 503, text: 'Other', question_id: 5 },
+  { id: 601, text: 'Bullet shells / gun remains', question_id: 6 },
+  { id: 602, text: 'Footprints (human)', question_id: 6 },
+  { id: 603, text: 'Dog tracks', question_id: 6 },
+  { id: 604, text: 'Other', question_id: 6 },
+  { id: 701, text: 'Small (individual, informal)', question_id: 7 },
+  { id: 702, text: 'Large (many vehicles, coordinated)', question_id: 7 },
+  { id: 703, text: 'None', question_id: 7 }
 ]
 export const seedValues = { primaryFirstname, primaryLastname, primaryEmail, primaryGuid, questionTypes, questions, answers }
 
