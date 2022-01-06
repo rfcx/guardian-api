@@ -4,6 +4,7 @@ import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import { sequelize } from '../common/db'
 import { createEvent } from './service'
 import Classification from '../classifications/classification.model'
+import Stream from '../streams/stream.model'
 import Event from './event.model'
 import { list } from './dao'
 import classificationDao from '../classifications/dao'
@@ -28,6 +29,7 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  await Stream.create({ id: 'stream000001', lastEventEnd: '2021-09-14T20:03:21.795Z' })
   setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', 200, {
     id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
     streamId: 'stream000001',

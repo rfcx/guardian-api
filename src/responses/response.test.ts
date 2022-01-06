@@ -13,6 +13,7 @@ import incidentsDao from '../incidents/dao'
 import Classification from '../classifications/classification.model'
 import service from './service'
 import ResponseAnswer from './models/response-answer.model'
+import Stream from '../streams/stream.model'
 const app = expressApp()
 jest.mock('../common/auth', () => {
   return {
@@ -28,6 +29,9 @@ beforeAll(async () => {
   await seed()
   setupMockAxios('core', GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  await Stream.create({ id: 'aaaaaaaaa000', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'aaaaaaaaa001', lastEventEnd: '2021-06-09T15:39:05.000Z' })
+  await Stream.create({ id: 'stream000000', lastEventEnd: '2021-06-09T15:40:05.000Z' })
   jest.spyOn(service, 'uploadFileAndSaveToDb').mockImplementation(async () => await Promise.resolve(''))
 })
 beforeEach(async () => {

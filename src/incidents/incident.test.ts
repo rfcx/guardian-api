@@ -7,6 +7,7 @@ import Incident from '../incidents/incident.model'
 import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
 import Classification from '../classifications/classification.model'
+import Stream from '../streams/stream.model'
 import { get } from './dao'
 import mockedProjectService from '../projects/service'
 import { ForbiddenError } from '@rfcx/http-utils'
@@ -34,6 +35,11 @@ beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
   await seed()
+
+  await Stream.create({ id: 'stream000000', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000002', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000003', lastEventEnd: '2021-06-09T15:38:05.000Z' })
 
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
   incident1 = await Incident.create({ streamId: 'stream000000', projectId: 'project000000', ref: 1 })
