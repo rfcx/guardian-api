@@ -5,6 +5,7 @@ import Event from '../events/event.model'
 import User from '../users/user.model'
 import Response from '../responses/models/response.model'
 import Classification from '../classifications/classification.model'
+import Stream from '../streams/stream.model'
 
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
@@ -31,6 +32,10 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   classification = await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
+  await Stream.create({ id: 'bbbbbbbbbbbb', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbc', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbd', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbe', lastEventEnd: '2021-06-09T15:38:05.000Z' })
   user = await User.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
 })
 beforeEach(async () => {
@@ -113,5 +118,67 @@ describe('GET /streams', () => {
     expect(stream3.eventsCount).toEqual(0)
     expect(stream4.eventsCount).toEqual(0)
     resetMockAxios()
+  })
+
+  describe('active query param', () => {
+    test('returns 4 active of 5 total streams', async () => {
+      const mockStream = [
+        { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbf', name: 'test-stream-5', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
+      ]
+
+      setupMockAxios('core', GET, endpoint, 200, mockStream)
+      const response = await request(app).get('/').query({ active: true })
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(4)
+      resetMockAxios()
+    })
+
+    test('returns 4 active of 4 total streams', async () => {
+      const mockStream = [
+        { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
+      ]
+
+      setupMockAxios('core', GET, endpoint, 200, mockStream)
+      const response = await request(app).get('/').query({ active: true })
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(4)
+      resetMockAxios()
+    })
+
+    test('returns 3 active of 4 total streams', async () => {
+      const mockStream = [
+        { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
+      ]
+
+      setupMockAxios('core', GET, endpoint, 200, mockStream)
+      const response = await request(app).get('/').query({ active: true })
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(3)
+      resetMockAxios()
+    })
+
+    test('returns 0 active of 4 total streams', async () => {
+      const mockStream = [
+        { id: 'bbbbbbbbbbbg', name: 'test-stream-6', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbh', name: 'test-stream-7', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbi', name: 'test-stream-8', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+        { id: 'bbbbbbbbbbbj', name: 'test-stream-9', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
+      ]
+
+      setupMockAxios('core', GET, endpoint, 200, mockStream)
+      const response = await request(app).get('/').query({ active: true })
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(0)
+      resetMockAxios()
+    })
   })
 })

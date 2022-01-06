@@ -4,6 +4,7 @@ import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 import { StreamQuery } from './types'
 import { getEventsCountSinceLastReport } from '../events/service'
+import { filterActiveStreams } from './service'
 
 const router = Router()
 
@@ -30,6 +31,12 @@ const router = Router()
  *         in: query
  *         type: boolean
  *         example: true
+ *       - name: active
+ *         description: Return only streams which have events
+ *         in: query
+ *         type: boolean
+ *         example: false
+ *         default: false
  *       - name: limit
  *         description: Maximum number of results to return
  *         in: query
@@ -75,6 +82,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('projects').optional().toArray()
   converter.convert('keyword').optional().toString()
   converter.convert('with_events_count').optional().toBoolean()
+  converter.convert('active').default(false).toBoolean()
   converter.convert('limit').default(100).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('sort').default('-updated_at').toString()
@@ -84,6 +92,9 @@ router.get('/', (req: Request, res: Response): void => {
       const forwardedResponse = await api.getStreams(userToken, params)
       for (const key in forwardedResponse.headers) {
         res.header(key, forwardedResponse.headers[key])
+      }
+      if (params.active) {
+        forwardedResponse.data = await filterActiveStreams(forwardedResponse.data)
       }
       if (params.with_events_count) {
         await getEventsCountSinceLastReport(forwardedResponse.data)
