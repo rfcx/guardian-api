@@ -135,6 +135,32 @@
       }
     ]
   },
+  "StreamsWithIncidents": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Stream"
+      },
+      {
+        "properties": {
+          "incidents": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number",
+                "example": 33
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Incident"
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
   "Classification": {
     "properties": {
       "value": {

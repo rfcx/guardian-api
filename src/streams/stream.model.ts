@@ -9,6 +9,9 @@ export default class Stream extends Model {
   @Column(DataType.UUID)
   id!: string
 
+  @Column(DataType.STRING(12))
+  projectId!: string
+
   @Column(DataType.DATE)
   lastEventEnd!: Date
 }

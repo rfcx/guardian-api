@@ -150,4 +150,8 @@ export function muteConsole (levels = ['log', 'info', 'warn', 'error']): void {
   })
 }
 
-export default { migrate, truncate, expressApp, muteConsole, seedValues }
+export async function timeout (ms: number = 1000): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export default { migrate, truncate, expressApp, muteConsole, seedValues, timeout }

@@ -1,4 +1,5 @@
 import { StreamResponse } from '../types'
+import Incident from '../incidents/incident.model'
 
 export interface StreamQuery {
   projects: string[]
@@ -10,14 +11,33 @@ export interface StreamQuery {
   with_events_count: boolean
   active: boolean
 }
+export interface StreamWithIncidentsQuery {
+  projects: string[]
+  keyword: string
+  incidentsClosed: boolean
+  incidentsMinEvents: number
+  limit: number
+  offset: number
+  limitIncidents: number
+  fields: string[]
+}
 
 export interface StreamFilters {
   ids?: string[]
+  projects?: string[]
   lastEventEndNotNull?: boolean
+  lastEventEnd?: Date
 }
 
 export interface StreamResponseWithEventsCount extends StreamResponse {
   eventsCount: number
+}
+
+export interface StreamResponseWithIncidents extends StreamResponse {
+  incidents: {
+    total: number
+    items: Incident[]
+  }
 }
 
 export interface Stream {

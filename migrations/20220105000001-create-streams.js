@@ -12,16 +12,21 @@ module.exports = {
           allowNull: false,
           primaryKey: true
         },
+        project_id: {
+          type: Sequelize.STRING(12),
+          allowNull: false
+        },
         last_event_end: {
           type: Sequelize.DATE,
           allowNull: true
         }
       }, { transaction })
       await queryInterface.sequelize.query('CREATE INDEX streams_last_event_end ON streams (last_event_end);', { type: RAW, transaction })
+      await queryInterface.sequelize.query('CREATE INDEX streams_project_id ON streams (project_id);', { type: RAW, transaction })
 
       // get distinct `stream_id` from `incidents` table, then find latest `start` value for each of them from `events` table
       const streamTimes = await queryInterface.sequelize.query(`
-        SELECT ev.stream_id, ev.id, ev."end" FROM events ev
+        SELECT ev.stream_id, ev.project_id, ev.id, ev."end" FROM events ev
         INNER JOIN
           (SELECT stream_id, max("end") as max_end FROM events GROUP BY stream_id) ev2
           ON ev.stream_id = ev2.stream_id AND ev."end" = ev2.max_end
@@ -32,7 +37,7 @@ module.exports = {
         transaction
       })
       if (streamTimes.length) {
-        await queryInterface.sequelize.query(`INSERT INTO streams (id, last_event_end) VALUES ${streamTimes.map((i) => `('${i.stream_id}', '${dayjs.utc(i.end).toISOString()}')`).join(', ')}`, {
+        await queryInterface.sequelize.query(`INSERT INTO streams (id, project_id, last_event_end) VALUES ${streamTimes.map((i) => `('${i.stream_id}', ${i.project_id}', '${dayjs.utc(i.end).toISOString()}')`).join(', ')}`, {
           type: queryInterface.sequelize.QueryTypes.INSERT,
           transaction
         })

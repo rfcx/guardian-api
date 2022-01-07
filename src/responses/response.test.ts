@@ -29,9 +29,9 @@ beforeAll(async () => {
   await seed()
   setupMockAxios('core', GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
-  await Stream.create({ id: 'aaaaaaaaa000', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'aaaaaaaaa001', lastEventEnd: '2021-06-09T15:39:05.000Z' })
-  await Stream.create({ id: 'stream000000', lastEventEnd: '2021-06-09T15:40:05.000Z' })
+  await Stream.create({ id: 'aaaaaaaaa000', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'aaaaaaaaa001', projectId: 'project000002', lastEventEnd: '2021-06-09T15:39:05.000Z' })
+  await Stream.create({ id: 'stream000000', projectId: 'project000000', lastEventEnd: '2021-06-09T15:40:05.000Z' })
   jest.spyOn(service, 'uploadFileAndSaveToDb').mockImplementation(async () => await Promise.resolve(''))
 })
 beforeEach(async () => {

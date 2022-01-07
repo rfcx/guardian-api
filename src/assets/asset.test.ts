@@ -15,7 +15,7 @@ beforeAll(async () => {
   muteConsole()
   await migrate(sequelize)
   await seed()
-  await Stream.create({ id: 'stream000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000001', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
 })
 beforeEach(async () => {
   await truncate([Asset, Response, Incident])

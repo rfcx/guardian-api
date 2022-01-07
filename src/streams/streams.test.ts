@@ -7,7 +7,7 @@ import Response from '../responses/models/response.model'
 import Classification from '../classifications/classification.model'
 import Stream from '../streams/stream.model'
 
-import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
+import { migrate, truncate, expressApp, seed, muteConsole, timeout } from '../common/db/testing'
 import { sequelize } from '../common/db'
 import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import Incident from '../incidents/incident.model'
@@ -32,14 +32,15 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   classification = await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
-  await Stream.create({ id: 'bbbbbbbbbbbb', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'bbbbbbbbbbbc', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'bbbbbbbbbbbd', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'bbbbbbbbbbbe', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbc', projectId: 'cccccccccccc', lastEventEnd: '2021-06-09T15:39:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', lastEventEnd: '2021-06-09T15:40:05.000Z' })
+  await Stream.create({ id: 'bbbbbbbbbbbe', projectId: 'cccccccccccc', lastEventEnd: '2021-06-09T15:41:05.000Z' })
   user = await User.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
+  setupMockAxios('core', GET, 'projects', 200, [{ id: 'cccccccccccc', name: 'test-project-1', isPublic: true, externalId: null }])
 })
 beforeEach(async () => {
-  await truncate([Event])
+  await truncate([Event, Response, Incident])
 })
 
 app.use('/', routes)
@@ -180,5 +181,85 @@ describe('GET /streams', () => {
       expect(response.body.length).toBe(0)
       resetMockAxios()
     })
+  })
+})
+
+describe('GET /streams/incidents', () => {
+  beforeAll(() => {
+    const mockStream = [
+      { id: 'bbbbbbbbbbbb', name: 'test-stream-1', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbc', name: 'test-stream-2', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbd', name: 'test-stream-3', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbe', name: 'test-stream-4', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } },
+      { id: 'bbbbbbbbbbbf', name: 'test-stream-5', isPublic: true, externalId: null, project: { id: 'cccccccccccc' } }
+    ]
+    setupMockAxios('core', GET, endpoint, 200, mockStream)
+  })
+  beforeEach(async () => {
+    // without timeouts these incidents have same createdAt time and then sorted incorrectly
+    await Incident.create({ streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', ref: 1 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', ref: 2 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbb', projectId: 'cccccccccccc', ref: 3 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbc', projectId: 'cccccccccccc', ref: 1 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbc', projectId: 'cccccccccccc', ref: 2 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbd', projectId: 'cccccccccccc', ref: 1 })
+    await timeout(1)
+    await Incident.create({ streamId: 'bbbbbbbbbbbe', projectId: 'cccccccccccc', ref: 1 })
+  })
+  afterAll(() => {
+    resetMockAxios()
+  })
+  test('returns list of active streams', async () => {
+    const response = await request(app).get('/incidents')
+    expect(response.statusCode).toBe(200)
+    const stream1 = response.body[0]
+    const stream2 = response.body[1]
+    const stream3 = response.body[2]
+    const stream4 = response.body[3]
+    expect(stream1.id).toBe('bbbbbbbbbbbe')
+    expect(stream1.incidents.total).toBe(1)
+    expect(stream1.incidents.items.length).toBe(1)
+    expect(stream1.incidents.items[0].ref).toBe(1)
+    expect(stream2.id).toBe('bbbbbbbbbbbd')
+    expect(stream2.incidents.total).toBe(1)
+    expect(stream2.incidents.items.length).toBe(1)
+    expect(stream2.incidents.items[0].ref).toBe(1)
+    expect(stream3.id).toBe('bbbbbbbbbbbc')
+    expect(stream3.incidents.total).toBe(2)
+    expect(stream3.incidents.items.length).toBe(2)
+    expect(stream3.incidents.items[0].ref).toBe(2)
+    expect(stream4.id).toBe('bbbbbbbbbbbb')
+    expect(stream4.incidents.total).toBe(3)
+    expect(stream4.incidents.items.length).toBe(3)
+    expect(stream4.incidents.items[0].ref).toBe(3)
+  })
+  test('returns list of active streams with only one incident', async () => {
+    const response = await request(app).get('/incidents').query({ limit_incidents: 1 })
+    expect(response.statusCode).toBe(200)
+    const stream1 = response.body[0]
+    const stream2 = response.body[1]
+    const stream3 = response.body[2]
+    const stream4 = response.body[3]
+    expect(stream1.id).toBe('bbbbbbbbbbbe')
+    expect(stream1.incidents.total).toBe(1)
+    expect(stream1.incidents.items.length).toBe(1)
+    expect(stream1.incidents.items[0].ref).toBe(1)
+    expect(stream2.id).toBe('bbbbbbbbbbbd')
+    expect(stream2.incidents.total).toBe(1)
+    expect(stream2.incidents.items.length).toBe(1)
+    expect(stream2.incidents.items[0].ref).toBe(1)
+    expect(stream3.id).toBe('bbbbbbbbbbbc')
+    expect(stream3.incidents.total).toBe(2)
+    expect(stream3.incidents.items.length).toBe(1)
+    expect(stream3.incidents.items[0].ref).toBe(2)
+    expect(stream4.id).toBe('bbbbbbbbbbbb')
+    expect(stream4.incidents.total).toBe(3)
+    expect(stream4.incidents.items.length).toBe(1)
+    expect(stream4.incidents.items[0].ref).toBe(3)
   })
 })

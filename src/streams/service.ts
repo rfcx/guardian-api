@@ -5,11 +5,19 @@ function extractIds (streams): string[] {
   return streams.map(i => i.id)
 }
 
-export const filterActiveStreams = async (streams: StreamResponse[]): Promise<StreamResponse[]> => {
-  console.log('\n\nfilterActiveStreams', streams, '\n\n')
-  const activeStreams = extractIds(await list({ ids: extractIds(streams), lastEventEndNotNull: true }))
-  console.log('\n\nactiveStreams', activeStreams, '\n\n')
-  return streams.filter(s => activeStreams.includes(s.id))
+export const filterbyActiveStreams = async (streams: StreamResponse[]): Promise<StreamResponse[]> => {
+  const activeStreams = await list({ ids: extractIds(streams), lastEventEndNotNull: true })
+  const activeStreamIds = extractIds(activeStreams)
+  return streams
+    .filter(s => activeStreamIds.includes(s.id))
+    .sort((a, b) => {
+      const strA = activeStreams.find(s => s.id === a.id)
+      const strB = activeStreams.find(s => s.id === b.id)
+      if (strA === undefined || strB === undefined) {
+        return 0
+      }
+      return new Date(strB.lastEventEnd).valueOf() - new Date(strA.lastEventEnd).valueOf()
+    })
 }
 
-export default { filterActiveStreams }
+export default { filterbyActiveStreams }

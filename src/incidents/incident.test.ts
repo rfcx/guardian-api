@@ -36,10 +36,10 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
 
-  await Stream.create({ id: 'stream000000', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'stream000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'stream000002', lastEventEnd: '2021-06-09T15:38:05.000Z' })
-  await Stream.create({ id: 'stream000003', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000000', projectId: 'project000000', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000001', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000002', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
+  await Stream.create({ id: 'stream000003', projectId: 'project000002', lastEventEnd: '2021-06-09T15:38:05.000Z' })
 
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
   incident1 = await Incident.create({ streamId: 'stream000000', projectId: 'project000000', ref: 1 })
