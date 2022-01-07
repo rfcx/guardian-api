@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import minMax from 'dayjs/plugin/minMax'
+import streamsDao from '../streams/dao'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -62,12 +63,20 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     if (coreStream.project === null) {
       throw new Error('Stream must be associated with a project')
     }
+    const start = dayjs.utc(coreEvent.start).toDate()
+    const end = dayjs.utc(coreEvent.end).toDate()
+    await streamsDao.findOrCreate({ id: coreStream.id, projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
+      .then(async ([stream, created]) => {
+        if (!created) {
+          await streamsDao.update(stream.id, { projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
+        }
+      })
     const classification = await ensureClassificationExists(coreEvent.classification)
     const incidentForEvent = await findOrCreateIncidentForEvent(coreStream, { transaction })
     const event = await create({
       id: eventData.id,
-      start: coreEvent.start !== undefined ? dayjs.utc(coreEvent.start).toDate() : undefined as any,
-      end: coreEvent.end !== undefined ? dayjs(coreEvent.end).toDate() : undefined as any,
+      start,
+      end,
       streamId: coreStream.id,
       projectId: (coreStream.project as any).id,
       classificationId: classification.id,

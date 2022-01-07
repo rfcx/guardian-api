@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { StreamFilters, QueryOptionsRFCx } from '../types'
-import { Op } from 'sequelize'
+import { StreamFilters, StreamCreationData, StreamUpdatableData, QueryOptionsRFCx } from '../types'
+import { Op, Transactionable } from 'sequelize'
 import Stream from './stream.model'
 
 dayjs.extend(utc)
@@ -30,4 +30,19 @@ export const list = async function (f: StreamFilters = {}, o: QueryOptionsRFCx =
   })
 }
 
-export default { list }
+export const findOrCreate = async function (f: StreamCreationData, o: Transactionable = {}): Promise<[Stream, boolean]> {
+  const { id, projectId, lastEventEnd } = f
+  const transaction = o.transaction
+  return await Stream.findOrCreate({
+    where: { id },
+    defaults: { projectId, lastEventEnd },
+    transaction
+  })
+}
+
+export const update = async function (id: string, data: StreamUpdatableData, o: Transactionable = {}): Promise<void> {
+  const transaction = o.transaction
+  await Stream.update(data, { where: { id }, transaction })
+}
+
+export default { list, findOrCreate, update }

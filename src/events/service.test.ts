@@ -5,12 +5,14 @@ import { sequelize } from '../common/db'
 import { createEvent } from './service'
 import Classification from '../classifications/classification.model'
 import Stream from '../streams/stream.model'
+import streamsDao from '../streams/dao'
 import Event from './event.model'
 import { list } from './dao'
 import classificationDao from '../classifications/dao'
 import Incident, { incidentAttributes } from '../incidents/incident.model'
 import incidentsDao from '../incidents/dao'
 import Response from '../responses/models/response.model'
+
 jest.mock('../common/auth', () => {
   return {
     getM2MToken: jest.fn(() => 'mocked token')
@@ -29,7 +31,7 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
-  await Stream.create({ id: 'stream000001', projectId: 'project000001', lastEventEnd: '2021-09-14T20:03:21.795Z' })
+  await Stream.create({ id: 'stream000001', projectId: 'project000001', lastEventEnd: '2021-09-14T19:02:21.795Z' })
   setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', 200, {
     id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
     streamId: 'stream000001',
@@ -44,9 +46,20 @@ beforeAll(async () => {
   setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', 200, {
     id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12',
     streamId: 'stream000001',
-    start: '2021-09-14T19:59:48.795Z',
-    end: '2021-09-14T20:03:21.795Z',
-    createdAt: '2021-09-14T20:10:01.312Z',
+    start: '2021-09-14T20:05:48.795Z',
+    end: '2021-09-14T20:08:21.795Z',
+    createdAt: '2021-09-14T20:09:01.312Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b13', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b13',
+    streamId: 'stream000002',
+    start: '2021-09-14T21:15:48.795Z',
+    end: '2021-09-14T21:18:21.795Z',
+    createdAt: '2021-09-14T21:19:01.312Z',
     classification: {
       value: 'chainsaw',
       title: 'Chainsaw'
@@ -60,6 +73,16 @@ beforeAll(async () => {
     project: {
       id: 'project000001',
       name: 'Project 000001'
+    }
+  })
+  setupMockAxios('core', GET, 'streams/stream000002', 200, {
+    id: 'stream000002',
+    name: 'Stream 000002',
+    latitude: 10,
+    longitude: 20,
+    project: {
+      id: 'project000002',
+      name: 'Project 000002'
     }
   })
 })
@@ -77,6 +100,8 @@ describe('createEvent function', () => {
     const event = events[0]
     const classifications: Classification[] = await classificationDao.list()
     const classification = classifications[0]
+    const streams: Stream[] = await streamsDao.list()
+    const stream = streams[0]
     expect(events.length).toBe(1)
     expect(event.id).toBe('7b8c15a9-5bc0-4059-b8cd-ec26aea92b11')
     expect(event.start?.toISOString()).toBe('2021-09-14T19:59:48.795Z')
@@ -88,6 +113,9 @@ describe('createEvent function', () => {
     expect(classifications.length).toBe(1)
     expect(classification.value).toBe('chainsaw')
     expect(classification.title).toBe('Chainsaw')
+    expect(stream.id).toBe('stream000001')
+    expect(stream.projectId).toBe('project000001')
+    expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T20:03:21.795Z')
   })
   describe('incidents creation', () => {
     test('creates incident if there are no open incidents', async () => {
@@ -173,15 +201,15 @@ describe('createEvent function', () => {
       const event = events[0]
       expect(events.length).toBe(2)
       const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
-      const incident = incidents[1]
+      const incident = incidents[0]
       expect(incidents.length).toBe(2)
       expect(incident.streamId).toBe('stream000001')
       expect(incident.projectId).toBe('project000001')
       expect(incident.closedAt).toBeNull()
-      expect(incident.events.map(e => e.id).includes(event.id)).toBeTruthy()
-      expect(incident.responses.length).toBe(1)
-      expect(incident.firstEvent.id).toBe(event.id)
-      expect(incident.firstResponse.id).toBe(resp.id)
+      expect(incident.events.map(e => e.id).includes('7b8c15a9-5bc0-4059-b8cd-ec26aea92b12')).toBeTruthy()
+      expect(incident.responses.length).toBe(0)
+      expect(incident.firstEvent.id).toBe('7b8c15a9-5bc0-4059-b8cd-ec26aea92b12')
+      expect(incident.firstResponse).toBeNull()
     })
     test('adds event to existing incident', async () => {
       const inc = await Incident.create({
@@ -243,6 +271,14 @@ describe('createEvent function', () => {
       expect(incidents[0].events.length).toBe(1)
       expect(incidents[1].events.length).toBe(1)
       expect(incidents[1].ref).toBe(2)
+    })
+    test('creates new stream', async () => {
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b13' })
+      const streams: Stream[] = await streamsDao.list()
+      const stream = streams[0]
+      expect(stream.id).toBe('stream000002')
+      expect(stream.projectId).toBe('project000002')
+      expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T21:18:21.795Z')
     })
   })
 })

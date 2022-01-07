@@ -29,6 +29,17 @@ export interface StreamFilters {
   lastEventEnd?: Date
 }
 
+export interface StreamCreationData {
+  id: string
+  projectId: string
+  lastEventEnd: Date
+}
+
+export interface StreamUpdatableData {
+  projectId: string
+  lastEventEnd: Date
+}
+
 export interface StreamResponseWithEventsCount extends StreamResponse {
   eventsCount: number
 }
