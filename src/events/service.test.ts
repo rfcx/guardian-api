@@ -198,7 +198,6 @@ describe('createEvent function', () => {
       await inc.update({ firstResponseId: resp.id })
       await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12' })
       const events: Event[] = await list()
-      const event = events[0]
       expect(events.length).toBe(2)
       const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
       const incident = incidents[0]

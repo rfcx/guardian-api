@@ -42,21 +42,6 @@ module.exports = {
           transaction
         })
       }
-
-      const fkBase = {
-        fields: ['stream_id'],
-        type: 'FOREIGN KEY',
-        references: {
-          table: 'streams',
-          field: 'id'
-        },
-        onDelete: 'no action',
-        onUpdate: 'no action',
-        transaction
-      }
-      await queryInterface.addConstraint('incidents', { ...fkBase, name: 'fk_incidents_stream_id' })
-      await queryInterface.addConstraint('events', { ...fkBase, name: 'fk_events_stream_id' })
-      await queryInterface.addConstraint('responses', { ...fkBase, name: 'fk_responses_stream_id' })
     })
   },
   down: (queryInterface, Sequelize) => {
