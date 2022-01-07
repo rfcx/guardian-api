@@ -37,7 +37,7 @@ module.exports = {
         transaction
       })
       if (streamTimes.length) {
-        await queryInterface.sequelize.query(`INSERT INTO streams (id, project_id, last_event_end) VALUES ${streamTimes.map((i) => `('${i.stream_id}', ${i.project_id}', '${dayjs.utc(i.end).toISOString()}')`).join(', ')}`, {
+        await queryInterface.sequelize.query(`INSERT INTO streams (id, project_id, last_event_end) VALUES ${streamTimes.map((i) => `('${i.stream_id}', '${i.project_id}', '${dayjs.utc(i.end).toISOString()}')`).join(', ')}`, {
           type: queryInterface.sequelize.QueryTypes.INSERT,
           transaction
         })
