@@ -2,7 +2,7 @@ import MockDate from 'mockdate'
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { GET, setupMockAxios, resetMockAxios } from '../common/axios/mock'
 import { sequelize } from '../common/db'
-import { createEvent } from './service'
+import { createEvent, updateEvent } from './service'
 import Classification from '../classifications/classification.model'
 import Stream from '../streams/stream.model'
 import streamsDao from '../streams/dao'
@@ -279,5 +279,43 @@ describe('createEvent function', () => {
       expect(stream.projectId).toBe('project000002')
       expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T21:18:21.795Z')
     })
+  })
+})
+
+describe('updateEvent function', () => {
+  test('updates event', async () => {
+    const id = '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11'
+    setupMockAxios('core', GET, `events/${id}`, 200, {
+      id,
+      streamId: 'stream000001',
+      start: '2021-09-14T19:59:48.795Z',
+      end: '2021-09-14T20:05:13.795Z',
+      createdAt: '2021-09-14T20:10:01.312Z',
+      classification: {
+        value: 'chainsaw',
+        title: 'Chainsaw'
+      }
+    })
+    const inc = await Incident.create({
+      streamId: 'stream000001',
+      projectId: 'project000001',
+      ref: 1
+    })
+    await Event.create({
+      id,
+      start: '2021-09-14T19:59:48.795Z',
+      end: '2021-09-14T20:03:21.795Z',
+      streamId: 'stream000001',
+      projectId: 'project000001',
+      classificationId: 1,
+      createdAt: '2021-09-14T18:10:01.312Z',
+      incidentId: inc.id
+    })
+    await inc.update({ firstEventId: id, closedAt: '2021-09-14T20:09:01.312Z' })
+
+    await updateEvent({ id })
+
+    const event = await Event.findOne({ where: { id } })
+    expect((event as any).end.toISOString()).toBe('2021-09-14T20:05:13.795Z')
   })
 })

@@ -2,7 +2,7 @@ import { Transaction } from 'sequelize'
 import { EventSQSMessage, Project, EventResponse, StreamResponse, StreamResponseWithEventsCount, PNData } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
-import { get, create, list, count } from './dao'
+import { get, create, list, count, update } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
 import { getEvent, getStream } from '../common/core-api/index'
@@ -88,6 +88,12 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     }
     return { event, coreEvent: coreEvent, coreStream: coreStream }
   })
+}
+
+export const updateEvent = async (eventData: EventSQSMessage): Promise<void> => {
+  const coreEvent = await getEvent(eventData.id).then(e => e.data)
+  const end = dayjs.utc(coreEvent.end).toDate()
+  await update(coreEvent.id, { end })
 }
 
 export const sendPushNotification = async (event: EventResponse, stream: StreamResponse): Promise<string> => {

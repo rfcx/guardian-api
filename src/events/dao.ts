@@ -39,6 +39,11 @@ export const list = async function (f: EventFilters = {}, o: QueryOptionsRFCx = 
   })
 }
 
+export const update = async function (id: string, data: EventUpdatableData, o: Transactionable = {}): Promise<void> {
+  const transaction = o.transaction
+  await Event.update(data, { where: { id }, transaction })
+}
+
 export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number, Event[]]> {
   const transaction = o.transaction
   const where = combineWhere(f)
@@ -51,4 +56,4 @@ export const count = async function (f: EventFilters = {}): Promise<number> {
   return await Event.count({ where })
 }
 
-export default { create, get, list, updateBatch, count }
+export default { create, get, list, update, updateBatch, count }

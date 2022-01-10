@@ -78,6 +78,7 @@ const answers = [
   { id: 105, text: 'Illegal camps', question_id: 1 },
   { id: 106, text: 'Fired/burned areas', question_id: 1 },
   { id: 107, text: 'Evidence of poaching', question_id: 1 },
+  { id: 108, text: 'Other', question_id: 1 },
   { id: 200, text: 'None', question_id: 2 },
   { id: 201, text: 'Collected evidence', question_id: 2 },
   { id: 202, text: 'Issue a warning', question_id: 2 },
@@ -86,6 +87,7 @@ const answers = [
   { id: 205, text: 'Arrests', question_id: 2 },
   { id: 206, text: 'Planning to come back with security enforcement', question_id: 2 },
   { id: 207, text: 'Other', question_id: 2 },
+  { id: 208, text: 'Damaged machinery', question_id: 2 },
   { id: 301, text: 'None', question_id: 3 },
   { id: 302, text: 'Not sure', question_id: 3 },
   { id: 303, text: 'Small', question_id: 3 },
@@ -101,8 +103,9 @@ const answers = [
   { id: 602, text: 'Footprints (human)', question_id: 6 },
   { id: 603, text: 'Dog tracks', question_id: 6 },
   { id: 604, text: 'Other', question_id: 6 },
+  { id: 605, text: 'None', question_id: 6 },
   { id: 701, text: 'Small (individual, informal)', question_id: 7 },
-  { id: 702, text: 'Large (many vehicles, coordinated)', question_id: 7 },
+  { id: 702, text: 'Large (group, coordinated)', question_id: 7 },
   { id: 703, text: 'None', question_id: 7 }
 ]
 export const seedValues = { primaryFirstname, primaryLastname, primaryEmail, primaryGuid, questionTypes, questions, answers }

@@ -1,12 +1,12 @@
 import { MessageQueue } from '@rfcx/message-queue'
 import { EventSQSMessage } from './types'
-import { createEvent, sendPushNotification } from './service'
+import { createEvent, updateEvent, sendPushNotification } from './service'
 
-if (process.env.EVENTS_SQS_QUEUE_ENABLED === 'true') {
+if (process.env.SQS_ENABLED === 'true') {
   const messageQueue = new MessageQueue('sqs')
-  const topic = process.env.EVENTS_SQS_QUEUE as string
-  console.log(`Subsribing to SQS topic "${topic}"`)
-  messageQueue.subscribe(topic, async (data: EventSQSMessage) => {
+  const eventCreatedTopic = process.env.SQS_EVENT_CREATED as string
+  console.log(`Subsribing to SQS topic "${eventCreatedTopic}"`)
+  messageQueue.subscribe(eventCreatedTopic, async (data: EventSQSMessage) => {
     try {
       const result = await createEvent(data)
       if (result !== null) {
@@ -14,6 +14,18 @@ if (process.env.EVENTS_SQS_QUEUE_ENABLED === 'true') {
       }
     } catch (e) {
       console.error('Error creating event', e)
+      return false
+    }
+    return true
+  })
+
+  const eventUpdatedTopic = process.env.SQS_EVENT_CREATED as string
+  console.log(`Subsribing to SQS topic "${eventUpdatedTopic}"`)
+  messageQueue.subscribe(eventUpdatedTopic, async (data: EventSQSMessage) => {
+    try {
+      await updateEvent(data)
+    } catch (e) {
+      console.error('Error updating event', e)
       return false
     }
     return true
