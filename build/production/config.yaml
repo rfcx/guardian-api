@@ -4,8 +4,9 @@ metadata:
   name: ranger-api-config
   namespace: production
 data:
-  CORE_URL: https://api.rfcx.org
-  MEDIA_URL: https://media-api.rfcx.org
-  EVENTS_SQS_QUEUE_ENABLED: "true"
-  EVENTS_SQS_QUEUE: "ranger-api-events-production"
+  CORE_URL: http://api-service.production.svc.cluster.local
+  MEDIA_URL: http://api-media-service.production.svc.cluster.local
+  SQS_ENABLED: "true"
+  SQS_EVENT_CREATED: "ranger-api-event-created"
+  SQS_EVENT_UPDATED: "ranger-api-event-updated"
   AUTH0_DOMAIN: "auth.rfcx.org"

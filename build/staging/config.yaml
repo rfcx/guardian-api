@@ -4,8 +4,9 @@ metadata:
   name: ranger-api-config
   namespace: staging
 data:
-  CORE_URL: https://staging-api.rfcx.org
-  MEDIA_URL: https://staging-api.rfcx.org
-  EVENTS_SQS_QUEUE_ENABLED: "true"
-  EVENTS_SQS_QUEUE: "ranger-api-events-staging"
+  CORE_URL: http://api-service.staging.svc.cluster.local
+  MEDIA_URL: http://api-service.staging.svc.cluster.local
+  SQS_ENABLED: "true"
+  SQS_EVENT_CREATED: "ranger-api-event-created-staging"
+  SQS_EVENT_UPDATED: "ranger-api-event-updated-staging"
   AUTH0_DOMAIN: "auth.rfcx.org"
