@@ -2,7 +2,6 @@ import MockDate from 'mockdate'
 import routes from './router'
 import request from 'supertest'
 import Event from '../events/event.model'
-// import User from '../users/user.model'
 import Response from '../responses/models/response.model'
 import Classification from '../classifications/classification.model'
 import Stream from '../streams/stream.model'
@@ -49,7 +48,6 @@ beforeAll(async () => {
   await Stream.create({ id: STREAM3, projectId: PROJECT1, lastEventEnd: STREAM3_LAST_EV_END, hasOpenIncident: true })
   await Stream.create({ id: STREAM4, projectId: PROJECT1, lastEventEnd: STREAM4_LAST_EV_END, hasOpenIncident: true })
   await Stream.create({ id: STREAM5, projectId: PROJECT1, lastEventEnd: STREAM5_LAST_EV_END })
-  // user = await User.create({ guid: 'user1', email: 'john@doe.com', firstname: 'John', lastname: 'Doe' })
   setupMockAxios('core', GET, 'projects', 200, [{ id: PROJECT1, name: 'test-project-1', isPublic: true, externalId: null }])
 })
 beforeEach(async () => {
@@ -69,10 +67,11 @@ describe('GET /streams', () => {
 
     setupMockAxios('core', GET, endpoint, 200, mockStream)
     const response = await request(app).get('/')
-
     expect(response.statusCode).toBe(200)
-    expect(response.body[0]).toEqual(mockStream[0])
-    expect(response.body[1]).toEqual(mockStream[1])
+    const stream2 = response.body[0]
+    const stream1 = response.body[1]
+    expect(stream2.id).toEqual(mockStream[0].id)
+    expect(stream1.id).toEqual(mockStream[1].id)
     resetMockAxios()
   })
 
@@ -85,55 +84,6 @@ describe('GET /streams', () => {
     resetMockAxios()
   })
 
-  // test('get streams with events count since last report', async () => {
-  //   const mockStream = [
-  //     { id: STREAM1, name: 'test-stream-1', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-  //     { id: STREAM2, name: 'test-stream-2', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-  //     { id: STREAM3, name: 'test-stream-3', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-  //     { id: STREAM4, name: 'test-stream-4', isPublic: true, externalId: null, project: { id: PROJECT1 } }
-  //   ]
-  //   const incident = await Incident.create({
-  //     streamId: STREAM1,
-  //     projectId: PROJECT1,
-  //     ref: 1
-  //   })
-  //   await Event.bulkCreate([
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de1', start: '2021-09-15T13:00:00.000Z', end: '2021-09-15T13:05:00.000Z', incidentId: incident.id, streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T13:06:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de2', start: '2021-09-15T13:05:00.000Z', end: '2021-09-15T13:10:00.000Z', incidentId: incident.id, streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T13:11:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de3', start: '2021-09-15T13:10:00.000Z', end: '2021-09-15T13:15:00.000Z', incidentId: incident.id, streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T13:16:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de4', start: '2021-09-15T13:15:00.000Z', end: '2021-09-15T13:20:00.000Z', incidentId: incident.id, streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T13:21:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de5', start: '2021-09-15T13:20:00.000Z', end: '2021-09-15T13:25:00.000Z', incidentId: incident.id, streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T13:26:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de6', start: '2021-09-15T14:00:00.000Z', end: '2021-09-15T14:05:00.000Z', incidentId: incident.id, streamId: STREAM3, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-15T14:06:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de7', start: '2021-09-01T14:00:00.000Z', end: '2021-09-01T14:05:00.000Z', incidentId: incident.id, streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-01T14:06:00.123Z' },
-  //     { id: '9c5acb84-78fc-4bb5-88af-1710f9a64de8', start: '2021-09-01T14:10:00.000Z', end: '2021-09-01T14:15:00.000Z', incidentId: incident.id, streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, createdAt: '2021-09-01T14:16:00.123Z' }
-  //   ])
-  //   await Response.bulkCreate([
-  //     { streamId: STREAM1, projectId: PROJECT1, incidentId: incident.id, investigatedAt: '2021-09-15T13:06:00.000Z', startedAt: '2021-09-16T12:21:00.000Z', submittedAt: '2021-09-16T12:26:00.000Z', createdAt: '2021-09-18T13:07:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
-  //     { streamId: STREAM2, projectId: PROJECT1, incidentId: incident.id, investigatedAt: '2021-09-11T13:10:00.000Z', startedAt: '2021-09-12T12:27:00.000Z', submittedAt: '2021-09-12T12:28:00.000Z', createdAt: '2021-09-15T13:10:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 },
-  //     { streamId: STREAM3, projectId: PROJECT1, incidentId: incident.id, investigatedAt: '2021-09-15T14:30:00.123Z', startedAt: '2021-09-12T12:31:00.000Z', submittedAt: '2021-09-12T12:33:00.000Z', createdAt: '2021-09-15T14:30:10.000Z', loggingScale: 1, damageScale: 1, createdById: user.id, schemaVersion: 1 }
-  //   ])
-
-  //   setupMockAxios('core', GET, endpoint, 200, mockStream)
-  //   MockDate.set('2021-09-16T20:10:01.312Z')
-  //   const response = await request(app).get('/').query({ with_events_count: true })
-  //   MockDate.reset()
-
-  //   expect(response.statusCode).toBe(200)
-  //   const stream1 = response.body[0]
-  //   const stream2 = response.body[1]
-  //   const stream3 = response.body[2]
-  //   const stream4 = response.body[3]
-  //   expect(stream1.id).toEqual(mockStream[0].id)
-  //   expect(stream2.id).toEqual(mockStream[1].id)
-  //   expect(stream3.id).toEqual(mockStream[2].id)
-  //   expect(stream4.id).toEqual(mockStream[3].id)
-  //   expect(stream1.eventsCount).toEqual(3)
-  //   expect(stream2.eventsCount).toEqual(0)
-  //   expect(stream3.eventsCount).toEqual(0)
-  //   expect(stream4.eventsCount).toEqual(0)
-  //   resetMockAxios()
-  // })
-
   describe('active query param', () => {
     test('returns 4 active of 5 total streams', async () => {
       const mockStream = [
@@ -142,11 +92,9 @@ describe('GET /streams', () => {
         { id: STREAM3, name: 'test-stream-3', isPublic: true, externalId: null, project: { id: PROJECT1 } },
         { id: STREAM4, name: 'test-stream-4', isPublic: true, externalId: null, project: { id: PROJECT1 } },
         { id: STREAM5, name: 'test-stream-5', isPublic: true, externalId: null, project: { id: PROJECT1 } }
-        // { id: 'bbbbbbbbbbbg', name: 'test-stream-6', isPublic: true, externalId: null, project: { id: PROJECT1 } }
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      // const response = await request(app).get('/').query({ active: true })
       const response = await request(app).get('/')
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(4)
@@ -162,7 +110,6 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      // const response = await request(app).get('/').query({ active: true })
       const response = await request(app).get('/')
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(4)
@@ -177,7 +124,6 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      // const response = await request(app).get('/').query({ active: true })
       const response = await request(app).get('/')
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(3)
@@ -193,142 +139,147 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      // const response = await request(app).get('/').query({ active: true })
       const response = await request(app).get('/')
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(0)
       resetMockAxios()
     })
   })
-})
-
-describe('GET /streams/', () => {
-  let incident1
-  beforeAll(() => {
-    const mockStream = [
-      { id: STREAM1, name: 'test-stream-1', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-      { id: STREAM2, name: 'test-stream-2', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-      { id: STREAM3, name: 'test-stream-3', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-      { id: STREAM4, name: 'test-stream-4', isPublic: true, externalId: null, project: { id: PROJECT1 } },
-      { id: STREAM5, name: 'test-stream-5', isPublic: true, externalId: null, project: { id: PROJECT1 } }
-    ]
-    setupMockAxios('core', GET, endpoint, 200, mockStream)
-  })
-  beforeEach(async () => {
-    incident1 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 1, closedAt: '2021-08-15T11:23:01.000Z' })
-    const event1 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', start: '2021-08-14T10:00:00.000Z', end: '2021-08-14T10:02:00.000Z', createdAt: '2021-08-14T10:02:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident1.id })
-    await incident1.update({ firstEventId: event1.id })
-    const incident2 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 2 })
-    const event2 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', start: '2021-08-14T10:03:00.000Z', end: '2021-08-14T10:05:00.000Z', createdAt: '2021-08-14T10:05:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident2.id })
-    await incident2.update({ firstEventId: event2.id })
-    const incident3 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 3 })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b13', start: '2021-08-14T10:06:00.000Z', end: '2021-08-14T10:08:00.000Z', createdAt: '2021-08-14T10:08:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b14', start: '2021-08-14T10:09:00.000Z', end: '2021-08-14T10:11:00.000Z', createdAt: '2021-08-14T10:11:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b15', start: '2021-08-14T10:12:00.000Z', end: '2021-08-14T10:14:00.000Z', createdAt: '2021-08-14T10:14:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b16', start: '2021-08-14T10:15:00.000Z', end: '2021-08-14T10:17:00.000Z', createdAt: '2021-08-17T10:17:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b17', start: '2021-08-14T10:18:00.000Z', end: '2021-08-14T10:20:00.000Z', createdAt: '2021-08-17T10:20:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b18', start: '2021-08-14T10:21:00.000Z', end: '2021-08-14T10:23:00.000Z', createdAt: '2021-08-17T10:23:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b19', start: '2021-08-14T10:24:00.000Z', end: '2021-08-14T10:26:00.000Z', createdAt: '2021-08-17T10:26:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b20', start: '2021-08-14T10:27:00.000Z', end: '2021-08-14T10:29:00.000Z', createdAt: '2021-08-17T10:29:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b21', start: '2021-08-14T10:30:00.000Z', end: '2021-08-14T10:32:00.000Z', createdAt: '2021-08-17T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b22', start: '2021-08-22T10:30:00.000Z', end: '2021-08-22T10:32:00.000Z', createdAt: '2021-08-22T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    const event3 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b23', start: '2021-08-30T10:30:00.000Z', end: STREAM1_LAST_EV_END, createdAt: '2021-08-30T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
-    await incident3.update({ firstEventId: event3.id })
-    await Stream.update({ lastEventEnd: STREAM1_LAST_EV_END, lastIncidentEventsCount: 11 }, { where: { id: STREAM1 } })
-    const incident4 = await Incident.create({ streamId: STREAM2, projectId: PROJECT1, ref: 4 })
-    const event4 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b24', start: '2021-08-30T10:33:00.000Z', end: '2021-08-30T10:35:00.000Z', createdAt: '2021-08-30T10:35:01.000Z', streamId: STREAM2, projectId: PROJECT1, classificationId: classification.id, incidentId: incident4.id })
-    await incident4.update({ firstEventId: event4.id })
-    const incident5 = await Incident.create({ streamId: STREAM2, projectId: PROJECT1, ref: 5 })
-    const event5 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b25', start: '2021-08-30T10:36:00.000Z', end: STREAM2_LAST_EV_END, createdAt: '2021-08-30T10:38:01.000Z', streamId: STREAM2, projectId: PROJECT1, classificationId: classification.id, incidentId: incident5.id })
-    await incident5.update({ firstEventId: event5.id })
-    await Stream.update({ lastEventEnd: STREAM2_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM2 } })
-    const incident6 = await Incident.create({ streamId: STREAM3, projectId: PROJECT1, ref: 6 })
-    const event6 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b26', start: '2021-08-30T10:39:00.000Z', end: STREAM3_LAST_EV_END, createdAt: '2021-08-30T10:41:01.000Z', streamId: STREAM3, projectId: PROJECT1, classificationId: classification.id, incidentId: incident6.id })
-    await incident6.update({ firstEventId: event6.id })
-    await Stream.update({ lastEventEnd: STREAM3_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM3 } })
-    const incident7 = await Incident.create({ streamId: STREAM4, projectId: PROJECT1, ref: 7 })
-    const event7 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b27', start: '2021-08-30T10:42:00.000Z', end: STREAM4_LAST_EV_END, createdAt: '2021-08-30T10:44:01.000Z', streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, incidentId: incident7.id })
-    await incident7.update({ firstEventId: event7.id })
-    await Stream.update({ lastEventEnd: STREAM4_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM4 } })
-    const incident8 = await Incident.create({ streamId: STREAM5, projectId: PROJECT1, ref: 8, closedAt: '2021-08-30T12:21:01.000Z' })
-    const event8 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b28', start: '2021-08-30T10:44:00.000Z', end: STREAM5_LAST_EV_END, createdAt: '2021-08-30T10:46:01.000Z', streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, incidentId: incident8.id })
-    await incident7.update({ firstEventId: event8.id })
-    await Stream.update({ lastEventEnd: STREAM5_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM5 } })
-  })
-  afterAll(() => {
-    resetMockAxios()
-  })
-  test('returns list of active streams', async () => {
-    const response = await request(app).get('/').query({ limit_incidents: 10 })
-    expect(response.statusCode).toBe(200)
-    const stream1 = response.body[0]
-    const stream2 = response.body[1]
-    const stream3 = response.body[2]
-    const stream4 = response.body[3]
-    expect(stream1.id).toBe(STREAM4)
-    expect(stream1.incidents.total).toBe(1)
-    expect(stream1.incidents.items.length).toBe(1)
-    expect(stream2.id).toBe(STREAM3)
-    expect(stream2.incidents.total).toBe(1)
-    expect(stream2.incidents.items.length).toBe(1)
-    expect(stream3.id).toBe(STREAM2)
-    expect(stream3.incidents.total).toBe(2)
-    expect(stream3.incidents.items.length).toBe(2)
-    expect(stream4.id).toBe(STREAM1)
-    expect(stream4.incidents.total).toBe(2)
-    expect(stream4.incidents.items.length).toBe(2)
-  })
-  test('returns list of active streams with only one incident', async () => {
-    const response = await request(app).get('/').query({ limit_incidents: 1 })
-    expect(response.statusCode).toBe(200)
-    const stream1 = response.body[0]
-    const stream2 = response.body[1]
-    const stream3 = response.body[2]
-    const stream4 = response.body[3]
-    expect(stream1.id).toBe(STREAM4)
-    expect(stream1.incidents.total).toBe(1)
-    expect(stream1.incidents.items.length).toBe(1)
-    expect(stream2.id).toBe(STREAM3)
-    expect(stream2.incidents.total).toBe(1)
-    expect(stream2.incidents.items.length).toBe(1)
-    expect(stream3.id).toBe(STREAM2)
-    expect(stream3.incidents.total).toBe(2)
-    expect(stream3.incidents.items.length).toBe(1)
-    expect(stream4.id).toBe(STREAM1)
-    expect(stream4.incidents.total).toBe(2)
-    expect(stream4.incidents.items.length).toBe(1)
-  })
-  test('returns list of active streams including closed incidents', async () => {
-    const response = await request(app).get('/').query({ limit_incidents: 10, include_closed_incidents: true })
-    const stream5 = response.body[0]
-    const stream1 = response.body[4]
-    expect(stream1.incidents.total).toBe(3)
-    expect(stream1.incidents.items.length).toBe(3)
-    expect(stream5.incidents.total).toBe(1)
-    expect(stream5.incidents.items.length).toBe(1)
-  })
-  test('returns list of streams without incidents if "limit_incidents" is not set', async () => {
-    const response = await request(app).get('/')
-    expect(response.statusCode).toBe(200)
-    expect(response.body.length).toBe(4)
-    expect(response.body[0].incidents).toBeUndefined()
-    expect(response.body[1].incidents).toBeUndefined()
-    expect(response.body[2].incidents).toBeUndefined()
-    expect(response.body[3].incidents).toBeUndefined()
-  })
-  test('returns list of streams with hot incident', async () => {
-    const response = await request(app).get('/').query({ has_hot_incident: true })
-    expect(response.statusCode).toBe(200)
-    expect(response.body.length).toBe(1)
-    expect(response.body[0].id).toBe(STREAM1)
-  })
-  test('returns list of streams which have new events', async () => {
-    MockDate.set('2021-08-30T16:40:00.000Z')
-    const response = await request(app).get('/').query({ has_new_events: true })
-    MockDate.reset()
-    expect(response.statusCode).toBe(200)
-    expect(response.body.length).toBe(2)
-    expect(response.body[0].id).toBe(STREAM4)
-    expect(response.body[1].id).toBe(STREAM3)
+  describe('querying based on stats', () => {
+    let incident1
+    beforeAll(() => {
+      const mockStream = [
+        { id: STREAM1, name: 'test-stream-1', isPublic: true, externalId: null, project: { id: PROJECT1 } },
+        { id: STREAM2, name: 'test-stream-2', isPublic: true, externalId: null, project: { id: PROJECT1 } },
+        { id: STREAM3, name: 'test-stream-3', isPublic: true, externalId: null, project: { id: PROJECT1 } },
+        { id: STREAM4, name: 'test-stream-4', isPublic: true, externalId: null, project: { id: PROJECT1 } },
+        { id: STREAM5, name: 'test-stream-5', isPublic: true, externalId: null, project: { id: PROJECT1 } }
+      ]
+      setupMockAxios('core', GET, endpoint, 200, mockStream)
+    })
+    beforeEach(async () => {
+      incident1 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 1, closedAt: '2021-08-15T11:23:01.000Z' })
+      const event1 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11', start: '2021-08-14T10:00:00.000Z', end: '2021-08-14T10:02:00.000Z', createdAt: '2021-08-14T10:02:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident1.id })
+      await incident1.update({ firstEventId: event1.id })
+      const incident2 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 2 })
+      const event2 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12', start: '2021-08-14T10:03:00.000Z', end: '2021-08-14T10:05:00.000Z', createdAt: '2021-08-14T10:05:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident2.id })
+      await incident2.update({ firstEventId: event2.id })
+      const incident3 = await Incident.create({ streamId: STREAM1, projectId: PROJECT1, ref: 3 })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b13', start: '2021-08-14T10:06:00.000Z', end: '2021-08-14T10:08:00.000Z', createdAt: '2021-08-14T10:08:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b14', start: '2021-08-14T10:09:00.000Z', end: '2021-08-14T10:11:00.000Z', createdAt: '2021-08-14T10:11:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b15', start: '2021-08-14T10:12:00.000Z', end: '2021-08-14T10:14:00.000Z', createdAt: '2021-08-14T10:14:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b16', start: '2021-08-14T10:15:00.000Z', end: '2021-08-14T10:17:00.000Z', createdAt: '2021-08-17T10:17:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b17', start: '2021-08-14T10:18:00.000Z', end: '2021-08-14T10:20:00.000Z', createdAt: '2021-08-17T10:20:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b18', start: '2021-08-14T10:21:00.000Z', end: '2021-08-14T10:23:00.000Z', createdAt: '2021-08-17T10:23:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b19', start: '2021-08-14T10:24:00.000Z', end: '2021-08-14T10:26:00.000Z', createdAt: '2021-08-17T10:26:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b20', start: '2021-08-14T10:27:00.000Z', end: '2021-08-14T10:29:00.000Z', createdAt: '2021-08-17T10:29:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b21', start: '2021-08-14T10:30:00.000Z', end: '2021-08-14T10:32:00.000Z', createdAt: '2021-08-17T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b22', start: '2021-08-22T10:30:00.000Z', end: '2021-08-22T10:32:00.000Z', createdAt: '2021-08-22T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      const event3 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b23', start: '2021-08-30T10:30:00.000Z', end: STREAM1_LAST_EV_END, createdAt: '2021-08-30T10:32:01.000Z', streamId: STREAM1, projectId: PROJECT1, classificationId: classification.id, incidentId: incident3.id })
+      await incident3.update({ firstEventId: event3.id })
+      await Stream.update({ lastEventEnd: STREAM1_LAST_EV_END, lastIncidentEventsCount: 11 }, { where: { id: STREAM1 } })
+      const incident4 = await Incident.create({ streamId: STREAM2, projectId: PROJECT1, ref: 4 })
+      const event4 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b24', start: '2021-08-30T10:33:00.000Z', end: '2021-08-30T10:35:00.000Z', createdAt: '2021-08-30T10:35:01.000Z', streamId: STREAM2, projectId: PROJECT1, classificationId: classification.id, incidentId: incident4.id })
+      await incident4.update({ firstEventId: event4.id })
+      const incident5 = await Incident.create({ streamId: STREAM2, projectId: PROJECT1, ref: 5 })
+      const event5 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b25', start: '2021-08-30T10:36:00.000Z', end: STREAM2_LAST_EV_END, createdAt: '2021-08-30T10:38:01.000Z', streamId: STREAM2, projectId: PROJECT1, classificationId: classification.id, incidentId: incident5.id })
+      await incident5.update({ firstEventId: event5.id })
+      await Stream.update({ lastEventEnd: STREAM2_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM2 } })
+      const incident6 = await Incident.create({ streamId: STREAM3, projectId: PROJECT1, ref: 6 })
+      const event6 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b26', start: '2021-08-30T10:39:00.000Z', end: STREAM3_LAST_EV_END, createdAt: '2021-08-30T10:41:01.000Z', streamId: STREAM3, projectId: PROJECT1, classificationId: classification.id, incidentId: incident6.id })
+      await incident6.update({ firstEventId: event6.id })
+      await Stream.update({ lastEventEnd: STREAM3_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM3 } })
+      const incident7 = await Incident.create({ streamId: STREAM4, projectId: PROJECT1, ref: 7 })
+      const event7 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b27', start: '2021-08-30T10:42:00.000Z', end: STREAM4_LAST_EV_END, createdAt: '2021-08-30T10:44:01.000Z', streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, incidentId: incident7.id })
+      await incident7.update({ firstEventId: event7.id })
+      await Stream.update({ lastEventEnd: STREAM4_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM4 } })
+      const incident8 = await Incident.create({ streamId: STREAM5, projectId: PROJECT1, ref: 8, closedAt: '2021-08-30T12:21:01.000Z' })
+      const event8 = await Event.create({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b28', start: '2021-08-30T10:44:00.000Z', end: STREAM5_LAST_EV_END, createdAt: '2021-08-30T10:46:01.000Z', streamId: STREAM4, projectId: PROJECT1, classificationId: classification.id, incidentId: incident8.id })
+      await incident7.update({ firstEventId: event8.id })
+      await Stream.update({ lastEventEnd: STREAM5_LAST_EV_END, lastIncidentEventsCount: 1 }, { where: { id: STREAM5 } })
+    })
+    afterAll(() => {
+      resetMockAxios()
+    })
+    test('returns list of active streams', async () => {
+      const response = await request(app).get('/').query({ limit_incidents: 10 })
+      expect(response.statusCode).toBe(200)
+      const stream1 = response.body[0]
+      const stream2 = response.body[1]
+      const stream3 = response.body[2]
+      const stream4 = response.body[3]
+      expect(stream1.id).toBe(STREAM4)
+      expect(stream1.incidents.total).toBe(1)
+      expect(stream1.incidents.items.length).toBe(1)
+      expect(stream2.id).toBe(STREAM3)
+      expect(stream2.incidents.total).toBe(1)
+      expect(stream2.incidents.items.length).toBe(1)
+      expect(stream3.id).toBe(STREAM2)
+      expect(stream3.incidents.total).toBe(2)
+      expect(stream3.incidents.items.length).toBe(2)
+      expect(stream4.id).toBe(STREAM1)
+      expect(stream4.incidents.total).toBe(2)
+      expect(stream4.incidents.items.length).toBe(2)
+    })
+    test('returns list of active streams with only one incident', async () => {
+      const response = await request(app).get('/').query({ limit_incidents: 1 })
+      expect(response.statusCode).toBe(200)
+      const stream1 = response.body[0]
+      const stream2 = response.body[1]
+      const stream3 = response.body[2]
+      const stream4 = response.body[3]
+      expect(stream1.id).toBe(STREAM4)
+      expect(stream1.incidents.total).toBe(1)
+      expect(stream1.incidents.items.length).toBe(1)
+      expect(stream2.id).toBe(STREAM3)
+      expect(stream2.incidents.total).toBe(1)
+      expect(stream2.incidents.items.length).toBe(1)
+      expect(stream3.id).toBe(STREAM2)
+      expect(stream3.incidents.total).toBe(2)
+      expect(stream3.incidents.items.length).toBe(1)
+      expect(stream4.id).toBe(STREAM1)
+      expect(stream4.incidents.total).toBe(2)
+      expect(stream4.incidents.items.length).toBe(1)
+    })
+    test('returns list of active streams including closed incidents', async () => {
+      const response = await request(app).get('/').query({ limit_incidents: 10, include_closed_incidents: true })
+      const stream5 = response.body[0]
+      const stream1 = response.body[4]
+      expect(stream1.incidents.total).toBe(3)
+      expect(stream1.incidents.items.length).toBe(3)
+      expect(stream5.incidents.total).toBe(1)
+      expect(stream5.incidents.items.length).toBe(1)
+    })
+    test('returns list of streams without incidents if "limit_incidents" is not set', async () => {
+      const response = await request(app).get('/')
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(4)
+      expect(response.body[0].incidents).toBeUndefined()
+      expect(response.body[1].incidents).toBeUndefined()
+      expect(response.body[2].incidents).toBeUndefined()
+      expect(response.body[3].incidents).toBeUndefined()
+      expect(response.body[0].tags.length).toBe(0)
+      expect(response.body[1].tags.length).toBe(0)
+      expect(response.body[2].tags.length).toBe(0)
+      expect(response.body[3].tags.includes('hot')).toBeTruthy()
+    })
+    test('returns list of streams with hot incident', async () => {
+      const response = await request(app).get('/').query({ has_hot_incident: true })
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(1)
+      expect(response.body[0].id).toBe(STREAM1)
+      expect(response.body[0].tags.includes('hot')).toBeTruthy()
+    })
+    test('returns list of streams which have new events', async () => {
+      MockDate.set('2021-08-30T16:40:00.000Z')
+      const response = await request(app).get('/').query({ has_new_events: true })
+      MockDate.reset()
+      expect(response.statusCode).toBe(200)
+      expect(response.body.length).toBe(2)
+      expect(response.body[0].id).toBe(STREAM4)
+      expect(response.body[1].id).toBe(STREAM3)
+      expect(response.body[0].tags.includes('new')).toBeTruthy()
+      expect(response.body[1].tags.includes('new')).toBeTruthy()
+    })
   })
 })

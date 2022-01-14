@@ -52,6 +52,10 @@ export interface StreamResponseWithIncidents extends StreamResponse {
   }
 }
 
+export interface StreamResponseWithTags extends StreamResponse {
+  tags: string[]
+}
+
 export interface Stream {
   id: string
   name: string

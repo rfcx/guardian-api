@@ -3,9 +3,8 @@ import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 import { StreamResponseWithIncidents, StreamWithIncidentsQuery } from './types'
-import { filterbyActiveStreams } from './service'
+import { preprocessByActiveStreams } from './service'
 import { getIncidents } from '../incidents/service'
-import { limitAndOffset } from '../common/page'
 
 const router = Router()
 
@@ -94,30 +93,27 @@ router.get('/', (req: Request, res: Response): void => {
       // get all accessible streams from the Core API
       const forwardedResponse = await api.getStreams(userToken, {
         ...params,
-        limit: undefined,
-        offset: undefined
+        limit: 10000000000, // Core API has default limit of 100 items, so we need to overwrite it
+        offset: 0
       })
-      let streams = forwardedResponse.data as StreamResponseWithIncidents[]
-      streams = await filterbyActiveStreams(streams, params) as StreamResponseWithIncidents[]
-      const total = streams.length
-      streams = limitAndOffset(streams, params.limit, params.offset)
+      const { total, items } = await preprocessByActiveStreams(forwardedResponse.data, params)
       const { limitIncidents, includeClosedIncidents } = params
       if (limitIncidents > 0) {
-        for (const stream of streams) {
+        for (const stream of items) {
           const incData = await getIncidents({
             streams: [stream.id],
             closed: includeClosedIncidents ? undefined : false,
             limit: limitIncidents,
             offset: 0,
             sort: '-createdAt'
-          }, userToken)
-          stream.incidents = {
+          }, userToken);
+          (stream as StreamResponseWithIncidents).incidents = {
             total: incData.total,
             items: incData.results
           }
         }
       }
-      res.set({ 'Total-Items': total }).send(streams)
+      res.set({ 'Access-Control-Expose-Headers': 'Total-Items', 'Total-Items': total }).send(items)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting streams.'))
 })
