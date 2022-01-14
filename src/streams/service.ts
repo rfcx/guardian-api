@@ -44,6 +44,9 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
   }
   items = items.map((s: StreamResponse): StreamResponseWithTags => {
     const item = s as StreamResponseWithTags
+    // TODO: delete next two lines when Core API will handle dotted fields like `project.id`, `project.name`
+    delete item.project?.externalId
+    delete item.project?.isPublic
     item.tags = []
     const activeStream = activeStreams.find(active => s.id === active.id)
     if (activeStream === undefined) {
