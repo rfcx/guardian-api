@@ -43,4 +43,4 @@ export const getNextRefForProject = async function (projectId: string, o: Transa
   return isNaN(maxRef) ? 1 : maxRef + 1
 }
 
-export default { create, get, list, update }
+export default { create, get, list, count, update }

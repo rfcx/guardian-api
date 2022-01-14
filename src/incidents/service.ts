@@ -1,6 +1,6 @@
 import Incident, { incidentAttributes } from './incident.model'
 import { list, get, update, create, count, getNextRefForProject } from './dao'
-import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
+import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData, IncidentFilters } from '../types'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { Transactionable } from 'sequelize'
@@ -12,6 +12,7 @@ import { getAllUserProjects, hasAccessToProject } from '../projects/service'
 import eventsDao from '../events/dao'
 import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
+import { refreshOpenIncidentsCount } from '../streams/service'
 
 dayjs.extend(utc)
 
@@ -28,7 +29,7 @@ async function getUserProjects (projects: string[] | undefined, userToken: strin
 export const getIncidents = async (params: IncidentQuery, userToken: string): Promise<ListResults<Incident>> => {
   let { streams, projects, closed, minEvents, firstEventStart, limit, offset, sort } = params
   projects = await getUserProjects(projects, userToken)
-  const filters = {
+  const filters: IncidentFilters = {
     streams,
     projects,
     isClosed: closed,
@@ -70,6 +71,7 @@ export const updateIncident = async (id: string, payload: IncidentPatchPayload, 
     data.closedById = closed ? user.id : null
   }
   await update(id, data)
+  await refreshOpenIncidentsCount(incident.streamId)
 }
 
 export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o: Transactionable = {}): Promise<Incident> => {

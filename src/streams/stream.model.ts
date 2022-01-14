@@ -14,4 +14,10 @@ export default class Stream extends Model {
 
   @Column(DataType.DATE)
   lastEventEnd!: Date
+
+  @Column(DataType.INTEGER)
+  lastIncidentEventsCount!: number
+
+  @Column(DataType.BOOLEAN)
+  hasOpenIncident!: boolean
 }

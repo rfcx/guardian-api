@@ -1,36 +1,24 @@
-import { Transaction } from 'sequelize'
-import { EventSQSMessage, Project, EventResponse, StreamResponse, StreamResponseWithEventsCount, PNData } from '../types'
+import { Transaction, Transactionable } from 'sequelize'
+import { EventSQSMessage, Project, EventResponse, StreamResponse, PNData } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
 import { get, create, list, count, update } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
 import { getEvent, getStream } from '../common/core-api/index'
+import { refreshOpenIncidentsCount } from '../streams/service'
 import incidentsDao from '../incidents/dao'
+import streamsDao from '../streams/dao'
 import { findOrCreateIncidentForEvent } from '../incidents/service'
 import { sendToTopic } from '../common/firebase'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import minMax from 'dayjs/plugin/minMax'
-import streamsDao from '../streams/dao'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(minMax)
-
-export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
-  for (const stream of streams as StreamResponseWithEventsCount[]) {
-    const lastReport = await getLastResponseForStream(stream.id)
-    // TODO: change time period to be project based
-    const sevenDays = dayjs().subtract(7, 'days')
-    const date = lastReport !== null ? dayjs.max(sevenDays, dayjs(lastReport.investigatedAt)) : sevenDays
-    stream.eventsCount = await count({
-      streams: [stream.id],
-      start: date.toDate()
-    })
-  }
-}
 
 export const getEventsSinceLastReport = async (streamId: string): Promise<Event[]> => {
   const lastReport = await getLastResponseForStream(streamId)
@@ -86,6 +74,9 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     if (incidentForEvent.firstEvent === undefined) {
       await incidentsDao.update(incidentForEvent.id, { firstEventId: event.id }, { transaction })
     }
+    const lastIncidentEventsCount = await countEventsForIncident(incidentForEvent.id, { transaction })
+    await streamsDao.update(coreStream.id, { lastIncidentEventsCount }, { transaction })
+    await refreshOpenIncidentsCount(coreStream.id)
     return { event, coreEvent: coreEvent, coreStream: coreStream }
   })
 }
@@ -112,6 +103,10 @@ export const sendPushNotification = async (event: EventResponse, stream: StreamR
     body
   }
   return await sendToTopic(opts)
+}
+
+export const countEventsForIncident = async (incidentId: string, o: Transactionable = {}): Promise<number> => {
+  return await count({ incidents: [incidentId] }, o)
 }
 
 export default { createEvent, sendPushNotification }

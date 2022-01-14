@@ -202,38 +202,31 @@
     }
   },
   "ResponseForIncident": {
-    "allOf": [
-      {
-        "$ref": "#/components/schemas/ResponseLite"
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "5cb87566-f50b-4d14-b940-5c526dbbcbbb"
       },
-      {
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "5cb87566-f50b-4d14-b940-5c526dbbcbbb"
-          },
-          "investigatedAt": {
-            "type": "Date",
-            "example": "2021-09-21T04:45:16.991Z"
-          },
-          "startedAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:25.829Z"
-          },
-          "submittedAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:43.517Z"
-          },
-          "createdAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:35.855Z"
-          },
-          "createdBy": {
-            "$ref": "#/components/schemas/User"
-          }
-        }
+      "investigatedAt": {
+        "type": "Date",
+        "example": "2021-09-21T04:45:16.991Z"
+      },
+      "startedAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:25.829Z"
+      },
+      "submittedAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:43.517Z"
+      },
+      "createdAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:35.855Z"
+      },
+      "createdBy": {
+        "$ref": "#/components/schemas/User"
       }
-    ]
+    }
   },
   "Question": {
     "properties": {

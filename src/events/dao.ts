@@ -51,9 +51,10 @@ export const updateBatch = async function (f: EventFilters = {}, data: EventUpda
   return await Event.update({ end, incidentId }, { where, transaction })
 }
 
-export const count = async function (f: EventFilters = {}): Promise<number> {
+export const count = async function (f: EventFilters = {}, o: Transactionable = {}): Promise<number> {
   const where = combineWhere(f)
-  return await Event.count({ where })
+  const transaction = o.transaction
+  return await Event.count({ where, transaction })
 }
 
 export default { create, get, list, update, updateBatch, count }

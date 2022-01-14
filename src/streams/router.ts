@@ -2,10 +2,10 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { StreamQuery, StreamResponseWithIncidents, StreamWithIncidentsQuery } from './types'
-import { getEventsCountSinceLastReport } from '../events/service'
+import { StreamResponseWithIncidents, StreamWithIncidentsQuery } from './types'
 import { filterbyActiveStreams } from './service'
 import { getIncidents } from '../incidents/service'
+import { limitAndOffset } from '../common/page'
 
 const router = Router()
 
@@ -13,102 +13,6 @@ const router = Router()
  * @swagger
  *
  * /streams:
- *   get:
- *     summary: Get list of streams
- *     tags:
- *       - streams
- *     parameters:
- *       - name: projects
- *         description: Match streams belonging to one or more projects (by id)
- *         in: query
- *         type: array
- *       - name: keyword
- *         description: Match streams with name
- *         in: query
- *         type: string
- *         example: "Temb"
- *       - name: with_events_count
- *         description: Include count of events created since last report for this stream
- *         in: query
- *         type: boolean
- *         example: true
- *       - name: active
- *         description: Return only streams which have events
- *         in: query
- *         type: boolean
- *         example: false
- *         default: false
- *       - name: limit
- *         description: Maximum number of results to return
- *         in: query
- *         type: int
- *         default: 100
- *       - name: offset
- *         description: Number of results to skip
- *         in: query
- *         type: int
- *         default: 0
- *       - name: sort
- *         description: Order the results (comma-separated list of fields, prefix "-" for descending)
- *         in: query
- *         type: string
- *         example: name
- *         default: -updated_at
- *       - name: fields
- *         description: Customize included fields and relations
- *         in: query
- *         type: array
- *     responses:
- *       200:
- *         description: List of stream objects
- *         headers:
- *           Total-Items:
- *             schema:
- *               type: integer
- *             description: Total number of items without limit and offset.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 anyOf:
- *                 - $ref: '#/components/schemas/Stream'
- *                 - $ref: '#/components/schemas/StreamWithEventsCount'
- *       400:
- *         description: Invalid query parameters
- */
-router.get('/', (req: Request, res: Response): void => {
-  const userToken = req.headers.authorization ?? ''
-  const converter = new Converter(req.query, {})
-  converter.convert('projects').optional().toArray()
-  converter.convert('keyword').optional().toString()
-  converter.convert('with_events_count').optional().toBoolean()
-  converter.convert('active').default(false).toBoolean()
-  converter.convert('limit').default(100).toInt()
-  converter.convert('offset').default(0).toInt()
-  converter.convert('sort').default('-updated_at').toString()
-  converter.convert('fields').optional().toArray()
-  converter.validate()
-    .then(async (params: StreamQuery) => {
-      const forwardedResponse = await api.getStreams(userToken, params)
-      for (const key in forwardedResponse.headers) {
-        res.header(key, forwardedResponse.headers[key])
-      }
-      if (params.active) {
-        forwardedResponse.data = await filterbyActiveStreams(forwardedResponse.data)
-      }
-      if (params.with_events_count) {
-        await getEventsCountSinceLastReport(forwardedResponse.data)
-      }
-      res.send(forwardedResponse.data)
-    })
-    .catch(httpErrorHandler(req, res, 'Failed getting streams.'))
-})
-
-/**
- * @swagger
- *
- * /streams/incidents:
  *   get:
  *     summary: Get list of streams with incidents
  *     tags:
@@ -123,14 +27,18 @@ router.get('/', (req: Request, res: Response): void => {
  *         in: query
  *         type: string
  *         example: "Temb"
- *       - name: incidents_closed
- *         description: Open or closed incidents
+ *       - name: has_new_events
+ *         description: Stream has incident which has event in the last 6 hours
  *         in: query
  *         type: boolean
- *       - name: incidents_min_events
- *         description: Minimum number of events in the incident
+ *       - name: has_hot_incident
+ *         description: Stream has incident which has more than 10 events
  *         in: query
- *         type: number
+ *         type: boolean
+ *       - name: include_closed_incidents
+ *         description: Include closed incidents into list of incidents. Also include streams which have only closed incidents.
+ *         in: query
+ *         type: boolean
  *       - name: limit
  *         description: Maximum number of streams to return
  *         in: query
@@ -169,41 +77,47 @@ router.get('/', (req: Request, res: Response): void => {
  *       400:
  *         description: Invalid query parameters
  */
-router.get('/incidents', (req: Request, res: Response): void => {
+router.get('/', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization ?? ''
   const converter = new Converter(req.query, {}, { camelize: true })
   converter.convert('projects').optional().toArray()
   converter.convert('keyword').optional().toString()
-  converter.convert('incidents_closed').optional().toBoolean()
-  converter.convert('incidents_min_events').optional().toInt().minimum(0)
+  converter.convert('has_new_events').optional().toBoolean()
+  converter.convert('has_hot_incident').optional().toBoolean()
+  converter.convert('include_closed_incidents').default(false).toBoolean()
   converter.convert('limit').default(10).maximum(20).toInt()
   converter.convert('offset').default(0).toInt()
-  converter.convert('limit_incidents').default(10).toInt()
+  converter.convert('limit_incidents').default(0).toInt()
   converter.convert('fields').optional().toArray()
   converter.validate()
     .then(async (params: StreamWithIncidentsQuery) => {
-      const forwardedResponse = await api.getStreams(userToken, params)
-      let streams = forwardedResponse.data
-      for (const key in forwardedResponse.headers) {
-        res.header(key, forwardedResponse.headers[key])
-      }
-      streams = await filterbyActiveStreams(streams)
-      const { incidentsClosed, incidentsMinEvents, limitIncidents } = params
-      for (const stream of streams) {
-        const incData = await getIncidents({
-          streams: [stream.id],
-          closed: incidentsClosed,
-          minEvents: incidentsMinEvents,
-          limit: limitIncidents,
-          offset: 0,
-          sort: '-createdAt'
-        }, userToken);
-        (stream as StreamResponseWithIncidents).incidents = {
-          total: incData.total,
-          items: incData.results
+      // get all accessible streams from the Core API
+      const forwardedResponse = await api.getStreams(userToken, {
+        ...params,
+        limit: undefined,
+        offset: undefined
+      })
+      let streams = forwardedResponse.data as StreamResponseWithIncidents[]
+      streams = await filterbyActiveStreams(streams, params) as StreamResponseWithIncidents[]
+      const total = streams.length
+      streams = limitAndOffset(streams, params.limit, params.offset)
+      const { limitIncidents, includeClosedIncidents } = params
+      if (limitIncidents > 0) {
+        for (const stream of streams) {
+          const incData = await getIncidents({
+            streams: [stream.id],
+            closed: includeClosedIncidents ? undefined : false,
+            limit: limitIncidents,
+            offset: 0,
+            sort: '-createdAt'
+          }, userToken)
+          stream.incidents = {
+            total: incData.total,
+            items: incData.results
+          }
         }
       }
-      res.send(streams)
+      res.set({ 'Total-Items': total }).send(streams)
     })
     .catch(httpErrorHandler(req, res, 'Failed getting streams.'))
 })
