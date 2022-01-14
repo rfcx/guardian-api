@@ -13,6 +13,8 @@ export interface ForwardedArrayResponse<T> {
 export interface ProjectResponse {
   id: string
   name: string
+  isPublic?: boolean
+  externalId?: boolean
 }
 
 export interface StreamResponse {

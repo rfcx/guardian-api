@@ -71,8 +71,7 @@ const router = Router()
  *             schema:
  *               type: array
  *               items:
- *                 anyOf:
- *                 - $ref: '#/components/schemas/StreamsWithIncidents'
+ *                 $ref: '#/components/schemas/StreamWithIncidents'
  *       400:
  *         description: Invalid query parameters
  */

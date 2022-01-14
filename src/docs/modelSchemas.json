@@ -23,16 +23,19 @@
       }
     }
   },
-  "StreamWithEventsCount": {
+  "StreamWithTags": {
     "allOf": [
       {
         "$ref": "#/components/schemas/Stream"
       },
       {
         "properties": {
-          "eventsCount": {
-            "type": "number",
-            "example": 10
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "hot"
+            }
           }
         }
       }
@@ -47,14 +50,6 @@
       "name": {
         "type": "string",
         "example": "My Project 1"
-      },
-      "isPublic": {
-        "type": "boolean",
-        "example": true
-      },
-      "externalId": {
-        "type": "number",
-        "example": 1910
       }
     }
   },
@@ -135,10 +130,10 @@
       }
     ]
   },
-  "StreamsWithIncidents": {
+  "StreamWithIncidents": {
     "allOf": [
       {
-        "$ref": "#/components/schemas/Stream"
+        "$ref": "#/components/schemas/StreamWithTags"
       },
       {
         "properties": {
