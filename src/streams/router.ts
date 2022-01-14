@@ -54,7 +54,7 @@ const router = Router()
  *         description: Maximum number of incidents to return per each stream
  *         in: query
  *         type: int
- *         default: 10
+ *         default: 0
  *       - name: fields
  *         description: Customize included fields and relations
  *         in: query
