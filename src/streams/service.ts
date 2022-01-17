@@ -1,3 +1,4 @@
+import { Transactionable } from 'sequelize'
 import { StreamResponse, StreamResponseWithIncidents, StreamResponseWithTags, StreamWithIncidentsQuery, StreamFilters } from '../types'
 import { list, update } from './dao'
 import incidentsDao from '../incidents/dao'
@@ -65,9 +66,9 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
   return { total, items }
 }
 
-export const refreshOpenIncidentsCount = async (id: string): Promise<void> => {
-  const openedIncidents = await incidentsDao.count({ streams: [id], isClosed: false })
-  return await update(id, { hasOpenIncident: openedIncidents > 0 })
+export const refreshOpenIncidentsCount = async (id: string, o: Transactionable = {}): Promise<void> => {
+  const openedIncidents = await incidentsDao.count({ streams: [id], isClosed: false }, o)
+  return await update(id, { hasOpenIncident: openedIncidents > 0 }, o)
 }
 
 export default { preprocessByActiveStreams, refreshOpenIncidentsCount }

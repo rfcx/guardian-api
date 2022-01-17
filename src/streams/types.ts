@@ -40,7 +40,7 @@ export interface StreamCreationData {
 
 export interface StreamUpdatableData {
   projectId?: string
-  lastEventEnd?: Date
+  lastEventEnd?: string
   lastIncidentEventsCount?: number
   hasOpenIncident?: boolean
 }

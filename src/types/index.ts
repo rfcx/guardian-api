@@ -1,3 +1,5 @@
+import { Transaction } from 'sequelize'
+
 export interface Env {
   AUTH0_DOMAIN: string
   AUTH0_CLIENT_ID: string
@@ -29,6 +31,7 @@ export interface QueryOptionsRFCx {
   offset?: number
   order?: QueryOrder
   fields?: string[]
+  transaction?: Transaction | null
 }
 
 export interface Attachment {

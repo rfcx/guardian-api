@@ -15,12 +15,14 @@ export const create = async function (data: EventCreationData, o: CreateOptions 
   return await Event.create(data, { transaction })
 }
 
-export const get = async function (id: string): Promise<Event | null> {
+export const get = async function (id: string, o: Transactionable = {}): Promise<Event | null> {
+  const transaction = o.transaction
   return await Event.findByPk(id, {
     attributes: {
       exclude: ['updatedAt']
     },
-    include
+    include,
+    transaction
   })
 }
 

@@ -31,7 +31,7 @@ export const combineWhere = function (f: IncidentFilters = {}): WhereOptions<any
 }
 
 export const combineOptions = async function (f: IncidentFilters = {}, o: QueryOptionsRFCx = {}): Promise<FindOptions<Incident['_attributes']>> {
-  const { limit, offset, order, fields } = o
+  const { limit, offset, order, fields, transaction } = o
   const hasFields = fields !== undefined && fields.length > 0
   const options: FindOptions<Incident['_attributes']> = {
     where: combineWhere(f),
@@ -39,7 +39,8 @@ export const combineOptions = async function (f: IncidentFilters = {}, o: QueryO
     attributes: { include: hasFields ? incidentAttributes.full.filter(a => fields.includes(a)) : incidentAttributes.lite },
     limit: limit ?? 100,
     offset: offset ?? 0,
-    order: order !== undefined ? [[order.field, order.dir]] : [['createdAt', 'DESC']]
+    order: order !== undefined ? [[order.field, order.dir]] : [['createdAt', 'DESC']],
+    transaction
   }
   if (f.minEvents !== undefined) {
     const ids = (await Incident.findAll({
@@ -49,7 +50,8 @@ export const combineOptions = async function (f: IncidentFilters = {}, o: QueryO
       include: [{ model: Event, as: 'events', attributes: [] }],
       having: where(fn('count', col('events.id')), { [Op.gte]: f.minEvents }),
       group: ['Incident.id'],
-      order: options.order
+      order: options.order,
+      transaction
     })).map(i => i.id);
 
     (options.where as WhereAttributeHash).id = {

@@ -1,13 +1,15 @@
-import { Op } from 'sequelize'
+import { Op, Transactionable } from 'sequelize'
 import Classification from './classification.model'
 import { ClassificationFilters, QueryOptionsRFCx } from '../types'
 
-export const getByValue = async function (value: string): Promise<Classification | null> {
-  return await Classification.findOne({ where: { value } })
+export const getByValue = async function (value: string, o: Transactionable = {}): Promise<Classification | null> {
+  const transaction = o.transaction
+  return await Classification.findOne({ where: { value }, transaction })
 }
 
-export const create = async function (classification: Classification): Promise<Classification> {
-  return await Classification.create(classification)
+export const create = async function (classification: Classification, o: Transactionable = {}): Promise<Classification> {
+  const transaction = o.transaction
+  return await Classification.create(classification, { transaction })
 }
 
 export const list = async function (f: ClassificationFilters = {}, o: QueryOptionsRFCx = {}): Promise<Classification[]> {

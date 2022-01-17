@@ -48,7 +48,13 @@ export const findOrCreate = async function (f: StreamCreationData, o: Transactio
 
 export const update = async function (id: string, data: StreamUpdatableData, o: Transactionable = {}): Promise<void> {
   const transaction = o.transaction
-  await Stream.update(data, { where: { id }, transaction })
+  await Stream.update(data, {
+    where: {
+      id: id
+    },
+    returning: true,
+    transaction
+  })
 }
 
 export default { list, findOrCreate, update }

@@ -1,5 +1,5 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { EventSQSMessage, Project, EventResponse, StreamResponse, PNData } from '../types'
+import { EventSQSMessage, Project, EventResponse, StreamResponse, PNData, StreamUpdatableData } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
 import { get, create, list, count, update } from './dao'
@@ -42,7 +42,7 @@ export const getEventsSinceLastReport = async (streamId: string): Promise<Event[
 export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: Event, coreEvent: EventResponse, coreStream: StreamResponse } | null> => {
   // in case SQS message was received more than one time...
   return await sequelize.transaction(async (transaction: Transaction) => {
-    const existingEvent = await get(eventData.id)
+    const existingEvent = await get(eventData.id, { transaction })
     if (existingEvent !== null) {
       return null
     }
@@ -51,22 +51,25 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     if (coreStream.project === null) {
       throw new Error('Stream must be associated with a project')
     }
+    const projectId = (coreStream.project as any).id
     const start = dayjs.utc(coreEvent.start).toDate()
     const end = dayjs.utc(coreEvent.end).toDate()
-    await streamsDao.findOrCreate({ id: coreStream.id, projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
-      .then(async ([stream, created]) => {
-        if (!created) {
-          await streamsDao.update(stream.id, { projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
-        }
-      })
-    const classification = await ensureClassificationExists(coreEvent.classification)
+    const [stream, created] = await streamsDao.findOrCreate({ id: coreStream.id, projectId, lastEventEnd: end }, { transaction })
+    const streamUpdate: StreamUpdatableData = {}
+    if (!created) {
+      streamUpdate.lastEventEnd = end.toISOString()
+      if (stream.projectId !== projectId) {
+        streamUpdate.projectId = projectId
+      }
+    }
+    const classification = await ensureClassificationExists(coreEvent.classification, { transaction })
     const incidentForEvent = await findOrCreateIncidentForEvent(coreStream, { transaction })
     const event = await create({
       id: eventData.id,
       start,
       end,
       streamId: coreStream.id,
-      projectId: (coreStream.project as any).id,
+      projectId,
       classificationId: classification.id,
       createdAt: coreEvent.createdAt !== undefined ? dayjs.utc(coreEvent.createdAt).toDate() : undefined as any,
       incidentId: incidentForEvent.id
@@ -75,8 +78,8 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
       await incidentsDao.update(incidentForEvent.id, { firstEventId: event.id }, { transaction })
     }
     const lastIncidentEventsCount = await countEventsForIncident(incidentForEvent.id, { transaction })
-    await streamsDao.update(coreStream.id, { lastIncidentEventsCount }, { transaction })
-    await refreshOpenIncidentsCount(coreStream.id)
+    await streamsDao.update(coreStream.id, { ...streamUpdate, lastIncidentEventsCount }, { transaction })
+    await refreshOpenIncidentsCount(coreStream.id, { transaction })
     return { event, coreEvent: coreEvent, coreStream: coreStream }
   })
 }
