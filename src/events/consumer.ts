@@ -19,7 +19,7 @@ if (process.env.SQS_ENABLED === 'true') {
     return true
   })
 
-  const eventUpdatedTopic = process.env.SQS_EVENT_CREATED as string
+  const eventUpdatedTopic = process.env.SQS_EVENT_UPDATED as string
   console.log(`Subsribing to SQS topic "${eventUpdatedTopic}"`)
   messageQueue.subscribe(eventUpdatedTopic, async (data: EventSQSMessage) => {
     try {
