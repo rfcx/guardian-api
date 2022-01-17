@@ -84,10 +84,11 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
   })
 }
 
-export const updateEvent = async (eventData: EventSQSMessage): Promise<void> => {
+export const updateEvent = async (eventData: EventSQSMessage): Promise<string> => {
   const coreEvent = await getEvent(eventData.id).then(e => e.data)
   const end = dayjs.utc(coreEvent.end).toDate()
   await update(coreEvent.id, { end })
+  return coreEvent.id
 }
 
 export const sendPushNotification = async (event: EventResponse, stream: StreamResponse): Promise<string> => {
