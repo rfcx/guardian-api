@@ -23,16 +23,19 @@
       }
     }
   },
-  "StreamWithEventsCount": {
+  "StreamWithTags": {
     "allOf": [
       {
         "$ref": "#/components/schemas/Stream"
       },
       {
         "properties": {
-          "eventsCount": {
-            "type": "number",
-            "example": 10
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "hot"
+            }
           }
         }
       }
@@ -47,14 +50,6 @@
       "name": {
         "type": "string",
         "example": "My Project 1"
-      },
-      "isPublic": {
-        "type": "boolean",
-        "example": true
-      },
-      "externalId": {
-        "type": "number",
-        "example": 1910
       }
     }
   },
@@ -135,10 +130,10 @@
       }
     ]
   },
-  "StreamsWithIncidents": {
+  "StreamWithIncidents": {
     "allOf": [
       {
-        "$ref": "#/components/schemas/Stream"
+        "$ref": "#/components/schemas/StreamWithTags"
       },
       {
         "properties": {
@@ -202,38 +197,31 @@
     }
   },
   "ResponseForIncident": {
-    "allOf": [
-      {
-        "$ref": "#/components/schemas/ResponseLite"
+    "properties": {
+      "id": {
+        "type": "string",
+        "example": "5cb87566-f50b-4d14-b940-5c526dbbcbbb"
       },
-      {
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "5cb87566-f50b-4d14-b940-5c526dbbcbbb"
-          },
-          "investigatedAt": {
-            "type": "Date",
-            "example": "2021-09-21T04:45:16.991Z"
-          },
-          "startedAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:25.829Z"
-          },
-          "submittedAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:43.517Z"
-          },
-          "createdAt": {
-            "type": "Date",
-            "example": "2021-10-05T08:51:35.855Z"
-          },
-          "createdBy": {
-            "$ref": "#/components/schemas/User"
-          }
-        }
+      "investigatedAt": {
+        "type": "Date",
+        "example": "2021-09-21T04:45:16.991Z"
+      },
+      "startedAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:25.829Z"
+      },
+      "submittedAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:43.517Z"
+      },
+      "createdAt": {
+        "type": "Date",
+        "example": "2021-10-05T08:51:35.855Z"
+      },
+      "createdBy": {
+        "$ref": "#/components/schemas/User"
       }
-    ]
+    }
   },
   "Question": {
     "properties": {

@@ -1,36 +1,24 @@
-import { Transaction } from 'sequelize'
-import { EventSQSMessage, Project, EventResponse, StreamResponse, StreamResponseWithEventsCount, PNData } from '../types'
+import { Transaction, Transactionable } from 'sequelize'
+import { EventSQSMessage, Project, EventResponse, StreamResponse, PNData, StreamUpdatableData } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
 import { get, create, list, count, update } from './dao'
 import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
 import { getEvent, getStream } from '../common/core-api/index'
+import { refreshOpenIncidentsCount } from '../streams/service'
 import incidentsDao from '../incidents/dao'
+import streamsDao from '../streams/dao'
 import { findOrCreateIncidentForEvent } from '../incidents/service'
 import { sendToTopic } from '../common/firebase'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import minMax from 'dayjs/plugin/minMax'
-import streamsDao from '../streams/dao'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(minMax)
-
-export const getEventsCountSinceLastReport = async (streams: StreamResponse[]): Promise<void> => {
-  for (const stream of streams as StreamResponseWithEventsCount[]) {
-    const lastReport = await getLastResponseForStream(stream.id)
-    // TODO: change time period to be project based
-    const sevenDays = dayjs().subtract(7, 'days')
-    const date = lastReport !== null ? dayjs.max(sevenDays, dayjs(lastReport.investigatedAt)) : sevenDays
-    stream.eventsCount = await count({
-      streams: [stream.id],
-      start: date.toDate()
-    })
-  }
-}
 
 export const getEventsSinceLastReport = async (streamId: string): Promise<Event[]> => {
   const lastReport = await getLastResponseForStream(streamId)
@@ -54,7 +42,7 @@ export const getEventsSinceLastReport = async (streamId: string): Promise<Event[
 export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: Event, coreEvent: EventResponse, coreStream: StreamResponse } | null> => {
   // in case SQS message was received more than one time...
   return await sequelize.transaction(async (transaction: Transaction) => {
-    const existingEvent = await get(eventData.id)
+    const existingEvent = await get(eventData.id, { transaction })
     if (existingEvent !== null) {
       return null
     }
@@ -63,22 +51,25 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     if (coreStream.project === null) {
       throw new Error('Stream must be associated with a project')
     }
+    const projectId = (coreStream.project as any).id
     const start = dayjs.utc(coreEvent.start).toDate()
     const end = dayjs.utc(coreEvent.end).toDate()
-    await streamsDao.findOrCreate({ id: coreStream.id, projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
-      .then(async ([stream, created]) => {
-        if (!created) {
-          await streamsDao.update(stream.id, { projectId: (coreStream.project as any).id, lastEventEnd: end }, { transaction })
-        }
-      })
-    const classification = await ensureClassificationExists(coreEvent.classification)
+    const [stream, created] = await streamsDao.findOrCreate({ id: coreStream.id, projectId, lastEventEnd: end }, { transaction })
+    const streamUpdate: StreamUpdatableData = {}
+    if (!created) {
+      streamUpdate.lastEventEnd = end.toISOString()
+      if (stream.projectId !== projectId) {
+        streamUpdate.projectId = projectId
+      }
+    }
+    const classification = await ensureClassificationExists(coreEvent.classification, { transaction })
     const incidentForEvent = await findOrCreateIncidentForEvent(coreStream, { transaction })
     const event = await create({
       id: eventData.id,
       start,
       end,
       streamId: coreStream.id,
-      projectId: (coreStream.project as any).id,
+      projectId,
       classificationId: classification.id,
       createdAt: coreEvent.createdAt !== undefined ? dayjs.utc(coreEvent.createdAt).toDate() : undefined as any,
       incidentId: incidentForEvent.id
@@ -86,14 +77,18 @@ export const createEvent = async (eventData: EventSQSMessage): Promise<{ event: 
     if (incidentForEvent.firstEvent === undefined) {
       await incidentsDao.update(incidentForEvent.id, { firstEventId: event.id }, { transaction })
     }
+    const lastIncidentEventsCount = await countEventsForIncident(incidentForEvent.id, { transaction })
+    await streamsDao.update(coreStream.id, { ...streamUpdate, lastIncidentEventsCount }, { transaction })
+    await refreshOpenIncidentsCount(coreStream.id, { transaction })
     return { event, coreEvent: coreEvent, coreStream: coreStream }
   })
 }
 
-export const updateEvent = async (eventData: EventSQSMessage): Promise<void> => {
+export const updateEvent = async (eventData: EventSQSMessage): Promise<string> => {
   const coreEvent = await getEvent(eventData.id).then(e => e.data)
   const end = dayjs.utc(coreEvent.end).toDate()
   await update(coreEvent.id, { end })
+  return coreEvent.id
 }
 
 export const sendPushNotification = async (event: EventResponse, stream: StreamResponse): Promise<string> => {
@@ -112,6 +107,10 @@ export const sendPushNotification = async (event: EventResponse, stream: StreamR
     body
   }
   return await sendToTopic(opts)
+}
+
+export const countEventsForIncident = async (incidentId: string, o: Transactionable = {}): Promise<number> => {
+  return await count({ incidents: [incidentId] }, o)
 }
 
 export default { createEvent, sendPushNotification }

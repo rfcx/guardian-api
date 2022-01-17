@@ -1,9 +1,10 @@
 import Incident, { incidentAttributes } from './incident.model'
 import { list, get, update, create, count, getNextRefForProject } from './dao'
-import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData } from '../types'
+import { StreamResponse, ResponsePayload, IncidentQuery, ListResults, IncidentPatchPayload, IncidentUpdatableData, IncidentFilters } from '../types'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { Transactionable } from 'sequelize'
+import { Transaction, Transactionable } from 'sequelize'
+import { sequelize } from '../common/db'
 import { querySortToOrder } from '../common/db/helpers'
 import User from '../users/user.model'
 import { EmptyResultError } from '@rfcx/http-utils'
@@ -12,6 +13,7 @@ import { getAllUserProjects, hasAccessToProject } from '../projects/service'
 import eventsDao from '../events/dao'
 import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
+import { refreshOpenIncidentsCount } from '../streams/service'
 
 dayjs.extend(utc)
 
@@ -28,7 +30,7 @@ async function getUserProjects (projects: string[] | undefined, userToken: strin
 export const getIncidents = async (params: IncidentQuery, userToken: string): Promise<ListResults<Incident>> => {
   let { streams, projects, closed, minEvents, firstEventStart, limit, offset, sort } = params
   projects = await getUserProjects(projects, userToken)
-  const filters = {
+  const filters: IncidentFilters = {
     streams,
     projects,
     isClosed: closed,
@@ -57,22 +59,26 @@ export const getIncident = async (id: string, userToken: string): Promise<Incide
 }
 
 export const updateIncident = async (id: string, payload: IncidentPatchPayload, userData: User): Promise<void> => {
-  const incident = await get(id)
-  const user = await ensureUserExists(userData)
-  if (incident === null) {
-    // eslint-disable-next-line @typescript-eslint/no-throw-literal
-    throw new EmptyResultError('Incident with given id not found')
-  }
-  const { closed } = payload
-  const data: IncidentUpdatableData = {}
-  if (closed !== undefined) {
-    data.closedAt = closed ? dayjs.utc().toDate() : null
-    data.closedById = closed ? user.id : null
-  }
-  await update(id, data)
+  return await sequelize.transaction(async (transaction: Transaction) => {
+    const incident = await get(id, undefined, { transaction })
+    const user = await ensureUserExists(userData, { transaction })
+    if (incident === null) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw new EmptyResultError('Incident with given id not found')
+    }
+    const { closed } = payload
+    const data: IncidentUpdatableData = {}
+    if (closed !== undefined) {
+      data.closedAt = closed ? dayjs.utc().toDate() : null
+      data.closedById = closed ? user.id : null
+    }
+    await update(id, data, { transaction })
+    await refreshOpenIncidentsCount(incident.streamId, { transaction })
+  })
 }
 
 export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o: Transactionable = {}): Promise<Incident> => {
+  const transaction = o.transaction
   const existingIncidents = await list({
     streams: [streamData.id],
     isClosed: false
@@ -81,7 +87,8 @@ export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o
       field: 'createdAt',
       dir: 'DESC'
     },
-    fields: ['id', 'firstEvent', 'firstResponse']
+    fields: ['id', 'firstEvent', 'firstResponse'],
+    transaction
   })
   const activeIncidents = existingIncidents.filter((incident) => {
     // TODO: change time period to be project based

@@ -9,13 +9,15 @@ export const create = async function (data: IncidentCreationData, o: CreateOptio
   return await Incident.create(data, { transaction })
 }
 
-export const get = async function (id: string, fields: string[] = []): Promise<Incident | null> {
+export const get = async function (id: string, fields: string[] = [], o: Transactionable = {}): Promise<Incident | null> {
   const hasFields = fields !== undefined && fields.length > 0
+  const transaction = o.transaction
   const attributes = hasFields ? incidentAttributes.full.filter(a => fields.includes(a)) : incidentAttributes.full
   const include = hasFields ? availableIncludes.filter(i => fields.includes(i.as)) : availableIncludes
   return await Incident.findByPk(id, {
     attributes,
-    include
+    include,
+    transaction
   })
 }
 
@@ -24,9 +26,10 @@ export const list = async function (f: IncidentFilters = {}, o: QueryOptionsRFCx
   return await Incident.findAll(options)
 }
 
-export const count = async function (f: IncidentFilters = {}): Promise<number> {
+export const count = async function (f: IncidentFilters = {}, o: Transactionable = {}): Promise<number> {
   const { where, include } = await combineOptions(f)
-  return await Incident.count({ where, include })
+  const transaction = o.transaction
+  return await Incident.count({ where, include, transaction })
 }
 
 export const update = async function (id: string, data: IncidentUpdatableData, o: Transactionable = {}): Promise<void> {
@@ -43,4 +46,4 @@ export const getNextRefForProject = async function (projectId: string, o: Transa
   return isNaN(maxRef) ? 1 : maxRef + 1
 }
 
-export default { create, get, list, update }
+export default { create, get, list, count, update }

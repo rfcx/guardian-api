@@ -65,6 +65,28 @@ beforeAll(async () => {
       title: 'Chainsaw'
     }
   })
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b14', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b14',
+    streamId: 'stream000002',
+    start: '2021-09-14T21:20:48.795Z',
+    end: '2021-09-14T21:24:21.795Z',
+    createdAt: '2021-09-14T21:25:01.312Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b15', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b15',
+    streamId: 'stream000002',
+    start: '2021-09-14T21:27:48.795Z',
+    end: '2021-09-14T21:29:21.795Z',
+    createdAt: '2021-09-14T21:29:31.312Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
   setupMockAxios('core', GET, 'streams/stream000001', 200, {
     id: 'stream000001',
     name: 'Stream 000001',
@@ -116,6 +138,7 @@ describe('createEvent function', () => {
     expect(stream.id).toBe('stream000001')
     expect(stream.projectId).toBe('project000001')
     expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T20:03:21.795Z')
+    expect(stream.hasOpenIncident).toBeTruthy()
   })
   describe('incidents creation', () => {
     test('creates incident if there are no open incidents', async () => {
@@ -278,6 +301,21 @@ describe('createEvent function', () => {
       expect(stream.id).toBe('stream000002')
       expect(stream.projectId).toBe('project000002')
       expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T21:18:21.795Z')
+      expect(stream.lastIncidentEventsCount).toBe(1)
+    })
+    test('updates stream stats when several evenes are created', async () => {
+      MockDate.set('2021-09-14T21:19:05.312Z')
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b13' })
+      MockDate.set('2021-09-14T21:25:05.312Z')
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b14' })
+      MockDate.set('2021-09-14T21:29:36.312Z')
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b15' })
+      MockDate.reset()
+      const streams: Stream[] = await streamsDao.list()
+      const stream = streams[0]
+      expect(stream.id).toBe('stream000002')
+      expect(stream.lastEventEnd.toISOString()).toBe('2021-09-14T21:29:21.795Z')
+      expect(stream.lastIncidentEventsCount).toBe(3)
     })
   })
 })

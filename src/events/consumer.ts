@@ -9,6 +9,7 @@ if (process.env.SQS_ENABLED === 'true') {
   messageQueue.subscribe(eventCreatedTopic, async (data: EventSQSMessage) => {
     try {
       const result = await createEvent(data)
+      console.log('Event is created', result?.event.id)
       if (result !== null) {
         await sendPushNotification(result.coreEvent, result.coreStream)
       }
@@ -23,7 +24,8 @@ if (process.env.SQS_ENABLED === 'true') {
   console.log(`Subsribing to SQS topic "${eventUpdatedTopic}"`)
   messageQueue.subscribe(eventUpdatedTopic, async (data: EventSQSMessage) => {
     try {
-      await updateEvent(data)
+      const id = await updateEvent(data)
+      console.log('Event is updated', id)
     } catch (e) {
       console.error('Error updating event', e)
       return false

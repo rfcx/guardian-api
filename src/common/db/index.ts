@@ -15,6 +15,11 @@ const baseOptions: SequelizeOptions = {
 
 const options: SequelizeOptions = {
   ...baseOptions,
+  logging: process.env.NODE_ENV === 'dev'
+    ? function (str: string, params: any) {
+      console.log('\nSQL QUERY----------------------------------\n', str, '\n', params?.bind, '\n----------------------------------')
+    }
+    : undefined,
   dialect: 'postgres',
   dialectOptions: {
     ssl: config.DB_SSL_ENABLED

@@ -14,8 +14,9 @@ export interface StreamQuery {
 export interface StreamWithIncidentsQuery {
   projects: string[]
   keyword: string
-  incidentsClosed: boolean
-  incidentsMinEvents: number
+  hasNewEvents: boolean
+  hasHotIncident: boolean
+  includeClosedIncidents: boolean
   limit: number
   offset: number
   limitIncidents: number
@@ -26,7 +27,9 @@ export interface StreamFilters {
   ids?: string[]
   projects?: string[]
   lastEventEndNotNull?: boolean
-  lastEventEnd?: Date
+  lastEventEndAfter?: Date
+  minLastIncidentEventsCount?: number
+  hasOpenIncident?: boolean
 }
 
 export interface StreamCreationData {
@@ -36,12 +39,10 @@ export interface StreamCreationData {
 }
 
 export interface StreamUpdatableData {
-  projectId: string
-  lastEventEnd: Date
-}
-
-export interface StreamResponseWithEventsCount extends StreamResponse {
-  eventsCount: number
+  projectId?: string
+  lastEventEnd?: string
+  lastIncidentEventsCount?: number
+  hasOpenIncident?: boolean
 }
 
 export interface StreamResponseWithIncidents extends StreamResponse {
@@ -49,6 +50,10 @@ export interface StreamResponseWithIncidents extends StreamResponse {
     total: number
     items: Incident[]
   }
+}
+
+export interface StreamResponseWithTags extends StreamResponse {
+  tags: string[]
 }
 
 export interface Stream {

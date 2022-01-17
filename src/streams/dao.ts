@@ -8,7 +8,7 @@ dayjs.extend(utc)
 
 export const list = async function (f: StreamFilters = {}, o: QueryOptionsRFCx = {}): Promise<Stream[]> {
   const where: Stream['_attributes'] = {}
-  const { ids, projects, lastEventEnd, lastEventEndNotNull } = f
+  const { ids, projects, lastEventEndAfter, lastEventEndNotNull, minLastIncidentEventsCount, hasOpenIncident } = f
   const { limit, offset, order } = o
   if (ids !== undefined) {
     where.id = { [Op.in]: ids }
@@ -16,11 +16,17 @@ export const list = async function (f: StreamFilters = {}, o: QueryOptionsRFCx =
   if (projects !== undefined) {
     where.project_id = { [Op.in]: projects }
   }
-  if (lastEventEnd !== undefined) {
-    where.last_event_end = { [Op.gte]: dayjs.utc(lastEventEnd).valueOf() }
+  if (lastEventEndAfter !== undefined) {
+    where.last_event_end = { [Op.gte]: dayjs.utc(lastEventEndAfter).valueOf() }
   }
   if (lastEventEndNotNull === true) {
     where.last_event_end = { [Op.ne]: null }
+  }
+  if (minLastIncidentEventsCount !== undefined) {
+    where.last_incident_events_count = { [Op.gte]: minLastIncidentEventsCount }
+  }
+  if (hasOpenIncident === true) {
+    where.has_open_incident = true
   }
   return await Stream.findAll({
     where,
@@ -42,7 +48,13 @@ export const findOrCreate = async function (f: StreamCreationData, o: Transactio
 
 export const update = async function (id: string, data: StreamUpdatableData, o: Transactionable = {}): Promise<void> {
   const transaction = o.transaction
-  await Stream.update(data, { where: { id }, transaction })
+  await Stream.update(data, {
+    where: {
+      id: id
+    },
+    returning: true,
+    transaction
+  })
 }
 
 export default { list, findOrCreate, update }
