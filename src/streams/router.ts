@@ -83,7 +83,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('has_new_events').optional().toBoolean()
   converter.convert('has_hot_incident').optional().toBoolean()
   converter.convert('include_closed_incidents').default(false).toBoolean()
-  converter.convert('limit').default(10).maximum(20).toInt()
+  converter.convert('limit').default(10).toInt()
   converter.convert('offset').default(0).toInt()
   converter.convert('limit_incidents').default(0).toInt()
   converter.convert('fields').optional().toArray()
