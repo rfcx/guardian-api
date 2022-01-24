@@ -1,13 +1,13 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: ranger-api-service
+  name: guardian-api-service
   namespace: staging
   labels:
-    app: ranger-api
+    app: guardian-api
 spec:
   selector:
-    app: ranger-api
+    app: guardian-api
   type: ClusterIP
   ports:
     - name: node

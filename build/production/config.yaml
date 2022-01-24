@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ranger-api-config
+  name: guardian-api-config
   namespace: production
 data:
   CORE_URL: http://api-service.production.svc.cluster.local

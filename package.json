@@ -1,7 +1,7 @@
 {
-  "name": "ranger-api",
+  "name": "guardian-api",
   "version": "0.0.1",
-  "description": "Ranger API",
+  "description": "Guardian API",
   "author": "Rainforest Connection",
   "license": "UNLICENSED",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "serve": "ts-node-dev --require dotenv/config --files --respawn src/index.ts",
     "start": "node dist/index.js",
     "start.timescale": ". ./bin/timescale/start.sh",
-    "stop.timescale": "docker container stop ranger-api-timescaledb"
+    "stop.timescale": "docker container stop guardian-api-timescaledb"
   },
   "dependencies": {
     "@rfcx/http-utils": "^1.0.9",

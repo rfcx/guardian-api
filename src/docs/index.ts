@@ -12,16 +12,16 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'RFCx Ranger API Documentation',
+      title: 'RFCx Guardian API Documentation',
       version: '0.0.1'
     },
     servers: [
       {
-        url: 'https://staging-ranger-api.rfcx.org',
+        url: 'https://staging-guardian-api.rfcx.org',
         description: 'Staging server'
       },
       {
-        url: 'https://ranger-api.rfcx.org',
+        url: 'https://guardian-api.rfcx.org',
         description: 'Production server (live data - use with care)'
       },
       {
@@ -82,11 +82,11 @@ const options = {
 
 const swaggerSpec: swaggerUi.JsonObject = swaggerJSDoc(options)
 const swaggerUiOptions: SwaggerOptions = {
-  oauth2RedirectUrl: 'https://dev-ranger-rfcx.org/docs/auth-callback',
+  oauth2RedirectUrl: 'https://dev-guardian-rfcx.org/docs/auth-callback',
   operationsSorter: 'alpha'
 }
 const swaggerUiExpressOptions: SwaggerUiOptions = {
-  customSiteTitle: 'RFCx Ranger API Documentation',
+  customSiteTitle: 'RFCx Guardian API Documentation',
   customCss: '.topbar { display: none }',
   swaggerOptions: swaggerUiOptions
 }
