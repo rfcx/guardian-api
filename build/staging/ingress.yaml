@@ -25,3 +25,9 @@ spec:
           - backend:
               serviceName: ranger-api-service
               servicePort: 80
+    - host: staging-guardian-api.rfcx.org
+      http:
+        paths:
+          - backend:
+              serviceName: ranger-api-service
+              servicePort: 80
