@@ -356,4 +356,14 @@ describe('updateEvent function', () => {
     const event = await Event.findOne({ where: { id } })
     expect((event as any).end.toISOString()).toBe('2021-09-14T20:05:13.795Z')
   })
+  test('creates event if it does not exist', async () => {
+    const id = '7b8c15a9-5bc0-4059-b8cd-ec26aea92b12'
+    const eventBefore = await Event.findOne({ where: { id } })
+    expect(eventBefore).toBe(null)
+    await updateEvent({ id })
+    const eventAfter = await Event.findOne({ where: { id } })
+    expect(eventAfter?.id).toBe(id)
+    expect(eventAfter?.start.toISOString()).toBe('2021-09-14T20:05:48.795Z')
+    expect(eventAfter?.end.toISOString()).toBe('2021-09-14T20:08:21.795Z')
+  })
 })
