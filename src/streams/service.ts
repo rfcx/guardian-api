@@ -55,11 +55,15 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
     }
     const isNew = dayjs.utc(activeStream.lastEventEnd).isAfter(dayjs.utc().subtract(hoursForIsNew, 'hours'))
     const isHot = activeStream.lastIncidentEventsCount >= eventsForHot
+    const isOpen = activeStream.hasOpenIncident
     if (isNew) {
       item.tags.push('new')
     }
     if (isHot) {
       item.tags.push('hot')
+    }
+    if (isOpen) {
+      item.tags.push('open')
     }
     return item
   })

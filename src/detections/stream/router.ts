@@ -62,7 +62,6 @@ const router = Router()
  *         description: Stream not found
  */
 router.get('/:id/detections', (req: Request, res: Response): void => {
-  console.log('\n\nHEREEE\n\n')
   const userToken = req.headers.authorization ?? ''
   const streamId = req.params.id
   const converter = new Converter(req.query, {})

@@ -45,7 +45,7 @@ export const sequelize = new Sequelize(process.env.NODE_ENV === 'test' ? options
 
 sequelize.authenticate()
   .then(() => {
-    console.log('Connection to TimescaleDB has been established successfully.')
+    console.log('Connection to TimescaleDB has been established successfully:', config.DB_HOSTNAME)
   })
   .catch((error) => {
     console.error('Unable to connect to the database:', error)

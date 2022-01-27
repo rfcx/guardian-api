@@ -24,7 +24,7 @@ spec:
     }
   }
     environment {
-        APP = "ranger-api"
+        APP = "guardian-api"
         K8S_NAMESPACE = k8sNamespace(BRANCH_NAME)
         ECR_HOST = "887044485231.dkr.ecr.eu-west-1.amazonaws.com"
         ECR_REPO = ecrRepoName(BRANCH_NAME)
@@ -46,7 +46,7 @@ spec:
                     echo 'Compile Stage Successful'
                 }
                 failure {
-                    slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#F44336', message: "*Ranger API*: Image build failed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+                    slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#F44336', message: "*Guardian API*: Image build failed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
                     echo 'Compile Stage Failed'
                 }
             }
@@ -69,7 +69,7 @@ spec:
             }
             steps {
                 sh "kubectl rollout status deployment ${APP} --namespace ${K8S_NAMESPACE}"
-                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Deployment completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Guardian API*: Deployment completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
             }
         }
         stage('Migrate database') {
@@ -85,7 +85,7 @@ spec:
                 "imagePullPolicy": "IfNotPresent", "restartPolicy": "Never", "args": [ "yarn", "migrate" ],
                 "envFrom": [ { "configMapRef": { "name": "${APP}-config" } }, { "secretRef": { "name": "${APP}-secrets" } } ] } ] } }
                 '"""
-                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Ranger API*: Migrations completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
+                slackSend (channel: "#${env.SLACK_CHANNEL}", color: '#4CAF50', message: "*Guardian API*: Migrations completed <${env.BUILD_URL}|#${env.BUILD_NUMBER}> branch ${env.BRANCH_NAME}")
             }
         }
     }
@@ -94,9 +94,9 @@ spec:
 
 def ecrRepoName(branch) {
     script {
-        repo = "ranger-api/staging"
+        repo = "guardian-api/staging"
         if (branch == 'master') {
-            repo = "ranger-api"
+            repo = "guardian-api"
         }
     }
     return repo
