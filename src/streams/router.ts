@@ -78,7 +78,7 @@ const router = Router()
 router.get('/', (req: Request, res: Response): void => {
   const userToken = req.headers.authorization ?? ''
   const converter = new Converter(req.query, {}, { camelize: true })
-  converter.convert('projects').optional().toArray()
+  converter.convert('projects').optional().toArray().isPassingRegExp(/[a-z0-9]{12}/, 'should consist of 12 lower-cased characters or digits')
   converter.convert('keyword').optional().toString()
   converter.convert('has_new_events').optional().toBoolean()
   converter.convert('has_hot_incident').optional().toBoolean()
