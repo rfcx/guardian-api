@@ -118,6 +118,21 @@ describe('POST /responses', () => {
       const responses: Response[] = await list()
       expect(responses.length).toBe(0)
     })
+    test('returns 400 if streamId has invalid format', async () => {
+      const requestBody = {
+        investigatedAt: '2021-06-08T19:26:40.000Z',
+        startedAt: '2021-06-09T15:35:21.000Z',
+        submittedAt: '2021-06-09T15:38:05.000Z',
+        answers: [102, 104, 105, 201, 301, 401],
+        note: 'Test note',
+        streamId: 'Aaaaaaaaa000'
+      }
+      const reqResponse = await request(app).post('/').send(requestBody)
+      expect(reqResponse.statusCode).toBe(400)
+      const responses: Response[] = await list()
+      expect(responses.length).toBe(0)
+      expect(reqResponse.body.message).toBe('Validation errors: Parameter \'streamId\' should consist of 12 lower-cased characters or digits.')
+    })
   })
   test('creates response and one incident', async () => {
     const requestBody = {

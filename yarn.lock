@@ -811,10 +811,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@rfcx/http-utils@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.9.tgz#b8303aff5de15f8f12976268cf75a32c032b1b71"
-  integrity sha512-aEggHkAkbHAMmrh2r86GIdJ0DuUjQmRYrnnG4k7FuKP9gNIo1dRvKReRAYmL/KHS/9ZY0fVzmMw+IrQEySS1+w==
+"@rfcx/http-utils@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@rfcx/http-utils/-/http-utils-1.0.10.tgz#9d4b59cd1e7d174ed419524a56d0972405174263"
+  integrity sha512-xtPzIiP/InEppVMfHUyrIEIAvt4jfph4tAdBfK4BW4ytldd+mitM43DZJWKjvlHsCCOWnyrrlB/X7OwCfpajuw==
   dependencies:
     moment-timezone "0.5.31"
 

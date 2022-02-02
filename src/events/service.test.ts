@@ -5,6 +5,7 @@ import { sequelize } from '../common/db'
 import { createEvent, updateEvent } from './service'
 import Classification from '../classifications/classification.model'
 import Stream from '../streams/stream.model'
+import Project from '../projects/project.model'
 import streamsDao from '../streams/dao'
 import Event from './event.model'
 import { list } from './dao'
@@ -87,6 +88,17 @@ beforeAll(async () => {
       title: 'Chainsaw'
     }
   })
+  setupMockAxios('core', GET, 'events/7b8c15a9-5bc0-4059-b8cd-ec26aea92b16', 200, {
+    id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b16',
+    streamId: 'stream000001',
+    start: '2021-10-01T19:31:48.795Z',
+    end: '2021-10-01T19:31:50.795Z',
+    createdAt: '2021-10-01T19:31:51.795Z',
+    classification: {
+      value: 'chainsaw',
+      title: 'Chainsaw'
+    }
+  })
   setupMockAxios('core', GET, 'streams/stream000001', 200, {
     id: 'stream000001',
     name: 'Stream 000001',
@@ -157,7 +169,7 @@ describe('createEvent function', () => {
       expect(incident.firstEvent.id).toBe(event.id)
       expect(incident.firstResponse).toBeNull()
     })
-    test('creates incident if there is another incident but it first event was more than 7 days ago', async () => {
+    test('creates incident if there is another incident but it first event was more than 7 days ago (default time range)', async () => {
       const inc = await Incident.create({
         streamId: 'stream000001',
         projectId: 'project000001',
@@ -265,6 +277,41 @@ describe('createEvent function', () => {
       expect(incident.events.length).toBe(2)
       expect(incident.firstEvent.id).toBe(event1.id)
       expect(incident.firstResponse).toBeNull()
+    })
+    test('adds event to existing incident for project with 30 days time range', async () => {
+      const project1 = await Project.create({ id: 'project000001', incidentRangeDays: 30 })
+      const inc = await Incident.create({
+        streamId: 'stream000001',
+        projectId: 'project000001',
+        ref: 1
+      })
+      const event1 = await Event.create({
+        id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b11',
+        start: '2021-09-14T19:31:48.795Z',
+        end: '2021-09-14T19:36:21.795Z',
+        streamId: 'stream000001',
+        projectId: 'project000001',
+        classificationId: 1,
+        createdAt: '2021-09-14T19:37:01.312Z',
+        incidentId: inc.id
+      })
+      await inc.update({ firstEventId: event1.id })
+      MockDate.set('2021-10-01T19:31:51.795Z')
+      await createEvent({ id: '7b8c15a9-5bc0-4059-b8cd-ec26aea92b16' })
+      MockDate.reset()
+      const events: Event[] = await list()
+      expect(events.length).toBe(2)
+      const incidents: Incident[] = await incidentsDao.list({}, { fields: [...incidentAttributes.full, 'events', 'responses', 'firstEvent', 'firstResponse'] })
+      const incident = incidents[0]
+      expect(incidents.length).toBe(1)
+      expect(incident.streamId).toBe('stream000001')
+      expect(incident.projectId).toBe('project000001')
+      expect(incident.closedAt).toBeNull()
+      expect(incident.responses.length).toBe(0)
+      expect(incident.events.length).toBe(2)
+      expect(incident.firstEvent.id).toBe(event1.id)
+      expect(incident.firstResponse).toBeNull()
+      await project1.destroy()
     })
     test('creates new incident if all previous are closed', async () => {
       const inc = await Incident.create({

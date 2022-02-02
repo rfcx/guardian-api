@@ -1,5 +1,5 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { EventSQSMessage, Project, EventResponse, StreamResponse, PNData, StreamUpdatableData } from '../types'
+import { EventSQSMessage, ProjectResponse, EventResponse, StreamResponse, PNData, StreamUpdatableData } from '../types'
 import { sequelize } from '../common/db'
 import Event from './event.model'
 import { get, create, list, count, update } from './dao'
@@ -7,6 +7,7 @@ import { ensureClassificationExists } from '../classifications/service'
 import { getLastResponseForStream } from '../responses/service'
 import { getEvent, getStream } from '../common/core-api/index'
 import { refreshOpenIncidentsCount } from '../streams/service'
+import { getProjectIncidentRange } from '../projects/service'
 import incidentsDao from '../incidents/dao'
 import streamsDao from '../streams/dao'
 import { findOrCreateIncidentForEvent } from '../incidents/service'
@@ -22,9 +23,9 @@ dayjs.extend(minMax)
 
 export const getEventsSinceLastReport = async (streamId: string): Promise<Event[]> => {
   const lastReport = await getLastResponseForStream(streamId)
-  // TODO: change time period to be project based
-  const sevenDays = dayjs().subtract(7, 'days')
-  const date = lastReport !== null ? dayjs.max(sevenDays, dayjs(lastReport.investigatedAt)) : sevenDays
+  const projectIncidentRange = await getProjectIncidentRange(lastReport?.projectId)
+  const projectIncidentRangeStart = dayjs().subtract(projectIncidentRange, 'days')
+  const date = lastReport !== null ? dayjs.max(projectIncidentRangeStart, dayjs(lastReport.investigatedAt)) : projectIncidentRangeStart
   return await list({
     streams: [streamId],
     start: date.toDate()
@@ -100,7 +101,7 @@ export const sendPushNotification = async (event: EventResponse, stream: StreamR
   const localTime = dayjs.tz(event.start, stream.timezone).format('HH:mm YYYY-MM-DD')
   const body = `A ${event.classification.title} detected on "${stream.name}" at ${localTime}`
   const opts: PNData = {
-    topic: `project_${(stream.project as Project).id}`,
+    topic: `project_${(stream.project as ProjectResponse).id}`,
     data: {
       streamName: stream.name,
       time: localTime,

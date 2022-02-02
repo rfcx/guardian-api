@@ -283,4 +283,21 @@ describe('GET /streams', () => {
       expect(response.body[1].tags.includes('new')).toBeTruthy()
     })
   })
+  describe('params validation', () => {
+    test('throws validation error if "projects" single item is not matching reg exp', async () => {
+      const response = await request(app).get('/').query({ projects: 'undefined' })
+      expect(response.statusCode).toBe(400)
+      expect(response.body.message).toBe('Validation errors: Parameter \'projects\' should consist of 12 lower-cased characters or digits.')
+    })
+    test('throws validation error if "projects" array with single item is not matching reg exp', async () => {
+      const response = await request(app).get('/').query({ projects: ['undefined'] })
+      expect(response.statusCode).toBe(400)
+      expect(response.body.message).toBe('Validation errors: Parameter \'projects\' should consist of 12 lower-cased characters or digits.')
+    })
+    test('throws validation error if one of array item of "projects" array is not matching reg exp', async () => {
+      const response = await request(app).get('/').query({ projects: ['s1ff1g4tgash', 'AAbbbbgfvrq2'] })
+      expect(response.statusCode).toBe(400)
+      expect(response.body.message).toBe('Validation errors: Parameter \'projects\' should consist of 12 lower-cased characters or digits.')
+    })
+  })
 })
