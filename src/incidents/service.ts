@@ -9,7 +9,7 @@ import { querySortToOrder } from '../common/db/helpers'
 import User from '../users/user.model'
 import { EmptyResultError } from '@rfcx/http-utils'
 import { ensureUserExists } from '../users/service'
-import { getAllUserProjects, hasAccessToProject } from '../projects/service'
+import { getAllUserProjects, hasAccessToProject, getProjectIncidentRange } from '../projects/service'
 import eventsDao from '../events/dao'
 import Response from '../responses/models/response.model'
 import Event from '../events/event.model'
@@ -77,6 +77,11 @@ export const updateIncident = async (id: string, payload: IncidentPatchPayload, 
   })
 }
 
+const firstEventInTimeRange = async (incident: Incident): Promise<boolean> => {
+  const projectIncidentRange = await getProjectIncidentRange(incident.projectId)
+  return incident.firstResponse === null && incident.firstEvent !== null && dayjs().diff(incident.firstEvent.start, 'd', true) < projectIncidentRange
+}
+
 export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o: Transactionable = {}): Promise<Incident> => {
   const transaction = o.transaction
   const existingIncidents = await list({
@@ -87,24 +92,20 @@ export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o
       field: 'createdAt',
       dir: 'DESC'
     },
+    limit: 1,
     fields: ['id', 'firstEvent', 'firstResponse'],
     transaction
   })
-  const activeIncidents = existingIncidents.filter((incident) => {
-    // TODO: change time period to be project based
-    return incident.firstResponse === null && incident.firstEvent !== null && dayjs().diff(incident.firstEvent.start, 'd', true) < 7
-  })
-  if (activeIncidents.length !== 0) {
-    return activeIncidents[0]
-  } else {
-    const transaction = o.transaction
-    const ref = await getNextRefForProject((streamData.project as any).id, { transaction })
-    return await Incident.create({
-      streamId: streamData.id,
-      projectId: (streamData.project as any).id,
-      ref
-    }, { transaction })
+  console.log('\n\nexistingIncidents', existingIncidents, '\n\n')
+  if (existingIncidents.length > 0 && await firstEventInTimeRange(existingIncidents[0])) {
+    return existingIncidents[0]
   }
+  const ref = await getNextRefForProject((streamData.project as any).id, { transaction })
+  return await Incident.create({
+    streamId: streamData.id,
+    projectId: (streamData.project as any).id,
+    ref
+  }, { transaction })
 }
 
 /*

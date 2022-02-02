@@ -1,7 +1,9 @@
 import * as api from '../common/core-api'
-import { Project } from './types'
+import { get } from './dao'
+import { ProjectResponse } from '../types'
+import { DEFAULT_INCIDENT_DAYS_RANGE } from './project.model'
 
-export const getAllUserProjects = async (userToken: string): Promise<Project[]> => {
+export const getAllUserProjects = async (userToken: string): Promise<ProjectResponse[]> => {
   const forwardedResponse = await api.getProjects(userToken, {
     fields: ['id', 'name'], // not sure anyone will ever have more projects
     limit: 100000
@@ -14,4 +16,12 @@ export const hasAccessToProject = async (projectId: string, userToken: string): 
   return true
 }
 
-export default { getAllUserProjects, hasAccessToProject }
+export const getProjectIncidentRange = async (projectId?: string): Promise<number> => {
+  if (projectId === undefined) {
+    return DEFAULT_INCIDENT_DAYS_RANGE
+  }
+  const project = await get(projectId)
+  return project !== null ? project.incidentRangeDays : DEFAULT_INCIDENT_DAYS_RANGE
+}
+
+export default { getAllUserProjects, hasAccessToProject, getProjectIncidentRange }

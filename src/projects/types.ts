@@ -6,8 +6,3 @@ export interface ProjectQuery {
   sort: string
   fields: string[]
 }
-
-export interface Project {
-  id: string
-  name: string
-}
