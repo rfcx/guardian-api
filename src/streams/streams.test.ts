@@ -279,8 +279,8 @@ describe('GET /streams', () => {
       expect(response.body.length).toBe(2)
       expect(response.body[0].id).toBe(STREAM4)
       expect(response.body[1].id).toBe(STREAM3)
-      expect(response.body[0].tags.includes('new')).toBeTruthy()
-      expect(response.body[1].tags.includes('new')).toBeTruthy()
+      expect(response.body[0].tags.includes('recent')).toBeTruthy()
+      expect(response.body[1].tags.includes('recent')).toBeTruthy()
     })
   })
   describe('params validation', () => {
