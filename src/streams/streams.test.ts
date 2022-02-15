@@ -4,7 +4,7 @@ import request from 'supertest'
 import Event from '../events/event.model'
 import Response from '../responses/models/response.model'
 import Classification from '../classifications/classification.model'
-import Stream from '../streams/stream.model'
+import Stream from './models/stream.model'
 
 import { migrate, truncate, expressApp, seed, muteConsole } from '../common/db/testing'
 import { sequelize } from '../common/db'
@@ -49,6 +49,11 @@ beforeAll(async () => {
   await Stream.create({ id: STREAM4, projectId: PROJECT1, lastEventEnd: STREAM4_LAST_EV_END, hasOpenIncident: true })
   await Stream.create({ id: STREAM5, projectId: PROJECT1, lastEventEnd: STREAM5_LAST_EV_END })
   setupMockAxios('core', GET, 'projects', 200, [{ id: PROJECT1, name: 'test-project-1', isPublic: true, externalId: null }])
+  setupMockAxios('core', GET, `internal/guardians/${STREAM1}`, 200, { type: 'satellite' })
+  setupMockAxios('core', GET, `internal/guardians/${STREAM2}`, 200, { type: 'gsm' })
+  setupMockAxios('core', GET, `internal/guardians/${STREAM3}`, 404, undefined)
+  setupMockAxios('core', GET, `internal/guardians/${STREAM4}`, 200, { type: 'edge' })
+  setupMockAxios('core', GET, `internal/guardians/${STREAM5}`, 404, undefined)
 })
 beforeEach(async () => {
   await truncate([Event, Response, Incident])
@@ -98,6 +103,10 @@ describe('GET /streams', () => {
       const response = await request(app).get('/')
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(4)
+      expect(response.body[0].guardianType).toBe('edge')
+      expect(response.body[1].guardianType).toBe(null)
+      expect(response.body[2].guardianType).toBe('gsm')
+      expect(response.body[3].guardianType).toBe('satellite')
       resetMockAxios()
     })
 

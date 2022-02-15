@@ -43,6 +43,7 @@ export interface StreamUpdatableData {
   lastEventEnd?: string
   lastIncidentEventsCount?: number
   hasOpenIncident?: boolean
+  guardianType?: string
 }
 
 export interface StreamResponseWithIncidents extends StreamResponse {
@@ -50,10 +51,12 @@ export interface StreamResponseWithIncidents extends StreamResponse {
     total: number
     items: Incident[]
   }
+  guardianType?: string
 }
 
 export interface StreamResponseWithTags extends StreamResponse {
   tags: string[]
+  guardianType?: string | null
 }
 
 export interface Stream {
@@ -61,4 +64,8 @@ export interface Stream {
   name: string
   latitude: number
   longitude: number
+}
+
+export interface Guardian {
+  type: string
 }

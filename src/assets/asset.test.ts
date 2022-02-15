@@ -5,7 +5,7 @@ import { sequelize } from '../common/db'
 import Asset from './asset.model'
 import Incident from '../incidents/incident.model'
 import Response from '../responses/models/response.model'
-import Stream from '../streams/stream.model'
+import Stream from '../streams/models/stream.model'
 
 const app = expressApp()
 

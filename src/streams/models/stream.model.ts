@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript'
+import { Table, Column, Model, DataType, PrimaryKey, BelongsTo } from 'sequelize-typescript'
+import GuardianType from './guardian-type.model'
 
 @Table({
   tableName: 'streams',
@@ -20,4 +21,7 @@ export default class Stream extends Model {
 
   @Column(DataType.BOOLEAN)
   hasOpenIncident!: boolean
+
+  @BelongsTo(() => GuardianType, 'guardian_type_id')
+  guardianType!: GuardianType
 }

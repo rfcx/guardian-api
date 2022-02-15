@@ -9,7 +9,7 @@ import Incident from '../incidents/incident.model'
 import Event from '../events/event.model'
 import Asset from '../assets/asset.model'
 import Classification from '../classifications/classification.model'
-import Stream from '../streams/stream.model'
+import Stream from '../streams/models/stream.model'
 import Project from '../projects/project.model'
 const app = expressApp()
 jest.mock('../common/auth', () => {

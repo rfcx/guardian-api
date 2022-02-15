@@ -1,8 +1,9 @@
 import { Transactionable } from 'sequelize'
-import { StreamResponse, StreamResponseWithIncidents, StreamResponseWithTags, StreamWithIncidentsQuery, StreamFilters } from '../types'
-import { list, update } from './dao'
+import { StreamResponse, StreamResponseWithTags, StreamWithIncidentsQuery, StreamFilters } from '../types'
+import { list, update, findOrCreateGuardianType } from './dao'
 import incidentsDao from '../incidents/dao'
 import { limitAndOffset } from '../common/page'
+import { getGuardian } from '../common/core-api'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 const hoursForIsNew = 6
@@ -14,7 +15,7 @@ function extractIds (streams): string[] {
   return streams.map(i => i.id)
 }
 
-export const preprocessByActiveStreams = async (streams: StreamResponse[], params?: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponse[] | StreamResponseWithIncidents[] }> => {
+export const preprocessByActiveStreams = async (streams: StreamResponse[], params?: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponseWithTags[] }> => {
   const filters: StreamFilters = {
     ids: extractIds(streams)
   }
@@ -29,7 +30,7 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
   }
   const activeStreams = await list(filters)
   const activeStreamIds = extractIds(activeStreams)
-  let items = streams
+  const filteredStreams = streams
     .filter(s => activeStreamIds.includes(s.id))
     .sort((a, b) => {
       const strA = activeStreams.find(s => s.id === a.id)
@@ -39,11 +40,9 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
       }
       return new Date(strB.lastEventEnd).valueOf() - new Date(strA.lastEventEnd).valueOf()
     })
-  const total = items.length
-  if (params?.limit !== undefined && params?.offset !== undefined) {
-    items = limitAndOffset(items, params.limit, params.offset)
-  }
-  items = items.map((s: StreamResponse): StreamResponseWithTags => {
+  const total = filteredStreams.length
+  const pagedStreams = (params?.limit !== undefined && params?.offset !== undefined) ? limitAndOffset(filteredStreams, params.limit, params.offset) : filteredStreams
+  const streamsWithTags = pagedStreams.map<StreamResponseWithTags>((s: StreamResponse) => {
     const item = s as StreamResponseWithTags
     // TODO: delete next two lines when Core API will handle dotted fields like `project.id`, `project.name`
     delete item.project?.externalId
@@ -53,6 +52,7 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
     if (activeStream === undefined) {
       return item
     }
+    item.guardianType = activeStream.guardianType?.title
     const isRecent = dayjs.utc(activeStream.lastEventEnd).isAfter(dayjs.utc().subtract(hoursForIsNew, 'hours'))
     const isHot = activeStream.lastIncidentEventsCount >= eventsForHot
     const isOpen = activeStream.hasOpenIncident
@@ -67,12 +67,40 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
     }
     return item
   })
-  return { total, items }
+  return { total, items: streamsWithTags }
+}
+
+export const fillGuardianType = async (streams: StreamResponseWithTags[]): Promise<StreamResponseWithTags[]> => {
+  for (const stream of streams) {
+    if (stream.guardianType === undefined) {
+      const guardianType = await syncGuardianTypeFromCore(stream.id)
+      stream.guardianType = guardianType
+    }
+  }
+  return streams
 }
 
 export const refreshOpenIncidentsCount = async (id: string, o: Transactionable = {}): Promise<void> => {
   const openedIncidents = await incidentsDao.count({ streams: [id], isClosed: false }, o)
   return await update(id, { hasOpenIncident: openedIncidents > 0 }, o)
+}
+
+export const syncGuardianTypeFromCore = async (id: string): Promise<string | null> => {
+  const guardianTypeTitle = await getGuardianTypeFromCore(id)
+  if (guardianTypeTitle !== null && guardianTypeTitle !== undefined) {
+    await findOrCreateGuardianType(guardianTypeTitle)
+    await update(id, { guardianType: guardianTypeTitle })
+  }
+  return guardianTypeTitle
+}
+
+export const getGuardianTypeFromCore = async (id: string): Promise<string | null> => {
+  try {
+    const guardian = await getGuardian(id)
+    return guardian?.data?.type
+  } catch (e) {
+    return null
+  }
 }
 
 export default { preprocessByActiveStreams, refreshOpenIncidentsCount }

@@ -2,8 +2,8 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
-import { StreamResponseWithIncidents, StreamWithIncidentsQuery } from './types'
-import { preprocessByActiveStreams } from './service'
+import { StreamWithIncidentsQuery } from './types'
+import { preprocessByActiveStreams, fillGuardianType } from './service'
 import { getIncidents } from '../incidents/service'
 
 const router = Router()
@@ -96,6 +96,7 @@ router.get('/', (req: Request, res: Response): void => {
         offset: 0
       })
       const { total, items } = await preprocessByActiveStreams(forwardedResponse.data, params)
+      await fillGuardianType(items)
       const { limitIncidents, includeClosedIncidents } = params
       if (limitIncidents > 0) {
         for (const stream of items) {
@@ -106,7 +107,7 @@ router.get('/', (req: Request, res: Response): void => {
             offset: 0,
             sort: '-createdAt'
           }, userToken);
-          (stream as StreamResponseWithIncidents).incidents = {
+          (stream as any).incidents = {
             total: incData.total,
             items: incData.results
           }

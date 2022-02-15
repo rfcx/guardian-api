@@ -13,7 +13,7 @@ import incidentsDao from '../incidents/dao'
 import Classification from '../classifications/classification.model'
 import service from './service'
 import ResponseAnswer from './models/response-answer.model'
-import Stream from '../streams/stream.model'
+import Stream from '../streams/models/stream.model'
 const app = expressApp()
 jest.mock('../common/auth', () => {
   return {

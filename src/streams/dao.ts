@@ -1,10 +1,24 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { StreamFilters, StreamCreationData, StreamUpdatableData, QueryOptionsRFCx } from '../types'
-import { Op, Transactionable } from 'sequelize'
-import Stream from './stream.model'
+import { Op, Transactionable, col } from 'sequelize'
+import Stream from './models/stream.model'
+import GuardianType from './models/guardian-type.model'
 
 dayjs.extend(utc)
+
+const include = [
+  {
+    model: GuardianType,
+    as: 'guardianType',
+    attributes: {
+      exclude: ['id']
+    },
+    on: {
+      id: { [Op.eq]: col('stream.guardian_type_id') }
+    }
+  }
+]
 
 export const list = async function (f: StreamFilters = {}, o: QueryOptionsRFCx = {}): Promise<Stream[]> {
   const where: Stream['_attributes'] = {}
@@ -31,6 +45,7 @@ export const list = async function (f: StreamFilters = {}, o: QueryOptionsRFCx =
   return await Stream.findAll({
     where,
     limit,
+    include,
     offset: offset ?? 0,
     order: order !== undefined ? [[order.field, order.dir]] : [['last_event_end', 'DESC']]
   })
@@ -57,4 +72,12 @@ export const update = async function (id: string, data: StreamUpdatableData, o: 
   })
 }
 
-export default { list, findOrCreate, update }
+export const findOrCreateGuardianType = async function (title: string, o: Transactionable = {}): Promise<[GuardianType, boolean]> {
+  const transaction = o.transaction
+  return await GuardianType.findOrCreate({
+    where: { title },
+    transaction
+  })
+}
+
+export default { list, findOrCreate, update, findOrCreateGuardianType }

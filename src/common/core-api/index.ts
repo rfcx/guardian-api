@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 import { coreApiAxios, mediaApiAxios } from '../axios'
-import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse } from './types'
+import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian } from '../../types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
 import { getM2MToken } from '../auth'
@@ -148,6 +148,24 @@ export const getMedia = async (filename: string, token?: string): Promise<any> =
     responseType: 'stream'
   }
   return await mediaApiAxios.get(`/internal/assets/streams/${filename}`, options)
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}
+
+export const getGuardian = async (id: string, token?: string, params: any = {}): Promise<ForwardedResponse<Guardian>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options = {
+    headers: { Authorization: token }
+  }
+  return await coreApiAxios.get(`/internal/guardians/${id}`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
