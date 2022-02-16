@@ -88,8 +88,8 @@ export const refreshOpenIncidentsCount = async (id: string, o: Transactionable =
 export const syncGuardianTypeFromCore = async (id: string): Promise<string | null> => {
   const guardianTypeTitle = await getGuardianTypeFromCore(id)
   if (guardianTypeTitle !== null && guardianTypeTitle !== undefined) {
-    await findOrCreateGuardianType(guardianTypeTitle)
-    await update(id, { guardianType: guardianTypeTitle })
+    const [guardianType] = await findOrCreateGuardianType(guardianTypeTitle)
+    await update(id, { guardianTypeId: guardianType.id })
   }
   return guardianTypeTitle
 }

@@ -43,7 +43,7 @@ export interface StreamUpdatableData {
   lastEventEnd?: string
   lastIncidentEventsCount?: number
   hasOpenIncident?: boolean
-  guardianType?: string
+  guardianTypeId?: number
 }
 
 export interface StreamResponseWithIncidents extends StreamResponse {

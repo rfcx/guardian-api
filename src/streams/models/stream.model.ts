@@ -22,6 +22,6 @@ export default class Stream extends Model {
   @Column(DataType.BOOLEAN)
   hasOpenIncident!: boolean
 
-  @BelongsTo(() => GuardianType, 'guardian_type_id')
+  @BelongsTo(() => GuardianType, 'guardianTypeId')
   guardianType!: GuardianType
 }
