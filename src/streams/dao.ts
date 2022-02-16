@@ -74,8 +74,10 @@ export const update = async function (id: string, data: StreamUpdatableData, o: 
 
 export const findOrCreateGuardianType = async function (title: string, o: Transactionable = {}): Promise<[GuardianType, boolean]> {
   const transaction = o.transaction
+  const where = { title }
   return await GuardianType.findOrCreate({
-    where: { title },
+    where,
+    defaults: where,
     transaction
   })
 }
