@@ -15,7 +15,7 @@ const include = [
       exclude: ['id']
     },
     on: {
-      id: { [Op.eq]: col('stream.guardian_type_id') }
+      id: { [Op.eq]: col('Stream.guardian_type_id') }
     }
   }
 ]
