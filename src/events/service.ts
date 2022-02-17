@@ -103,6 +103,7 @@ export const sendPushNotification = async (event: EventResponse, stream: StreamR
   const opts: PNData = {
     topic: `project_${(stream.project as ProjectResponse).id}`,
     data: {
+      streamId: stream.id,
       streamName: stream.name,
       time: localTime,
       latitude: stream.latitude.toString(),
