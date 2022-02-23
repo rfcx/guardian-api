@@ -159,7 +159,7 @@ export const getGuardian = async (id: string, token?: string, params: any = {}):
   const options = {
     headers: { Authorization: token }
   }
-  return await coreApiAxios.get(`/internal/guardians/${id}`, options)
+  return await coreApiAxios.get(`/v2/guardians/${id}`, options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),
