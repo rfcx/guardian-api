@@ -78,6 +78,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('sort').default('-createdAt').toString()
   converter.validate()
     .then(async (params: IncidentQuery) => {
+      // TODO: add check for streams permissions
       const data = await getIncidents(params, userToken)
       res
         .header('Access-Control-Expose-Headers', 'Total-Items')

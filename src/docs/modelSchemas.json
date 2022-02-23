@@ -41,6 +41,21 @@
       }
     ]
   },
+  "StreamWithGuardianType": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Stream"
+      },
+      {
+        "properties": {
+          "guardianType": {
+            "type": "string",
+            "example": "satellite"
+          }
+        }
+      }
+    ]
+  },
   "Project": {
     "properties": {
       "id": {
@@ -134,6 +149,9 @@
     "allOf": [
       {
         "$ref": "#/components/schemas/StreamWithTags"
+      },
+      {
+        "$ref": "#/components/schemas/StreamWithGuardianType"
       },
       {
         "properties": {
