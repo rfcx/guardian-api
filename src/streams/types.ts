@@ -1,5 +1,4 @@
 import { StreamResponse } from '../types'
-import Incident from '../incidents/incident.model'
 
 export interface StreamQuery {
   projects: string[]
@@ -46,19 +45,6 @@ export interface StreamUpdatableData {
   guardianTypeId?: number
 }
 
-export interface StreamResponseWithIncidents extends StreamResponse {
-  incidents: {
-    total: number
-    items: Incident[]
-  }
-  guardianType?: string
-}
-
-export interface StreamResponseWithTags extends StreamResponse {
-  tags: string[]
-  guardianType?: string | null
-}
-
 export interface Stream {
   id: string
   name: string
@@ -69,3 +55,5 @@ export interface Stream {
 export interface Guardian {
   type: string
 }
+
+export type streamsPostProcessFunc = (stream: StreamResponse | StreamResponse[]) => Promise<StreamResponse | StreamResponse[]>

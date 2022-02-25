@@ -49,11 +49,12 @@ beforeAll(async () => {
   await Stream.create({ id: STREAM4, projectId: PROJECT1, lastEventEnd: STREAM4_LAST_EV_END, hasOpenIncident: true })
   await Stream.create({ id: STREAM5, projectId: PROJECT1, lastEventEnd: STREAM5_LAST_EV_END })
   setupMockAxios('core', GET, 'projects', 200, [{ id: PROJECT1, name: 'test-project-1', isPublic: true, externalId: null }])
-  setupMockAxios('core', GET, `internal/guardians/${STREAM1}`, 200, { type: 'satellite' })
-  setupMockAxios('core', GET, `internal/guardians/${STREAM2}`, 200, { type: 'gsm' })
-  setupMockAxios('core', GET, `internal/guardians/${STREAM3}`, 404, undefined)
-  setupMockAxios('core', GET, `internal/guardians/${STREAM4}`, 200, { type: 'edge' })
-  setupMockAxios('core', GET, `internal/guardians/${STREAM5}`, 404, undefined)
+  setupMockAxios('core', GET, `streams/${STREAM1}`, 200, { id: STREAM1, name: 'test-stream-1' })
+  setupMockAxios('core', GET, `v2/streams/${STREAM1}`, 200, { type: 'satellite' })
+  setupMockAxios('core', GET, `v2/streams/${STREAM2}`, 200, { type: 'gsm' })
+  setupMockAxios('core', GET, `v2/streams/${STREAM3}`, 404, undefined)
+  setupMockAxios('core', GET, `v2/streams/${STREAM4}`, 200, { type: 'edge' })
+  setupMockAxios('core', GET, `v2/streams/${STREAM5}`, 404, undefined)
 })
 beforeEach(async () => {
   await truncate([Event, Response, Incident])
@@ -62,6 +63,17 @@ beforeEach(async () => {
 app.use('/', routes)
 
 const endpoint = 'streams'
+
+describe('GET /streams/:id', () => {
+  test('get streams', async () => {
+    const response = await request(app).get(`/${STREAM1}`)
+    expect(response.statusCode).toBe(200)
+    const stream = response.body
+    expect(stream.id).toEqual(STREAM1)
+    expect(stream.name).toEqual('test-stream-1')
+    expect(stream.guardianType).toEqual('satellite')
+  })
+})
 
 describe('GET /streams', () => {
   test('get streams', async () => {
