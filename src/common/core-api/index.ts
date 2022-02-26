@@ -26,7 +26,7 @@ export const getStreams = async (token?: string, params: any = {}): Promise<Forw
   }
   const options = {
     headers: { Authorization: token },
-    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
+    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project', 'timezone'] }
   }
   return await coreApiAxios.get('/streams', options)
     .then((response) => {
@@ -45,7 +45,7 @@ export const getStream = async (id: string, token?: string, params: any = {}): P
   }
   const options = {
     headers: { Authorization: token },
-    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project'] }
+    params: { ...params, fields: ['id', 'name', 'latitude', 'longitude', 'project', 'timezone'] }
   }
   return await coreApiAxios.get(`/streams/${id}`, options)
     .then((response) => {
