@@ -51,7 +51,7 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
     if (activeStream === undefined) {
       return item
     }
-    item.guardianType = activeStream.guardianType?.title
+    item.guardianType = activeStream?.guardianType?.title
     const isRecent = dayjs.utc(activeStream.lastEventEnd).isAfter(dayjs.utc().subtract(hoursForIsNew, 'hours'))
     const isHot = activeStream.lastIncidentEventsCount >= eventsForHot
     const isOpen = activeStream.hasOpenIncident
