@@ -1,4 +1,5 @@
 import Classification from '../../classifications/classification.model'
+import Incident from '../../incidents/incident.model'
 
 export interface ForwardedResponse<T> {
   data: T
@@ -25,6 +26,12 @@ export interface StreamResponse {
   altitude: number
   project: ProjectResponse | null
   timezone: string
+  incidents?: {
+    total: number
+    items: Incident[]
+  }
+  guardianType?: string | null
+  tags?: string[]
 }
 
 export interface DetectionResponse {

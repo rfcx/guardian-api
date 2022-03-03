@@ -118,4 +118,42 @@ router.get('/', (req: Request, res: Response): void => {
     .catch(httpErrorHandler(req, res, 'Failed getting streams.'))
 })
 
+/**
+ * @swagger
+ *
+ * /streams/{id}:
+ *   get:
+ *     summary: Get stream data
+ *     tags:
+ *       - streams
+ *     parameters:
+ *       - name: id
+ *         description: Stream id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         example: "uiq4kotjok6i"
+ *     responses:
+ *       200:
+ *         description: Stream object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/StreamWithTagsAndGuardianType'
+ *       404:
+ *         description: Stream not found
+ */
+router.get('/:id', (req: Request, res: Response): void => {
+  const userToken = req.headers.authorization ?? ''
+  api.getStream(req.params.id, userToken)
+    .then(async (streamResponse) => {
+      let stream = streamResponse.data
+      const { items } = await preprocessByActiveStreams([stream])
+      stream = items[0]
+      await fillGuardianType(stream)
+      res.json(stream)
+    })
+    .catch(httpErrorHandler(req, res, 'Failed getting Stream.'))
+})
+
 export default router

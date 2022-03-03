@@ -1,5 +1,5 @@
 import { Transactionable } from 'sequelize'
-import { StreamResponse, StreamResponseWithTags, StreamWithIncidentsQuery, StreamFilters } from '../types'
+import { StreamResponse, StreamWithIncidentsQuery, StreamFilters, streamsPostProcessFunc } from '../types'
 import { list, update, findOrCreateGuardianType } from './dao'
 import incidentsDao from '../incidents/dao'
 import { limitAndOffset } from '../common/page'
@@ -15,7 +15,7 @@ function extractIds (streams): string[] {
   return streams.map(i => i.id)
 }
 
-export const preprocessByActiveStreams = async (streams: StreamResponse[], params?: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponseWithTags[] }> => {
+export const preprocessByActiveStreams = async (streams: StreamResponse[], params?: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponse[] }> => {
   const filters: StreamFilters = {
     ids: extractIds(streams)
   }
@@ -42,17 +42,16 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
     })
   const total = filteredStreams.length
   const pagedStreams = (params?.limit !== undefined && params?.offset !== undefined) ? limitAndOffset(filteredStreams, params.limit, params.offset) : filteredStreams
-  const streamsWithTags = pagedStreams.map<StreamResponseWithTags>((s: StreamResponse) => {
-    const item = s as StreamResponseWithTags
+  const streamsWithTags = pagedStreams.map((item: StreamResponse) => {
     // TODO: delete next two lines when Core API will handle dotted fields like `project.id`, `project.name`
     delete item.project?.externalId
     delete item.project?.isPublic
     item.tags = []
-    const activeStream = activeStreams.find(active => s.id === active.id)
+    const activeStream = activeStreams.find(active => item.id === active.id)
     if (activeStream === undefined) {
       return item
     }
-    item.guardianType = activeStream.guardianType?.title
+    item.guardianType = activeStream?.guardianType?.title
     const isRecent = dayjs.utc(activeStream.lastEventEnd).isAfter(dayjs.utc().subtract(hoursForIsNew, 'hours'))
     const isHot = activeStream.lastIncidentEventsCount >= eventsForHot
     const isOpen = activeStream.hasOpenIncident
@@ -70,8 +69,9 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
   return { total, items: streamsWithTags }
 }
 
-export const fillGuardianType = async (streams: StreamResponseWithTags[]): Promise<StreamResponseWithTags[]> => {
-  for (const stream of streams) {
+export const fillGuardianType: streamsPostProcessFunc = async (streams) => {
+  const isArray = Array.isArray(streams)
+  for (const stream of (isArray ? streams : [streams])) {
     if (stream.guardianType === undefined) {
       const guardianType = await syncGuardianTypeFromCore(stream.id)
       stream.guardianType = guardianType

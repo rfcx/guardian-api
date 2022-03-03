@@ -56,6 +56,16 @@
       }
     ]
   },
+  "StreamWithTagsAndGuardianType": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/StreamWithTags"
+      },
+      {
+        "$ref": "#/components/schemas/StreamWithGuardianType"
+      }
+    ]
+  },
   "Project": {
     "properties": {
       "id": {
