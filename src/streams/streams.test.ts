@@ -102,7 +102,6 @@ describe('GET /streams', () => {
   })
 
   describe('check type parameter into the query parameters', () => {
-
     test('get streams with type guardian', async () => {
       const mockStream = [
         { id: STREAM1, name: 'test-stream-1', isPublic: true, externalId: null, project: { id: PROJECT1 } },
@@ -111,11 +110,10 @@ describe('GET /streams', () => {
         { id: STREAM4, name: 'test-stream-4', isPublic: true, externalId: null, project: { id: PROJECT1 } },
         { id: STREAM5, name: 'test-stream-5', isPublic: true, externalId: null, project: { id: PROJECT1 } }
       ]
-  
+
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      const response = await request(app).get('/').query({ type: 'guardian' })
+      const response = await request(app).get('/').query({ isEqualToAny: 'guardian' })
       expect(response.statusCode).toBe(200)
-      console.log(response.body)
       expect(response.body.length).toBe(2)
       expect(response.body[0].guardianType).toBe('gsm')
       expect(response.body[1].guardianType).toBe('satellite')
@@ -132,18 +130,16 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      const response = await request(app).get('/').query({ type: 'stream' })
-      console.log(response.body)
+      const response = await request(app).get('/').query({ isEqualToAny: 'stream' })
       expect(response.statusCode).toBe(200)
-      expect(response.body.length).toBe(2)
+      expect(response.body.length).toBe(4)
       expect(response.body[0].guardianType).toBe('edge')
       expect(response.body[1].guardianType).toBe(null)
+      expect(response.body[2].guardianType).toBe('gsm')
+      expect(response.body[3].guardianType).toBe('satellite')
       resetMockAxios()
     })
-
   })
-
-
 
   describe('active query param', () => {
     test('returns 4 active of 5 total streams', async () => {

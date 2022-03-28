@@ -3,7 +3,7 @@ import { Router } from 'express'
 import * as api from '../common/core-api'
 import { Converter, httpErrorHandler } from '@rfcx/http-utils'
 import { StreamWithIncidentsQuery } from './types'
-import { preprocessByActiveStreams, fillGuardianType, filterStreamType } from './service'
+import { preprocessByActiveStreams, fillGuardianType, filterByType } from './service'
 import { getIncidents } from '../incidents/service'
 
 const router = Router()
@@ -34,7 +34,7 @@ const router = Router()
  *         description: Stream has incident which has more than 10 events
  *         in: query
  *         type: boolean
- *       - name: type
+ *       - name: isEqualToAny
  *         description: Filter streams by 'guardian' and 'stream' type
  *         in: query
  *         type: string
@@ -86,7 +86,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('keyword').optional().toString()
   converter.convert('has_new_events').optional().toBoolean()
   converter.convert('has_hot_incident').optional().toBoolean()
-  converter.convert('type').optional().toString()
+  converter.convert('isEqualToAny').optional().toString()
   converter.convert('include_closed_incidents').default(false).toBoolean()
   converter.convert('limit').default(10).toInt()
   converter.convert('offset').default(0).toInt()
@@ -102,8 +102,8 @@ router.get('/', (req: Request, res: Response): void => {
       })
       let { total, items } = await preprocessByActiveStreams(forwardedResponse.data, params)
       await fillGuardianType(items)
-      if (params.type !== undefined) {
-        items = filterStreamType(items, params.type)
+      if (params.isEqualToAny !== undefined) {
+        items = filterByType(items, params.isEqualToAny)
       }
       const { limitIncidents, includeClosedIncidents } = params
       if (limitIncidents > 0) {

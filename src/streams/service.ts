@@ -80,15 +80,11 @@ export const fillGuardianType: streamsPostProcessFunc = async (streams) => {
   return streams
 }
 
-export const filterStreamType = (streams: any, type: string): StreamResponse[] => {
-  const isArray = Array.isArray(streams)
-  streams = (isArray ? streams : [streams]).filter((stream: StreamResponse) => {
-    if (type === 'stream') {
-      return stream.guardianType === 'edge' || stream.guardianType === null || stream.guardianType === undefined
-    } else if (type === 'guardian') {
+export const filterByType = (streams: StreamResponse[], type: string): StreamResponse[] => {
+  streams = streams.filter((stream: StreamResponse) => {
+    if (type === 'guardian') {
       return stream.guardianType === 'satellite' || stream.guardianType === 'gsm'
-    }
-    return false
+    } else return true
   })
   return streams
 }
