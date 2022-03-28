@@ -80,6 +80,19 @@ export const fillGuardianType: streamsPostProcessFunc = async (streams) => {
   return streams
 }
 
+export const filterStreamType = (streams: any, type: string): StreamResponse[] => {
+  const isArray = Array.isArray(streams)
+  streams = (isArray ? streams : [streams]).filter((stream: StreamResponse) => {
+    if (type === 'stream') {
+      return stream.guardianType === 'edge' || stream.guardianType === null || stream.guardianType === undefined
+    } else if (type === 'guardian') {
+      return stream.guardianType === 'satellite' || stream.guardianType === 'gsm'
+    }
+    return false
+  })
+  return streams
+}
+
 export const refreshOpenIncidentsCount = async (id: string, o: Transactionable = {}): Promise<void> => {
   const openedIncidents = await incidentsDao.count({ streams: [id], isClosed: false }, o)
   return await update(id, { hasOpenIncident: openedIncidents > 0 }, o)

@@ -16,6 +16,7 @@ export interface StreamWithIncidentsQuery {
   hasNewEvents: boolean
   hasHotIncident: boolean
   includeClosedIncidents: boolean
+  type: string
   limit: number
   offset: number
   limitIncidents: number
