@@ -112,7 +112,7 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      const response = await request(app).get('/').query({ isEqualToAny: 'guardian' })
+      const response = await request(app).get('/').query({ type: 'guardian' })
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(2)
       expect(response.body[0].guardianType).toBe('gsm')
@@ -130,7 +130,7 @@ describe('GET /streams', () => {
       ]
 
       setupMockAxios('core', GET, endpoint, 200, mockStream)
-      const response = await request(app).get('/').query({ isEqualToAny: 'stream' })
+      const response = await request(app).get('/').query({ type: 'stream' })
       expect(response.statusCode).toBe(200)
       expect(response.body.length).toBe(4)
       expect(response.body[0].guardianType).toBe('edge')

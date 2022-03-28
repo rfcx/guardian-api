@@ -86,7 +86,7 @@ router.get('/', (req: Request, res: Response): void => {
   converter.convert('keyword').optional().toString()
   converter.convert('has_new_events').optional().toBoolean()
   converter.convert('has_hot_incident').optional().toBoolean()
-  converter.convert('isEqualToAny').optional().toString()
+  converter.convert('type').optional().toString().isEqualToAny(['stream', 'guardian'])
   converter.convert('include_closed_incidents').default(false).toBoolean()
   converter.convert('limit').default(10).toInt()
   converter.convert('offset').default(0).toInt()
@@ -102,8 +102,8 @@ router.get('/', (req: Request, res: Response): void => {
       })
       let { total, items } = await preprocessByActiveStreams(forwardedResponse.data, params)
       await fillGuardianType(items)
-      if (params.isEqualToAny !== undefined) {
-        items = filterByType(items, params.isEqualToAny)
+      if (params.type !== undefined) {
+        items = filterByType(items, params.type)
       }
       const { limitIncidents, includeClosedIncidents } = params
       if (limitIncidents > 0) {
