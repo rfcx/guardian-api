@@ -1,3 +1,4 @@
+FROM jrottenberg/ffmpeg:3.3-alpine
 FROM node:14.17.6-alpine AS builder
 
 WORKDIR /build
@@ -8,6 +9,8 @@ COPY . .
 RUN yarn build
 
 FROM node:14.17.6-alpine
+
+COPY --from=0 / /
 
 WORKDIR /app
 COPY package.json yarn.lock ./

@@ -18,7 +18,7 @@ Requires Docker.
 
 2.  Run the app
     ```
-    docker run -it --rm guardian-api -p 3000:3000
+    docker run -p 3000:3000 --env-file .env -it --rm guardian-api
     ```
 
 
