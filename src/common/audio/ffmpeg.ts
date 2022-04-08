@@ -1,10 +1,10 @@
 import ffmpeg from 'fluent-ffmpeg'
 
 interface ConvertOptions {
-  acodec: string
+  acodec?: string
 }
 
-export const convert = async function (srcPath: string, destPath: string, options: ConvertOptions): Promise<void> {
+export const convert = async function (srcPath: string, destPath: string, options: ConvertOptions = {}): Promise<void> {
   return await new Promise((resolve, reject) => {
     const outputOpts: string[] = []
     if (options.acodec !== undefined) {
