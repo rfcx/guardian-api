@@ -1,5 +1,5 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { ResponsePayload, ResponseFormatted, GroupedAnswers } from '../types'
+import { ResponsePayload, ResponseFormatted, GroupedAnswers, AssetFileAttributes } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
@@ -8,12 +8,15 @@ import Answer from './models/answer.model'
 import { create, list, get, assignAnswersByIds } from './dao'
 import incidentsDao from '../incidents/dao'
 import { findOrCreateIncidentForResponse, shiftEventsAfterNewResponse } from '../incidents/service'
-import { assetPath, generateFilename } from '../common/storage/paths'
+import { assetPath, uniquifyFilename } from '../common/storage/paths'
 import { uploadFile } from '../common/storage'
 import assetDao from '../assets/dao'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { EmptyResultError } from '@rfcx/http-utils'
+import { convert } from '../common/audio/ffmpeg'
+import { join } from 'path'
+import { unlinkAsync } from '../common/fs'
 
 dayjs.extend(utc)
 
@@ -70,21 +73,33 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
   })
 }
 
-export const uploadFileAndSaveToDb = async (response: Response, file: any, userData: User, o: Transactionable = {}): Promise<string> => {
+export const uploadFileAndSaveToDb = async (response: Response, file: AssetFileAttributes, userData: User, o: Transactionable = {}): Promise<string> => {
   const isExternalTransaction = o.transaction !== undefined && o.transaction !== null
   const transaction = isExternalTransaction ? o.transaction : await sequelize.transaction()
-  if (file === null) {
-    throw new Error('File should not be null')
-  }
   try {
     const user = await ensureUserExists(userData)
-    const buf = file.buffer
-    const fileName = generateFilename(file.originalname)
-    const mimeType = file.mimetype
-    const newAsset = { fileName, mimeType, responseId: response.id, createdById: user.id }
-    const asset = await assetDao.create(newAsset, { transaction })
-    const remotePath = assetPath(asset)
-    await uploadFile(remotePath, buf)
+    const { mimetype, originalname, buffer } = file
+    const createdAt = new Date()
+    const uniquifiedFilename = uniquifyFilename(originalname)
+    const newAssetData = { fileName: uniquifiedFilename, mimeType: mimetype, responseId: response.id, createdById: user.id, createdAt }
+    // There wree some compatibility issues with playing voice recordings in Safari.
+    // So if asset is audio, save original file in storage and convert original file to mp3
+    if (mimetype.startsWith('audio')) {
+      const sourceRemotePath = assetPath({ createdAt, responseId: response.id, fileName: `source-${uniquifiedFilename}` })
+      await uploadFile(sourceRemotePath, buffer as Buffer) // upload original audio file just in case
+      const convFileName = `converted-${uniquifiedFilename}`
+      const dest = join(file.destination as string, convFileName)
+      await convert(file.path as string, dest, { acodec: 'libmp3lame' }) // convert audio file to mp3 with ffmpeg
+      const remotePath = assetPath({ createdAt, responseId: response.id, fileName: convFileName })
+      newAssetData.fileName = convFileName // rewrite asset filename
+      await uploadFile(remotePath, dest)
+      await unlinkAsync(file.path as string) // delete temp request file
+      await unlinkAsync(dest) // delete converted file
+    } else {
+      const remotePath = assetPath({ createdAt, responseId: response.id, fileName: uniquifiedFilename })
+      await uploadFile(remotePath, buffer as Buffer)
+    }
+    const asset = await assetDao.create(newAssetData, { transaction })
     if (!isExternalTransaction) {
       await (transaction as any).commit()
     }

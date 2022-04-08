@@ -11,7 +11,7 @@ RUN yarn build
 FROM node:14.17.6-alpine
 
 COPY --from=0 / /
-
+ENV CACHE_DIRECTORY="/tmp/guardian-api/"
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn --production --frozen-lockfile
