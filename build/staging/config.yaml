@@ -4,8 +4,8 @@ metadata:
   name: guardian-api-config
   namespace: staging
 data:
-  CORE_URL: http://api-service.staging.svc.cluster.local
-  MEDIA_URL: http://api-service.staging.svc.cluster.local
+  CORE_URL: http://core-api-service.staging.svc.cluster.local
+  MEDIA_URL: http://core-api-service.staging.svc.cluster.local
   SQS_ENABLED: "true"
   SQS_EVENT_CREATED: "guardian-api-event-created-staging"
   SQS_EVENT_UPDATED: "guardian-api-event-updated-staging"
