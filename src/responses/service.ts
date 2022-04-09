@@ -86,7 +86,7 @@ export const uploadFileAndSaveToDb = async (response: Response, file: AssetFileA
     // So if asset is audio, save original file in storage and convert original file to mp3
     if (mimetype.startsWith('audio')) {
       const sourceRemotePath = assetPath({ createdAt, responseId: response.id, fileName: `source-${uniquifiedFilename}` })
-      await uploadFile(sourceRemotePath, buffer as Buffer) // upload original audio file just in case
+      await uploadFile(sourceRemotePath, file.path as string) // upload original audio file just in case
       const convFileName = `converted-${uniquifiedFilename}`
       const dest = join(file.destination as string, convFileName)
       await convert(file.path as string, dest, { acodec: 'libmp3lame' }) // convert audio file to mp3 with ffmpeg
@@ -97,7 +97,7 @@ export const uploadFileAndSaveToDb = async (response: Response, file: AssetFileA
       await unlinkAsync(dest) // delete converted file
     } else {
       const remotePath = assetPath({ createdAt, responseId: response.id, fileName: uniquifiedFilename })
-      await uploadFile(remotePath, buffer as Buffer)
+      await uploadFile(remotePath, buffer !== undefined ? buffer : file.path as string)
     }
     const asset = await assetDao.create(newAssetData, { transaction })
     if (!isExternalTransaction) {
