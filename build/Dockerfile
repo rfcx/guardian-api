@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y libav-tools ffmpeg
 ENV CACHE_DIRECTORY="/tmp/guardian-api/"
 WORKDIR /app
 RUN yarn --production --frozen-lockfile
+COPY package.json ./
 COPY --from=builder /build/admin ./admin
 COPY --from=builder /build/migrations ./migrations
 COPY --from=builder /build/dist ./dist
