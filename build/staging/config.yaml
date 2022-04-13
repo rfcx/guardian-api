@@ -6,7 +6,6 @@ metadata:
 data:
   CORE_URL: http://core-api-service.staging.svc.cluster.local
   MEDIA_URL: http://core-api-service.staging.svc.cluster.local
-  SQS_ENABLED: "true"
-  SQS_EVENT_CREATED: "guardian-api-event-created-staging"
-  SQS_EVENT_UPDATED: "guardian-api-event-updated-staging"
+  MESSAGE_QUEUE_ENABLED: "true"
+  MESSAGE_QUEUE_PREFIX: "staging-guardianApi"
   AUTH0_DOMAIN: "auth.rfcx.org"
