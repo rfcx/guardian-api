@@ -818,10 +818,10 @@
   dependencies:
     moment-timezone "0.5.31"
 
-"@rfcx/message-queue@1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@rfcx/message-queue/-/message-queue-1.0.6.tgz#10cc5d019f5960ef31d9cc96dec16c65a789fcff"
-  integrity sha512-iE9zdTn2wQ1B/NC6Sy/pSJ/eT3jF1vtyR+a6UlCIDKHvrF5dDCvKqOqiZ5Kn046TeaPQLSL7hOVmE5Sq3VVxWg==
+"@rfcx/message-queue@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@rfcx/message-queue/-/message-queue-1.0.8.tgz#50d2305725aaa4141496fb5e67a92386fda8f856"
+  integrity sha512-LtnkS4Lsh0ozs2zbfZGjLjxR4+HbApKlsj2d/Zbm6GbcB2nWea9L0lAUJ8TIbxbelZEnMGdj6jxGShGYGmhnqw==
   dependencies:
     aws-sdk "^2.988.0"
     sqs-consumer "^5.6.0"

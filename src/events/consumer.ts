@@ -2,11 +2,16 @@ import { MessageQueue } from '@rfcx/message-queue'
 import { EventSQSMessage } from './types'
 import { createEvent, updateEvent, sendPushNotification } from './service'
 
-if (process.env.SQS_ENABLED === 'true') {
-  const messageQueue = new MessageQueue('sqs')
-  const eventCreatedTopic = process.env.SQS_EVENT_CREATED as string
-  console.log(`Subsribing to SQS topic "${eventCreatedTopic}"`)
-  messageQueue.subscribe(eventCreatedTopic, async (data: EventSQSMessage) => {
+// TODO Share with rfcx-api/common
+const EVENT_CREATED = 'eventCreated'
+const EVENT_UPDATED = 'eventUpdated'
+
+if (process.env.MESSAGE_QUEUE_ENABLED === 'true') {
+  const topicPrefix = process.env.MESSAGE_QUEUE_PREFIX as string
+  const messageQueue = new MessageQueue('sqs', { topicPrefix })
+
+  console.log(`Subscribing to SQS topic "${topicPrefix}-${EVENT_CREATED}"`)
+  messageQueue.subscribe(EVENT_CREATED, async (data: EventSQSMessage) => {
     try {
       const result = await createEvent(data)
       console.log('Event is created', result?.event.id)
@@ -20,9 +25,8 @@ if (process.env.SQS_ENABLED === 'true') {
     return true
   })
 
-  const eventUpdatedTopic = process.env.SQS_EVENT_UPDATED as string
-  console.log(`Subsribing to SQS topic "${eventUpdatedTopic}"`)
-  messageQueue.subscribe(eventUpdatedTopic, async (data: EventSQSMessage) => {
+  console.log(`Subscribing to SQS topic "${topicPrefix}-${EVENT_UPDATED}"`)
+  messageQueue.subscribe(EVENT_UPDATED, async (data: EventSQSMessage) => {
     try {
       const id = await updateEvent(data)
       console.log('Event is updated', id)
