@@ -6,9 +6,6 @@ metadata:
 
     # Maximum request body size
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    # Timeout for communicating with service (in seconds)
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     # Rate limiting
     # limit-rpm = limit each IP address to X requests per minute
     # limit-whitelist = do not rate limit clients in the IP range
