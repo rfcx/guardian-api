@@ -9,7 +9,6 @@ Manages reports produced by Rangers. Consumed by [Guardian App](https://github.c
 Requirements:
 - Node 14.17.6 (can be installed via `nvm` module and `.nvmrc` file)
 - yarn
-- MongoDb
 
 ### Basics
 
