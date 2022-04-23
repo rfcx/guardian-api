@@ -1,6 +1,6 @@
 # RFCx Guardian API
 
-Manages reports produced by Rangers. Consumed by [Guardian App](https://github.com/rfcx/guardian-app-android) and [Guardian Dashboard](https://github.com/rfcx/guardian-dashboard)
+Manages incidents and responses. Consumed by [Guardian App](https://github.com/rfcx/guardian-app-android) and [Guardian Dashboard](https://github.com/rfcx/guardian-dashboard)
 
 ---
 
