@@ -1,7 +1,7 @@
 # Deployment
 
 Overview:
-- Guardian API is built and deployed by Jenkins (jenkins.rfcx.org) as defined in [Jenkinsfile](./Jenkinsfile)
+- Guardian API is built and deployed by GitHub Actions as defined in [workflows](../.github/workflows)
 - Deployment is triggered by push to master/staging. All configuration is in the sub-folders `testing`, `staging` and `production` (corresponding to a Kubernetes namespace).
 - Secrets are stored on Kubernetes only in `guardian-api-secrets`.
 - Deployment notifications are posted on Slack #alerts-deployment and #alerts-deployment-prod
