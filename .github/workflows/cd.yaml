@@ -71,6 +71,7 @@ jobs:
       status: ${{ needs.deploy.result }}
       notification-title: 'CD: Guardian API'
       notification-footer: "Build: ${{ needs.build.result || 'n/a' }} | Deploy: ${{ needs.deploy.result || 'n/a' }}"
+      notification-success-statement: '{0} deployed the build!'
     secrets:
       slack-webhook: ${{ secrets.SLACK_ALERT_COREDT_WEBHOOK }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
