@@ -4,8 +4,9 @@ metadata:
   name: guardian-api-config
   namespace: production
 data:
-  CORE_URL: http://api-service.production.svc.cluster.local
-  MEDIA_URL: http://api-media-service.production.svc.cluster.local
+  CORE_URL: http://core-api-service.production.svc.cluster.local
+  NONCORE_URL: http://noncore-api-service.production.svc.cluster.local
+  MEDIA_URL: http://media-api-service.production.svc.cluster.local
   MESSAGE_QUEUE_ENABLED: "true"
   MESSAGE_QUEUE_PREFIX: "guardianApi"
   AUTH0_DOMAIN: "auth.rfcx.org"

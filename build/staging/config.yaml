@@ -5,6 +5,7 @@ metadata:
   namespace: staging
 data:
   CORE_URL: http://core-api-service.staging.svc.cluster.local
+  NONCORE_URL: http://noncore-api-service.staging.svc.cluster.local
   MEDIA_URL: http://core-api-service.staging.svc.cluster.local
   MESSAGE_QUEUE_ENABLED: "true"
   MESSAGE_QUEUE_PREFIX: "staging-guardianApi"
