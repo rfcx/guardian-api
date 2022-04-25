@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: guardian-api
-          image: 887044485231.dkr.ecr.eu-west-1.amazonaws.com/guardian-api/staging:latest
+          image: 887044485231.dkr.ecr.eu-west-1.amazonaws.com/guardian-api:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
