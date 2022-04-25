@@ -10,3 +10,4 @@ data:
   MESSAGE_QUEUE_ENABLED: "true"
   MESSAGE_QUEUE_PREFIX: "staging-guardianApi"
   AUTH0_DOMAIN: "auth.rfcx.org"
+  FOO: "BAR"
