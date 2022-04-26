@@ -10,15 +10,13 @@ Requirements:
 - Node 14.17.6 (can be installed via `nvm` module and `.nvmrc` file)
 - yarn
 
-### Basics
-
-#### Install dependencies
+### Install dependencies
 
 ```sh
 yarn
 ```
 
-#### Configure env variables
+### Configure env variables
 
 Copy `.env.example` to `.env`. Set DB credentials there.
 
@@ -38,24 +36,25 @@ yarn migrate.dev
 ```
 
 When you want to stop TimescaleDB
+
 ```sh
 yarn stop.timescale
 ```
 
-#### Run local dev server (live reload)
+### Run local dev server (live reload)
 
 ```sh
 yarn serve
 ```
 
-### Testing
+## Testing
 
-#### Run lint:
+### Run lint
 ```sh
 yarn lint
 ```
 
-#### Run tests:
+### Run tests
 ```
 yarn test
 ```
