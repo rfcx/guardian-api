@@ -42,7 +42,7 @@ jobs:
     with:
       dockerfile: build/Dockerfile
       targets: "[\"guardian-api\"]"
-      tag: ${{ needs.configure.outputs.namespace }}
+      tag-environment: ${{ needs.configure.outputs.namespace }}
       tag-latest: ${{ needs.configure.outputs.namespace == 'production' }}
     secrets:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -53,7 +53,7 @@ jobs:
     needs: [build, configure]
     uses: rfcx/cicd/.github/workflows/k8s-deploy.yaml@master
     with:
-      tag: ${{ needs.build.outputs.short-sha }}
+      tag: ${{ needs.build.outputs.unique-tag }}
       namespace: ${{ needs.configure.outputs.namespace }}
     secrets:
       kube-config: ${{ secrets.KUBE_CONFIG_SUPER }}
@@ -69,6 +69,7 @@ jobs:
       workflow-id: cd.yaml
       previous-run-id: ${{ needs.prepare.outputs.previous-run-id }}
       status: ${{ needs.deploy.result }}
+      always: true
       notification-title: 'CD: Guardian API'
       notification-footer: "Build: ${{ needs.build.result || 'n/a' }} | Deploy: ${{ needs.deploy.result || 'n/a' }}"
       notification-success-statement: '{0} deployed the build!'
