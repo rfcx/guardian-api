@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
-import { coreApiAxios, mediaApiAxios } from '../axios'
+import { coreApiAxios, noncoreApiAxios, mediaApiAxios } from '../axios'
 import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian } from '../../types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
@@ -159,7 +159,7 @@ export const getGuardian = async (id: string, token?: string, params: any = {}):
   const options = {
     headers: { Authorization: token }
   }
-  return await coreApiAxios.get(`/v2/streams/${id}`, options)
+  return await noncoreApiAxios.get(`/v2/streams/${id}`, options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),

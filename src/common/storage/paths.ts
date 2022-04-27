@@ -1,17 +1,17 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import Asset from '../../assets/asset.model'
+import { AssetPathData } from '../../types'
 dayjs.extend(utc)
 
-export function assetPath (asset: Asset): string {
-  const timestamp = dayjs(asset.createdAt)
+export function assetPath (data: AssetPathData): string {
+  const timestamp = dayjs(data.createdAt)
   const year = timestamp.year()
   const month = (timestamp.month() + 1).toString().padStart(2, '0')
   const dayOfMonth = timestamp.date().toString().padStart(2, '0')
-  return `${year}/${month}/${dayOfMonth}/${(asset as any).responseId as string}/${asset.fileName}`
+  return `${year}/${month}/${dayOfMonth}/${data.responseId}/${data.fileName}`
 }
 
-export function generateFilename (originalFilename: string): string {
+export function uniquifyFilename (originalFilename: string): string {
   const rand = cheapRandomString(8)
   return `${rand}-${originalFilename}`
 }

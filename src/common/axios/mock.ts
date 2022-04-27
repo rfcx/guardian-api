@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter'
-import { instance, coreApiAxios, mediaApiAxios } from './index'
+import { instance, coreApiAxios, noncoreApiAxios, mediaApiAxios } from './index'
 
-type adapterType = 'core' | 'media' | 'default'
+type adapterType = 'core' | 'noncore' | 'media' | 'default'
 
 export const GET = 'GET'
 export const POST = 'POST'
@@ -9,6 +9,7 @@ export const PATCH = 'PATCH'
 
 const mockAdapterDefault = new MockAdapter(instance)
 const mockAdapterCore = new MockAdapter(coreApiAxios)
+const mockAdapterNoncore = new MockAdapter(noncoreApiAxios)
 const mockAdapterMedia = new MockAdapter(mediaApiAxios)
 
 export function setupMockAxios (type: adapterType, request: string, endpoint: string, status: number, mockResponse?: any, headers?: any): MockAdapter | undefined {
@@ -37,6 +38,9 @@ function getMockAdapter (type: adapterType): MockAdapter {
   switch (type) {
     case 'core':
       mockAdapter = mockAdapterCore
+      break
+    case 'noncore':
+      mockAdapter = mockAdapterNoncore
       break
     case 'media':
       mockAdapter = mockAdapterMedia

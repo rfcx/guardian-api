@@ -37,7 +37,7 @@ router.get('/:id', (req: Request, res: Response): void => {
         throw new EmptyResultError('Asset not found')
       } else {
         res.header('Content-Type', asset.mimeType)
-        const path = assetPath(asset)
+        const path = assetPath({ createdAt: asset.createdAt, responseId: asset.response.id, fileName: asset.fileName })
         downloadAsStream(path).pipe(res)
       }
     })

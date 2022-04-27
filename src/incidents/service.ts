@@ -96,7 +96,6 @@ export const findOrCreateIncidentForEvent = async (streamData: StreamResponse, o
     fields: ['id', 'firstEvent', 'firstResponse'],
     transaction
   })
-  console.log('\n\nexistingIncidents', existingIncidents, '\n\n')
   if (existingIncidents.length > 0 && await firstEventInTimeRange(existingIncidents[0])) {
     return existingIncidents[0]
   }

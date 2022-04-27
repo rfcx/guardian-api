@@ -177,9 +177,13 @@ router.get('/:id/assets', (req: Request, res: Response): void => {
 router.post('/:id/assets', multerFile.single('file'), (req: Request, res: Response): void => {
   const user = (req as any).user
   const responseId = req.params.id
-  const file = req.file ?? null
+  const file = req.file
   get(responseId)
     .then(async response => {
+      if (file === undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw new ValidationError('An asset must be set to "file" field.')
+      }
       if (response === null) {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new EmptyResultError('Response with given id not found')
