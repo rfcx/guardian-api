@@ -6,6 +6,7 @@ import responses from './responses/router'
 import streams from './streams/router'
 import streamDetections from './detections/stream/router'
 import events from './events/router'
+import clusteredEvents from './clustered-events/router'
 import incidents from './incidents/router'
 import projects from './projects/router'
 import media from './media/router'
@@ -28,6 +29,7 @@ app.use(jwtCheck, parseUserData)
 app.use(logger)
 app.use('/assets', assets)
 app.use('/incidents', incidents)
+app.use('/clustered-events', clusteredEvents)
 app.use('/streams', streams)
 app.use('/streams', streamDetections)
 app.use('/projects', projects)

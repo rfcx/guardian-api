@@ -2,7 +2,7 @@
 jest.mock('../common/auth', () => {
   return {
     getM2MToken: jest.fn(() => 'mocked token'),
-    jwtCheck: jest.fn((req, res, next) => { console.log('\n\nHEREEEEEEEE\n\n'); next(null) }),
+    jwtCheck: jest.fn((req, res, next) => { next(null) }),
     parseUserData: jest.fn((req, res, next) => { next(null) })
   }
 })
