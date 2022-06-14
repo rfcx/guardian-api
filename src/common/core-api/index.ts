@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 import { coreApiAxios, noncoreApiAxios, mediaApiAxios } from '../axios'
-import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian } from '../../types'
+import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian, ClusteredEventsResponse } from '../../types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
 import { getM2MToken } from '../auth'
@@ -67,6 +67,25 @@ export const getEvent = async (id: string, token?: string, params: any = {}): Pr
     params: { ...params, fields: ['id', 'start', 'end', 'created_at', 'stream_id', 'classification'] }
   }
   return await coreApiAxios.get(`/events/${id}`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}
+
+export const getClusteredEvents = async (token?: string, params: any = {}): Promise<ForwardedResponse<ClusteredEventsResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options = {
+    headers: { Authorization: token },
+    params
+  }
+  return await coreApiAxios.get('/clustered-events', options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),

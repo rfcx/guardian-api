@@ -51,3 +51,17 @@ export interface EventResponse {
   classification: Classification
   createdAt: string
 }
+
+export interface ClassificationResponse {
+  value: string
+  title: string
+  image: string
+}
+
+export interface ClusteredEventsResponse {
+  time_bucket: string
+  aggregated_value: number
+  first_start: string
+  last_start: string
+  classification: ClassificationResponse
+}

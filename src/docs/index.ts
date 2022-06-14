@@ -65,6 +65,7 @@ const options = {
     './src/projects/router.ts',
     './src/responses/router.ts',
     './src/events/router.ts',
+    './src/clustered-events/router.ts',
     './src/incidents/router.ts',
     './src/media/router.ts',
     './src/health-check/router.ts',
