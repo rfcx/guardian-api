@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 import { coreApiAxios, noncoreApiAxios, mediaApiAxios } from '../axios'
-import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian, ClusteredEventsResponse } from '../../types'
+import { ProjectResponse, StreamResponse, EventResponse, ForwardedResponse, ForwardedArrayResponse, DetectionResponse, Guardian, ClusteredResponse } from '../../types'
 import { snakeToCamel } from '../serializers/snake-camel'
 import { mapAxiosErrorToCustom } from '@rfcx/http-utils'
 import { getM2MToken } from '../auth'
@@ -77,7 +77,7 @@ export const getEvent = async (id: string, token?: string, params: any = {}): Pr
     .catch(e => { throw mapAxiosErrorToCustom(e) })
 }
 
-export const getClusteredEvents = async (token?: string, params: any = {}): Promise<ForwardedResponse<ClusteredEventsResponse>> => {
+export const getClusteredEvents = async (token?: string, params: any = {}): Promise<ForwardedResponse<ClusteredResponse>> => {
   if (token === undefined) {
     token = `Bearer ${await getM2MToken()}`
   }
@@ -110,6 +110,25 @@ export const getDetections = async (streamId: string, token?: string, params: an
     }
   }
   return await coreApiAxios.get(`/streams/${streamId}/detections`, options)
+    .then((response) => {
+      return {
+        data: snakeToCamel(response.data),
+        headers: extractCoreHeaders(response.headers)
+      }
+    })
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    .catch(e => { throw mapAxiosErrorToCustom(e) })
+}
+
+export const getClusteredDetections = async (token?: string, params: any = {}): Promise<ForwardedResponse<ClusteredResponse>> => {
+  if (token === undefined) {
+    token = `Bearer ${await getM2MToken()}`
+  }
+  const options = {
+    headers: { Authorization: token },
+    params
+  }
+  return await coreApiAxios.get('/clustered-detections', options)
     .then((response) => {
       return {
         data: snakeToCamel(response.data),

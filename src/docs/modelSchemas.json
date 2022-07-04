@@ -469,5 +469,8 @@
   },
   "EventCluster": {
     "$ref": "#/components/schemas/Cluster"
+  },
+  "DetectionCluster": {
+    "$ref": "#/components/schemas/Cluster"
   }
 }

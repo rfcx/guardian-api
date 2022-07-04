@@ -58,7 +58,7 @@ export interface ClassificationResponse {
   image: string
 }
 
-export interface ClusteredEventsResponse {
+export interface ClusteredResponse {
   time_bucket: string
   aggregated_value: number
   first_start: string
