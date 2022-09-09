@@ -11,15 +11,16 @@ export interface StreamQuery {
   active: boolean
 }
 export interface StreamWithIncidentsQuery {
-  projects: string[]
-  keyword: string
-  hasNewEvents: boolean
-  hasHotIncident: boolean
-  includeClosedIncidents: boolean
-  limit: number
-  offset: number
-  limitIncidents: number
-  fields: string[]
+  projects?: string[]
+  keyword?: string
+  hasNewEvents?: boolean
+  hasHotIncident?: boolean
+  includeClosedIncidents?: boolean
+  limit?: number
+  offset?: number
+  limitIncidents?: number
+  fields?: string[]
+  filterCoreStreams?: boolean
 }
 
 export interface StreamFilters {

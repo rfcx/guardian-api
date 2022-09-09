@@ -15,7 +15,7 @@ function extractIds (streams): string[] {
   return streams.map(i => i.id)
 }
 
-export const preprocessByActiveStreams = async (streams: StreamResponse[], params?: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponse[] }> => {
+export const preprocessByActiveStreams = async (streams: StreamResponse[], params: StreamWithIncidentsQuery): Promise<{ total: number, items: StreamResponse[] }> => {
   const filters: StreamFilters = {
     ids: extractIds(streams)
   }
@@ -31,7 +31,7 @@ export const preprocessByActiveStreams = async (streams: StreamResponse[], param
   const activeStreams = await list(filters)
   const activeStreamIds = extractIds(activeStreams)
   const filteredStreams = streams
-    .filter(s => activeStreamIds.includes(s.id))
+    .filter(s => params.filterCoreStreams === false || activeStreamIds.includes(s.id))
     .sort((a, b) => {
       const strA = activeStreams.find(s => s.id === a.id)
       const strB = activeStreams.find(s => s.id === b.id)
