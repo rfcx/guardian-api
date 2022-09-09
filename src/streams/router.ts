@@ -98,11 +98,11 @@ router.get('/', (req: Request, res: Response): void => {
       const { total, items } = await preprocessByActiveStreams(forwardedResponse.data, params)
       await fillGuardianType(items)
       const { limitIncidents, includeClosedIncidents } = params
-      if (limitIncidents > 0) {
+      if (limitIncidents !== undefined && limitIncidents > 0) {
         for (const stream of items) {
           const incData = await getIncidents({
             streams: [stream.id],
-            closed: includeClosedIncidents ? undefined : false,
+            closed: includeClosedIncidents === true ? undefined : false,
             limit: limitIncidents,
             offset: 0,
             sort: '-createdAt'
@@ -148,7 +148,7 @@ router.get('/:id', (req: Request, res: Response): void => {
   api.getStream(req.params.id, userToken)
     .then(async (streamResponse) => {
       let stream = streamResponse.data
-      const { items } = await preprocessByActiveStreams([stream])
+      const { items } = await preprocessByActiveStreams([stream], { filterCoreStreams: false })
       stream = items[0]
       await fillGuardianType(stream)
       res.json(stream)
