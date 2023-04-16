@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations
+
+    # Maximum request body size
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Rate limiting
+    # limit-rpm = limit each IP address to X requests per minute
+    # limit-whitelist = do not rate limit clients in the IP range
+    nginx.ingress.kubernetes.io/limit-rpm: "120"
+  name: guardian-api-ingress
+  namespace: staging
+  labels:
+    app: guardian-api
+spec:
+  rules:
+    - host: staging-ranger-api.rfcx.org
+      http:
+        paths:
+          - backend:
+              serviceName: guardian-api-service
+              servicePort: 80
+    - host: staging-guardian-api.rfcx.org
+      http:
+        paths:
+          - backend:
+              serviceName: guardian-api-service
+              servicePort: 80

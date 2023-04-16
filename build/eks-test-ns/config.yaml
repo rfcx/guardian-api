@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guardian-api-config
+  namespace: eks-test-ns
+data:
+  CORE_URL: http://core-api-service.eks-test-ns.svc.cluster.local
+  NONCORE_URL: http://noncore-api-service.eks-test-ns.svc.cluster.local
+  MEDIA_URL: http://core-api-service.eks-test-ns.svc.cluster.local
+  MESSAGE_QUEUE_ENABLED: "true"
+  MESSAGE_QUEUE_PREFIX: "eks-test-ns-guardianApi"
+  AUTH0_DOMAIN: "auth.rfcx.org"

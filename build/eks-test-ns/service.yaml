@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: guardian-api-service
+  namespace: eks-test-ns
+  labels:
+    app: guardian-api
+spec:
+  selector:
+    app: guardian-api
+  type: ClusterIP
+  ports:
+    - name: node
+      port: 80
+      targetPort: 3000
