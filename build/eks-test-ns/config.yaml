@@ -8,5 +8,5 @@ data:
   NONCORE_URL: http://noncore-api-service.eks-test-ns.svc.cluster.local
   MEDIA_URL: http://core-api-service.eks-test-ns.svc.cluster.local
   MESSAGE_QUEUE_ENABLED: "true"
-  MESSAGE_QUEUE_PREFIX: "eks-test-ns-guardianApi"
+  MESSAGE_QUEUE_PREFIX: "staging-guardianApi"
   AUTH0_DOMAIN: "auth.rfcx.org"
