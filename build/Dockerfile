@@ -7,6 +7,7 @@ RUN yarn build
 
 FROM node:14.17.6-stretch as guardian-api
 #RUN apt-get update && apt-get install -y libav-tools ffmpeg
+RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
 RUN apt-get -y update
 RUN apt-get -y upgrade 
 RUN apt install ffmpeg
