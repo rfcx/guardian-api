@@ -7,7 +7,8 @@ RUN yarn build
 
 FROM node:14.17.6-stretch as guardian-api
 #RUN apt-get update && apt-get install -y libav-tools ffmpeg
-RUN apt-get update && apt-get install -y v4l-utils
+RUN apt update && apt upgrade 
+RUN apt install ffmpeg
 ENV CACHE_DIRECTORY="/tmp/guardian-api/"
 WORKDIR /app
 COPY package.json yarn.lock ./
