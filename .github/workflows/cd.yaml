@@ -55,7 +55,7 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_NONPROD_APP_DEPLOY }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_NONPROD_APP_DEPLOY }}
 
- deploy-device-api-secrets:
+  deploy-device-api-secrets:
     name: 'Deploy guardian-api secrets'
     needs: [configure]
     uses: rfcx/cicd/.github/workflows/eks-reusable-k8s-deploy-sec.yaml@eks_cicd
