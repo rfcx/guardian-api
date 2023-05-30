@@ -69,7 +69,7 @@ jobs:
   deploy:
     name: 'Deploy'
     needs: [build, configure]
-#    uses: rfcx/cicd/.github/workflows/k8s-deploy.yaml@master
+#    uses: rfcx/cicd/.github/workflows/k8s-deploy.yaml@master 
     uses: rfcx/guardian-api/.github/workflows/eks-reusable-k8s-deploy.yaml@eks-branch
     with:
       tag: ${{ needs.build.outputs.unique-tag }}
