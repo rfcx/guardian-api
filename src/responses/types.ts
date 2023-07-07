@@ -18,6 +18,7 @@ export interface ResponseUpdatableData {
   attachments?: ReportAttachment[]
   answers?: number[]
   note?: string
+  isUnexpected: Boolean
 }
 
 export interface ResponsePayload extends ResponseUpdatableData {
@@ -51,6 +52,7 @@ export interface ResponseFormatted {
   investigatedAt: string
   startedAt: string
   submittedAt: string
+  isUnexpected: boolean
   createdAt: string
   createdBy: UserFormatted
   answers: GroupedAnswers[]

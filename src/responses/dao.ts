@@ -25,7 +25,7 @@ export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): P
   applyTimeRangeToQuery(where, 'investigatedAt', investigatedAfter, investigatedBefore)
   applyTimeRangeToQuery(where, 'startedAt', startedAfter, startedBefore)
   applyTimeRangeToQuery(where, 'submittedAt', submittedAfter, submittedBefore)
-  applyTimeRangeToQuery(where, 'creteadAt', createdAfter, createdBefore)
+  applyTimeRangeToQuery(where, 'createdAt', createdAfter, createdBefore)
   if (streams !== undefined) {
     where.streamId = { [Op.in]: streams }
   }

@@ -87,6 +87,7 @@ router.post('/', (req: Request, res: Response, next): void => {
   converter.convert('answers').toArray()
   converter.convert('note').optional().toString()
   converter.convert('streamId').toString().isPassingRegExp(/[a-z0-9]{12}/, 'should consist of 12 lower-cased characters or digits')
+  converter.convert('isUnexpected').default(false).toBoolean()
   converter.validate()
     .then(async (responsePayload: ResponsePayload) => {
       const forwardedResponse = await getStream(responsePayload.streamId, idToken)

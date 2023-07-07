@@ -115,7 +115,7 @@ export const uploadFileAndSaveToDb = async (response: Response, file: AssetFileA
 export const format = (response: Response): ResponseFormatted => {
   const {
     id, streamId, projectId, investigatedAt, startedAt, submittedAt,
-    createdAt, createdBy, answers, incident
+    isUnexpected, createdAt, createdBy, answers, incident
   } = response
   const questions: any = answers.reduce((acc: any, cur: Answer) => {
     const questionId = cur.question.id
@@ -137,6 +137,7 @@ export const format = (response: Response): ResponseFormatted => {
     investigatedAt: investigatedAt.toISOString(),
     startedAt: startedAt.toISOString(),
     submittedAt: submittedAt.toISOString(),
+    isUnexpected,
     createdAt: createdAt.toISOString(),
     createdBy,
     answers: groupedAnswers as GroupedAnswers[],

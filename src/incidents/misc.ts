@@ -47,7 +47,7 @@ export const availableIncludes = [
   {
     model: Response,
     as: 'responses',
-    attributes: ['id', 'investigatedAt', 'startedAt', 'submittedAt', 'createdAt'],
+    attributes: ['id', 'investigatedAt', 'startedAt', 'submittedAt', 'isUnexpected', 'createdAt'],
     include: [{
       model: User,
       attributes: {

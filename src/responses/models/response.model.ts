@@ -32,6 +32,9 @@ export default class Response extends Model {
   @Column(DataType.DATE)
   submittedAt!: Date
 
+  @Column(DataType.BOOLEAN)
+  isUnexpected!: boolean
+
   @CreatedAt
   createdAt!: Date
 
