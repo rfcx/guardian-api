@@ -482,7 +482,7 @@ describe('POST /responses', () => {
     expect(responses.length).toBe(1)
     expect(response.answers?.length).toBe(1)
     expect(response.answers?.map(e => e.id).includes(503)).toBeTruthy()
-    expect(stream.length).toBe(3)
+    expect(stream.length).toBe(4)
   })
 })
 
