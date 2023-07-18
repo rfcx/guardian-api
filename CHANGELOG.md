@@ -1,3 +1,7 @@
+## 0.0.2 (2023-07-18)
+### Features
+- Create active stream if there is no active stream in response creation
+
 ## 0.0.1 (2021-10-29)
 
 ### Features
