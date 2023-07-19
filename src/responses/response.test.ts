@@ -29,6 +29,7 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   setupMockAxios('core', GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
+  setupMockAxios('core', GET, 'streams/aaaaaaaaa009', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
   await Stream.create({ id: 'aaaaaaaaa000', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
   await Stream.create({ id: 'aaaaaaaaa001', projectId: 'project000002', lastEventEnd: '2021-06-09T15:39:05.000Z' })
@@ -471,17 +472,16 @@ describe('POST /responses', () => {
       note: 'Test note',
       streamId: 'aaaaaaaaa009'
     }
-    setupMockAxios('core', GET, 'streams/aaaaaaaaa009', 200, { project: { id: 'project000001' } })
-
     const reqResponse = await request(app).post('/').send(requestBody)
 
-    const stream = await streamsDao.list()
     expect(reqResponse.statusCode).toBe(201)
     const responses: Response[] = await list()
     const response = responses[0]
     expect(responses.length).toBe(1)
     expect(response.answers?.length).toBe(1)
     expect(response.answers?.map(e => e.id).includes(503)).toBeTruthy()
+    const stream = await streamsDao.list()
+    // newly created from endpoint
     expect(stream.length).toBe(4)
   })
 })

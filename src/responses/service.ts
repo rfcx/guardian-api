@@ -55,7 +55,8 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
         id: responseData.streamId,
         projectId: responseData.projectId,
         lastEventEnd: responseData.investigatedAt
-      } as StreamCreationData
+      } as StreamCreationData,
+      { transaction }
     )
     const incidentForResponse = await findOrCreateIncidentForResponse(responseData)
     const response = await create({
