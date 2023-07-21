@@ -1,5 +1,5 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { ResponsePayload, ResponseFormatted, GroupedAnswers, AssetFileAttributes } from '../types'
+import { ResponsePayload, ResponseFormatted, GroupedAnswers, AssetFileAttributes, StreamCreationData } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
@@ -7,6 +7,7 @@ import Response from './models/response.model'
 import Answer from './models/answer.model'
 import { create, list, get, assignAnswersByIds } from './dao'
 import incidentsDao from '../incidents/dao'
+import streamsDao from '../streams/dao'
 import { findOrCreateIncidentForResponse, shiftEventsAfterNewResponse } from '../incidents/service'
 import { assetPath, uniquifyFilename } from '../common/storage/paths'
 import { uploadFile } from '../common/storage'
@@ -48,6 +49,15 @@ export const getResponse = async (id: string): Promise<ResponseFormatted> => {
 export const createResponse = async (responseData: ResponsePayload, userData: User): Promise<Response> => {
   const user = await ensureUserExists(userData)
   return await sequelize.transaction(async (transaction: Transaction) => {
+    // ensure that the response we create have a active stream so it can be shown on both Dashboard and App
+    await streamsDao.findOrCreate(
+      {
+        id: responseData.streamId,
+        projectId: responseData.projectId,
+        lastEventEnd: responseData.investigatedAt
+      } as StreamCreationData,
+      { transaction }
+    )
     const incidentForResponse = await findOrCreateIncidentForResponse(responseData)
     const response = await create({
       ...responseData,
