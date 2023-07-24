@@ -483,6 +483,8 @@ describe('POST /responses', () => {
     const stream = await streamsDao.list()
     // newly created from endpoint
     expect(stream.length).toBe(4)
+    expect(stream[3].id).toBe('aaaaaaaaa009')
+    expect(stream[3].hasOpenIncident).toBe(true)
   })
 })
 

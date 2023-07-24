@@ -1,5 +1,5 @@
 import { Transaction, Transactionable } from 'sequelize'
-import { ResponsePayload, ResponseFormatted, GroupedAnswers, AssetFileAttributes, StreamCreationData } from '../types'
+import { ResponsePayload, ResponseFormatted, GroupedAnswers, AssetFileAttributes, StreamCreationData, StreamUpdatableData } from '../types'
 import { ensureUserExists } from '../users/service'
 import { sequelize } from '../common/db'
 import User from '../users/user.model'
@@ -50,7 +50,7 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
   const user = await ensureUserExists(userData)
   return await sequelize.transaction(async (transaction: Transaction) => {
     // ensure that the response we create have a active stream so it can be shown on both Dashboard and App
-    await streamsDao.findOrCreate(
+    const stream = await streamsDao.findOrCreate(
       {
         id: responseData.streamId,
         projectId: responseData.projectId,
@@ -58,6 +58,12 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
       } as StreamCreationData,
       { transaction }
     )
+    // ensure that the stream of response will be updated to has open incident
+    await streamsDao.update(stream[0].id, {
+      hasOpenIncident: true
+    } as StreamUpdatableData,
+    { transaction })
+
     const incidentForResponse = await findOrCreateIncidentForResponse(responseData)
     const response = await create({
       ...responseData,
