@@ -10,6 +10,7 @@ import Event from '../events/event.model'
 import Asset from '../assets/asset.model'
 import { list } from './dao'
 import incidentsDao from '../incidents/dao'
+import streamsDao from '../streams/dao'
 import Classification from '../classifications/classification.model'
 import service from './service'
 import ResponseAnswer from './models/response-answer.model'
@@ -28,6 +29,7 @@ beforeAll(async () => {
   await migrate(sequelize)
   await seed()
   setupMockAxios('core', GET, 'streams/aaaaaaaaa000', 200, { project: { id: 'project000001' } })
+  setupMockAxios('core', GET, 'streams/aaaaaaaaa009', 200, { project: { id: 'project000001' } })
   await Classification.create({ value: 'chainsaw', title: 'Chainsaw' })
   await Stream.create({ id: 'aaaaaaaaa000', projectId: 'project000001', lastEventEnd: '2021-06-09T15:38:05.000Z' })
   await Stream.create({ id: 'aaaaaaaaa001', projectId: 'project000002', lastEventEnd: '2021-06-09T15:39:05.000Z' })
@@ -459,6 +461,30 @@ describe('POST /responses', () => {
     expect(responses.length).toBe(1)
     expect(response.answers?.length).toBe(1)
     expect(response.answers?.map(e => e.id).includes(503)).toBeTruthy()
+  })
+
+  test('creates response without active stream will create stream and incident', async () => {
+    const requestBody = {
+      investigatedAt: '2021-06-08T19:26:40.000Z',
+      startedAt: '2021-06-09T15:35:21.000Z',
+      submittedAt: '2021-06-09T15:38:05.000Z',
+      answers: [503],
+      note: 'Test note',
+      streamId: 'aaaaaaaaa009'
+    }
+    const reqResponse = await request(app).post('/').send(requestBody)
+
+    expect(reqResponse.statusCode).toBe(201)
+    const responses: Response[] = await list()
+    const response = responses[0]
+    expect(responses.length).toBe(1)
+    expect(response.answers?.length).toBe(1)
+    expect(response.answers?.map(e => e.id).includes(503)).toBeTruthy()
+    const stream = await streamsDao.list()
+    // newly created from endpoint
+    expect(stream.length).toBe(4)
+    expect(stream[3].id).toBe('aaaaaaaaa009')
+    expect(stream[3].hasOpenIncident).toBe(true)
   })
 })
 
