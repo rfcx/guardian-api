@@ -12,7 +12,7 @@ export const availableIncludes = [
       exclude: ['id', 'classificationId', 'streamId', 'projectId']
     },
     on: {
-      id: { [Op.eq]: col('Incident.closed_by_id') }
+      id: { [Op.eq]: col('Incident.closedById') }
     }
   },
   {
