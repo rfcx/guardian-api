@@ -10,9 +10,6 @@ export const availableIncludes = [
     as: 'closedBy',
     attributes: {
       exclude: ['id', 'classificationId', 'streamId', 'projectId']
-    },
-    on: {
-      id: { [Op.eq]: col('Incident.closedById') }
     }
   },
   {
