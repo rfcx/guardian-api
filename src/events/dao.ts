@@ -12,7 +12,7 @@ const include = [
 
 export const create = async function (data: EventCreationData, o: CreateOptions = {}): Promise<Event> {
   const transaction = o.transaction
-  return await Event.create(data, { transaction })
+  return await Event.create(data as any, { transaction })
 }
 
 export const get = async function (id: string, o: Transactionable = {}): Promise<Event | null> {
@@ -46,7 +46,7 @@ export const update = async function (id: string, data: EventUpdatableData, o: T
   await Event.update(data, { where: { id }, transaction })
 }
 
-export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number, Event[]]> {
+export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number]> {
   const transaction = o.transaction
   const where = combineWhere(f)
   const { end, incidentId } = data

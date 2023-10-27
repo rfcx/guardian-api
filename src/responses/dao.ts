@@ -51,7 +51,7 @@ export const list = async (f: ResponseFilters = {}, o: QueryOptionsRFCx = {}): P
 
 export const create = async (data: ResponseCreationData, o: Transactionable = {}): Promise<Response> => {
   const transaction = o.transaction
-  return await Response.create(data, { transaction })
+  return await Response.create(data as any, { transaction })
 }
 
 export const assignAnswersByIds = async (responseId: string, answers: number[] = [], o: Transactionable = {}): Promise<void> => {

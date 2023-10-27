@@ -6,7 +6,7 @@ import { availableIncludes } from './misc'
 
 export const create = async function (data: IncidentCreationData, o: CreateOptions = {}): Promise<Incident> {
   const transaction = o.transaction
-  return await Incident.create(data, { transaction })
+  return await Incident.create(data as any, { transaction })
 }
 
 export const get = async function (id: string, fields: string[] = [], o: Transactionable = {}): Promise<Incident | null> {

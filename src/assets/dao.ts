@@ -7,7 +7,7 @@ import { AssetCreationData, QueryOptionsRFCx } from '../types'
 
 export async function create (newAsset: AssetCreationData, o: Transactionable = {}): Promise<Asset> {
   const transaction = o.transaction
-  return await Asset.create(newAsset, { transaction })
+  return await Asset.create(newAsset as any, { transaction })
 }
 
 export async function get (id: string): Promise<Asset | null> {

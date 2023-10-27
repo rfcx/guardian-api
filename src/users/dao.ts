@@ -8,7 +8,7 @@ export const getByGuidOrEmail = async function (guid: string, email: string, o: 
 
 export const create = async function (user: User, o: Transactionable = {}): Promise<User> {
   const transaction = o.transaction
-  return await User.create(user, { transaction })
+  return await User.create(user as any, { transaction })
 }
 
 export default { getByGuidOrEmail, create }

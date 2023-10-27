@@ -1,11 +1,11 @@
-FROM node:14 AS builder
+FROM node:20.9.0 AS builder
 WORKDIR /build
 COPY package.json yarn.lock ./
 RUN yarn --frozen-lockfile
 COPY . .
 RUN yarn build
 
-FROM node:14 as guardian-api
+FROM node:20.9.0 as guardian-api
 RUN apt-get update && apt-get install -y ffmpeg
 ENV CACHE_DIRECTORY="/tmp/guardian-api/"
 WORKDIR /app

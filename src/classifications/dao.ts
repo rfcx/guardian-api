@@ -9,7 +9,7 @@ export const getByValue = async function (value: string, o: Transactionable = {}
 
 export const create = async function (classification: Classification, o: Transactionable = {}): Promise<Classification> {
   const transaction = o.transaction
-  return await Classification.create(classification, { transaction })
+  return await Classification.create(classification as any, { transaction })
 }
 
 export const list = async function (f: ClassificationFilters = {}, o: QueryOptionsRFCx = {}): Promise<Classification[]> {
