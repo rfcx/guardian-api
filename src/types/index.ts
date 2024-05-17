@@ -2,6 +2,7 @@ import { Transaction } from 'sequelize'
 
 export interface Env {
   AUTH0_DOMAIN: string
+  AUTH0_CUSTOM_DOMAIN: string
   AUTH0_CLIENT_ID: string
   AUTH0_CLIENT_SECRET: string
   AUTH0_AUDIENCE: string

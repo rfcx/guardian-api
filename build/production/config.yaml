@@ -10,3 +10,4 @@ data:
   MESSAGE_QUEUE_ENABLED: "true"
   MESSAGE_QUEUE_PREFIX: "guardianApi"
   AUTH0_DOMAIN: "auth.rfcx.org"
+  AUTH0_CUSTOM_DOMAIN: "rfcx.eu.auth0.com"

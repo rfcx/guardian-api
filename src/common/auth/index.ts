@@ -8,7 +8,7 @@ const userMetaUrl = 'https://rfcx.org/user_metadata'
 const appMetaUrl = 'https://rfcx.org/app_metadata'
 let m2mToken
 
-export const jwtCheck = jwt({
+const baseJWT = {
   secret: jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -18,7 +18,17 @@ export const jwtCheck = jwt({
   issuer: `https://${config.AUTH0_DOMAIN}/`,
   algorithms: ['RS256'],
   requestProperty: 'auth'
-})
+}
+
+export const jwtCheck = (): jwt.RequestHandler => {
+  baseJWT.issuer = `https://${config.AUTH0_DOMAIN}/`
+  return jwt(baseJWT)
+}
+
+export const jwtCustomCheck = (): jwt.RequestHandler => {
+  baseJWT.issuer = `https://${config.AUTH0_CUSTOM_DOMAIN}/`
+  return jwt(baseJWT)
+}
 
 export function parseUserData (req: Request, res: Response, next: NextFunction): void {
   const auth = req.auth
