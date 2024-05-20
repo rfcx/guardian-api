@@ -9,5 +9,5 @@ data:
   MEDIA_URL: http://media-api-service.production.svc.cluster.local
   MESSAGE_QUEUE_ENABLED: "true"
   MESSAGE_QUEUE_PREFIX: "guardianApi"
-  AUTH0_DOMAIN: "auth.rfcx.org"
-  AUTH0_CUSTOM_DOMAIN: "rfcx.eu.auth0.com"
+  AUTH0_DOMAIN: "rfcx.eu.auth0.com"
+  AUTH0_CUSTOM_DOMAIN: "auth.rfcx.org"

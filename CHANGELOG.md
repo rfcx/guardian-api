@@ -1,3 +1,7 @@
+## 0.0.3 (2024-05-17)
+### Features
+- API support both custom and original auth0 domain
+
 ## 0.0.2 (2023-07-18)
 ### Features
 - Create active stream if there is no active stream in response creation
