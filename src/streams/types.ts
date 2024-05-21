@@ -35,7 +35,7 @@ export interface StreamFilters {
 export interface StreamCreationData {
   id: string
   projectId: string
-  lastEventEnd: Date
+  lastEventEnd?: Date
 }
 
 export interface StreamUpdatableData {

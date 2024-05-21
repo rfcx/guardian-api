@@ -50,19 +50,20 @@ export const createResponse = async (responseData: ResponsePayload, userData: Us
   const user = await ensureUserExists(userData)
   return await sequelize.transaction(async (transaction: Transaction) => {
     // ensure that the response we create have a active stream so it can be shown on both Dashboard and App
-    const stream = await streamsDao.findOrCreate(
-      {
-        id: responseData.streamId,
-        projectId: responseData.projectId,
-        lastEventEnd: responseData.investigatedAt
-      } as StreamCreationData,
+    const streamCreationObj: StreamCreationData = {
+      id: responseData.streamId,
+      projectId: responseData.projectId,
+      lastEventEnd: responseData.investigatedAt
+    }
+    const stream = await streamsDao.findOrCreate(streamCreationObj,
       { transaction }
     )
     // ensure that the stream of response will be updated to has open incident
-    await streamsDao.update(stream[0].id, {
+    const streamUpdateObj: StreamUpdatableData = {
       hasOpenIncident: true
-    } as StreamUpdatableData,
-    { transaction })
+    }
+    await streamsDao.update(stream[0].id, streamUpdateObj,
+      { transaction })
 
     const incidentForResponse = await findOrCreateIncidentForResponse(responseData)
     const response = await create({

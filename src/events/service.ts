@@ -28,7 +28,7 @@ export const getEventsSinceLastReport = async (streamId: string): Promise<Event[
   const date = lastReport !== null ? dayjs.max(projectIncidentRangeStart, dayjs(lastReport.investigatedAt)) : projectIncidentRangeStart
   return await list({
     streams: [streamId],
-    start: (date as dayjs.Dayjs).toDate()
+    start: (date).toDate()
   }, {
     limit: 1000000000 // just a big value to overwrite default 100
   })
