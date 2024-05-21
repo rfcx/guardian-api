@@ -46,7 +46,7 @@ export const update = async function (id: string, data: EventUpdatableData, o: T
   await Event.update(data, { where: { id }, transaction })
 }
 
-export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number, Event[]]> {
+export const updateBatch = async function (f: EventFilters = {}, data: EventUpdatableData = {}, o: Transactionable = {}): Promise<[number]> {
   const transaction = o.transaction
   const where = combineWhere(f)
   const { end, incidentId } = data
